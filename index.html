@@ -193,28 +193,98 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
 <body>
 
 <!-- LOGIN PAGE -->
-<div id="login-page" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f172a 0%,#0f766e 100%)">
-  <div style="background:white;border-radius:20px;padding:2.5rem;width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
-    <div style="text-align:center;margin-bottom:2rem">
+<div id="login-page" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f172a 0%,#0f766e 100%);padding:1rem">
+  <div style="background:white;border-radius:20px;padding:2.5rem;width:380px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
+    
+    <!-- Logo -->
+    <div style="text-align:center;margin-bottom:1.75rem">
       <div style="font-size:2.5rem;margin-bottom:0.5rem">🏥</div>
-      <h1 style="font-size:1.3rem;font-weight:700;color:#0f172a">Pharmacie Aman Ouchen</h1>
-      <p style="color:#94a3b8;font-size:0.85rem;margin-top:0.25rem">Connexion</p>
+      <h1 style="font-size:1.25rem;font-weight:700;color:#0f172a">PharmaGest Maroc</h1>
+      <p style="color:#94a3b8;font-size:0.82rem;margin-top:0.25rem">Gestion intelligente de votre pharmacie</p>
     </div>
-    <div style="display:flex;flex-direction:column;gap:1rem">
-      <div>
-        <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Utilisateur</label>
-        <select id="login-user" style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none">
-          <option value="admin">👑 Admin</option>
-          <option value="caissiere">💊 Caissière</option>
-        </select>
-      </div>
-      <div>
-        <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Code</label>
-        <input type="password" id="login-code" placeholder="••••" style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:1rem;text-align:center;outline:none;letter-spacing:4px">
-      </div>
-      <button onclick="doLogin()" style="background:#0f766e;color:white;border:none;border-radius:8px;padding:0.85rem;font-size:1rem;font-weight:600;cursor:pointer;margin-top:0.5rem">Se connecter</button>
-      <p id="login-error" style="color:#dc2626;text-align:center;font-size:0.85rem;display:none">Code incorrect!</p>
+
+    <!-- TABS -->
+    <div style="display:flex;background:#f1f5f9;border-radius:10px;padding:3px;margin-bottom:1.5rem">
+      <button id="tab-login-btn" onclick="switchAuthTab('login')"
+        style="flex:1;padding:0.55rem;border:none;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;background:#0f766e;color:white;transition:all 0.2s">
+        Connexion
+      </button>
+      <button id="tab-register-btn" onclick="switchAuthTab('register')"
+        style="flex:1;padding:0.55rem;border:none;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;background:transparent;color:#64748b;transition:all 0.2s">
+        Inscription
+      </button>
     </div>
+
+    <!-- CONNEXION FORM -->
+    <div id="auth-login-form">
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div>
+          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Email</label>
+          <input type="email" id="login-email" placeholder="votre@email.com"
+            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Mot de passe</label>
+          <input type="password" id="login-password" placeholder="••••••••"
+            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box"
+            onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <div id="login-role-row" style="display:none">
+          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Rôle</label>
+          <select id="login-user" style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none">
+            <option value="admin">👑 Admin</option>
+            <option value="caissiere">💊 Caissière</option>
+          </select>
+        </div>
+        <button onclick="doLogin()"
+          id="login-btn"
+          style="background:#0f766e;color:white;border:none;border-radius:8px;padding:0.85rem;font-size:1rem;font-weight:600;cursor:pointer;margin-top:0.25rem;display:flex;align-items:center;justify-content:center;gap:0.5rem">
+          Se connecter
+        </button>
+        <p id="login-error" style="color:#dc2626;text-align:center;font-size:0.82rem;display:none;margin:0"></p>
+      </div>
+    </div>
+
+    <!-- INSCRIPTION FORM -->
+    <div id="auth-register-form" style="display:none">
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <div>
+          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Nom de la pharmacie *</label>
+          <input type="text" id="reg-pharmacy" placeholder="Ex: Pharmacie Aman Ouchen"
+            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Nom du pharmacien *</label>
+          <input type="text" id="reg-name" placeholder="Dr. Prénom Nom"
+            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Email *</label>
+          <input type="email" id="reg-email" placeholder="votre@email.com"
+            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Mot de passe *</label>
+          <input type="password" id="reg-password" placeholder="Min. 8 caractères"
+            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Ville</label>
+          <input type="text" id="reg-city" placeholder="Ex: Casablanca"
+            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        </div>
+        <button onclick="doRegister()"
+          style="background:#0f766e;color:white;border:none;border-radius:8px;padding:0.85rem;font-size:1rem;font-weight:600;cursor:pointer;margin-top:0.25rem">
+          Créer mon compte
+        </button>
+        <p id="register-error" style="color:#dc2626;text-align:center;font-size:0.82rem;display:none;margin:0"></p>
+        <p id="register-success" style="color:#16a34a;text-align:center;font-size:0.82rem;display:none;margin:0"></p>
+      </div>
+    </div>
+
+    <p style="text-align:center;font-size:0.72rem;color:#cbd5e1;margin-top:1.5rem">
+      PharmaGest Maroc — Votre pharmacie, digitalisée 🇲🇦
+    </p>
   </div>
 </div>
 
@@ -1239,6 +1309,104 @@ async function saveNewProduct() {
 // USER MANAGEMENT
 let currentUser = null; // 'admin' or 'caissiere'
 
+// =====================
+// SUPABASE AUTH - Multi-tenant
+// =====================
+
+function switchAuthTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('auth-login-form').style.display = isLogin ? '' : 'none';
+  document.getElementById('auth-register-form').style.display = isLogin ? 'none' : '';
+  document.getElementById('tab-login-btn').style.background = isLogin ? '#0f766e' : 'transparent';
+  document.getElementById('tab-login-btn').style.color = isLogin ? 'white' : '#64748b';
+  document.getElementById('tab-register-btn').style.background = !isLogin ? '#0f766e' : 'transparent';
+  document.getElementById('tab-register-btn').style.color = !isLogin ? 'white' : '#64748b';
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+
+  errEl.style.display = 'none';
+  if(!email || !password) { errEl.textContent = 'Email et mot de passe requis'; errEl.style.display = 'block'; return; }
+
+  btn.textContent = 'Connexion...';
+  btn.disabled = true;
+
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
+
+  btn.textContent = 'Se connecter';
+  btn.disabled = false;
+
+  if(error) {
+    errEl.textContent = 'Email ou mot de passe incorrect';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  currentUser = 'admin';
+  onLoginSuccess(data.user);
+}
+
+async function doRegister() {
+  const pharmacy = document.getElementById('reg-pharmacy').value.trim();
+  const name = document.getElementById('reg-name').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const city = document.getElementById('reg-city').value.trim();
+  const errEl = document.getElementById('register-error');
+  const okEl = document.getElementById('register-success');
+
+  errEl.style.display = 'none';
+  okEl.style.display = 'none';
+
+  if(!pharmacy || !name || !email || !password) { errEl.textContent = 'Tous les champs sont obligatoires'; errEl.style.display = 'block'; return; }
+  if(password.length < 8) { errEl.textContent = 'Mot de passe min. 8 caractères'; errEl.style.display = 'block'; return; }
+
+  const { data, error } = await db.auth.signUp({
+    email, password,
+    options: { data: { pharmacy_name: pharmacy, pharmacist_name: name, city } }
+  });
+
+  if(error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+
+  okEl.textContent = '✅ Compte créé! Vérifiez votre email pour confirmer.';
+  okEl.style.display = 'block';
+}
+
+function onLoginSuccess(user) {
+  document.getElementById('login-page').style.display = 'none';
+  document.getElementById('app-container').style.display = 'block';
+  const meta = user.user_metadata || {};
+  const pharmacyName = meta.pharmacy_name || 'Pharmacie';
+  document.querySelector('.sidebar-logo').innerHTML = `🏥 ${pharmacyName} <span>Pharmacie</span>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:1rem">
+      <span id="current-user-display" style="font-size:0.78rem;font-weight:600;color:#2dd4bf">👑 Admin</span>
+      <span id="db-status" style="font-size:0.72rem;color:rgba(255,255,255,0.4)">⚡ Supabase</span>
+      <span id="top-time-nav" style="font-size:0.78rem;font-weight:600;color:#2dd4bf"></span>
+      <button onclick="logout()" style="background:rgba(255,255,255,0.12);border:none;color:rgba(255,255,255,0.7);padding:0.3rem 0.75rem;border-radius:6px;cursor:pointer;font-size:0.78rem">🚪 Sortir</button>
+    </div>`;
+  applyRole();
+  loadDashboard();
+}
+
+async function logout() {
+  await db.auth.signOut();
+  location.reload();
+}
+
+// Check session au démarrage
+async function checkSession() {
+  const { data: { session } } = await db.auth.getSession();
+  if(session) {
+    currentUser = 'admin';
+    onLoginSuccess(session.user);
+  }
+}
+
+// Legacy functions (kept for compatibility)
 function getAdminCode() { return localStorage.getItem('pharma_admin_code') || '1234'; }
 function getCaissiereCode() { return localStorage.getItem('pharma_caissiere_code') || '0000'; }
 
@@ -3561,8 +3729,7 @@ setQuickDate('month','v');
 setQuickDate('month','a');
 setQuickDate('month','rv');
 setQuickDate('month','rp');
-syncCodesFromSupabase();
-loadDashboard();
+checkSession();
 </script>
 
 <!-- MODAL SCAN BL -->
