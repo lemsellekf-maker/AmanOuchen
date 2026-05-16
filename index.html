@@ -1352,6 +1352,9 @@ async function saveNewProduct() {
     barcode2: null
   };
   
+  // Ajouter user_id
+  const { data: { user } } = await db.auth.getUser();
+  newProd.user_id = user?.id;
   const {error} = await db.from('products').insert(newProd);
   if(error) { toast('Erreur: '+error.message,'error'); return; }
   
@@ -3652,7 +3655,10 @@ async function validerJerd() {
     try {
       if(p.isNew || !p.id) {
         // Nouveau produit — créer dans products
+        // Générer un ID texte unique
+        const newId = 'P' + Date.now() + Math.floor(Math.random()*1000);
         const {data: newProd, error} = await db.from('products').insert({
+          id: newId,
           name: p.name,
           category: p.category || 'Médicament',
           pph: p.pph || 0,
