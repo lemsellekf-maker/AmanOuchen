@@ -1177,11 +1177,25 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
 
 <!-- MODAL NOUVEAU PRODUIT -->
 <div class="modal-overlay" id="modal-new-product">
-  <div class="modal" style="width:480px;max-width:95vw">
+  <div class="modal" style="width:520px;max-width:95vw;max-height:90vh;overflow-y:auto">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
       <h3 style="font-size:1.05rem;font-weight:700;color:#0f172a;margin:0">➕ Nouveau produit</h3>
       <button onclick="document.getElementById('modal-new-product').classList.remove('show')" style="background:none;border:none;font-size:1.3rem;cursor:pointer;color:#94a3b8">✕</button>
     </div>
+
+    <!-- RECHERCHE CATALOGUE -->
+    <div style="background:#f0fdf9;border:1.5px solid #6ee7b7;border-radius:10px;padding:0.85rem;margin-bottom:1rem">
+      <label style="font-size:0.75rem;font-weight:700;color:#065f46;display:block;margin-bottom:0.5rem">🔍 Rechercher dans le catalogue (7000+ médicaments)</label>
+      <div style="display:flex;gap:0.5rem">
+        <input type="text" id="catalogue-search" placeholder="Tapez le nom du médicament..."
+          oninput="searchCatalogue(this.value)"
+          style="flex:1;padding:0.6rem 0.85rem;border:1.5px solid #6ee7b7;border-radius:8px;font-size:0.88rem;outline:none">
+        <button onclick="document.getElementById('catalogue-search').value='';document.getElementById('catalogue-results').style.display='none'"
+          style="padding:0.6rem 0.75rem;border:1px solid #e2e8f0;border-radius:8px;background:white;cursor:pointer;color:#94a3b8">✕</button>
+      </div>
+      <div id="catalogue-results" style="display:none;margin-top:0.5rem;max-height:200px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;background:white"></div>
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;margin-bottom:1rem">
       <div class="form-group" style="grid-column:1/-1">
         <label>Nom du produit *</label>
@@ -1243,6 +1257,53 @@ const SUPA_URL = 'https://oqudrdcjxqhzpbbyhstn.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9xdWRyZGNqeHFoenBiYnloc3RuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3OTQyOTQsImV4cCI6MjA5NDM3MDI5NH0.RjPj_LkCRjokJ4-dNs2jDt-mbS9w--JtnAK5912hFUU';
 const { createClient } = supabase;
 const db = createClient(SUPA_URL, SUPA_KEY);
+
+// CATALOGUE SEARCH
+let catalogueTimeout = null;
+async function searchCatalogue(q) {
+  const resultsEl = document.getElementById('catalogue-results');
+  if(!q || q.length < 2) { resultsEl.style.display = 'none'; return; }
+  
+  clearTimeout(catalogueTimeout);
+  catalogueTimeout = setTimeout(async () => {
+    const {data} = await db.from('catalogue_medicaments')
+      .select('id,name,category,pph,ppv')
+      .ilike('name', `%${q}%`)
+      .limit(15);
+    
+    if(!data || !data.length) {
+      resultsEl.innerHTML = '<div style="padding:1rem;text-align:center;color:#94a3b8;font-size:0.82rem">Aucun résultat</div>';
+      resultsEl.style.display = 'block';
+      return;
+    }
+
+    resultsEl.innerHTML = data.map(m => `
+      <div onclick="selectFromCatalogue(${JSON.stringify(m).replace(/"/g,'&quot;')})"
+        style="padding:0.65rem 0.85rem;border-bottom:1px solid #f1f5f9;cursor:pointer;display:flex;justify-content:space-between;align-items:center"
+        onmouseover="this.style.background='#f0fdf9'" onmouseout="this.style.background='white'">
+        <div>
+          <div style="font-size:0.88rem;font-weight:600;color:#0f172a">${m.name}</div>
+          <div style="font-size:0.72rem;color:#94a3b8">${m.category || '—'}</div>
+        </div>
+        <div style="text-align:right;font-size:0.78rem;color:#0f766e;font-weight:600">
+          PPV: ${m.ppv || 0} MAD
+        </div>
+      </div>`).join('');
+    resultsEl.style.display = 'block';
+  }, 300);
+}
+
+function selectFromCatalogue(med) {
+  document.getElementById('np-name').value = med.name;
+  document.getElementById('np-category').value = med.category || 'Médicament';
+  document.getElementById('np-pph').value = med.pph || 0;
+  document.getElementById('np-ppv').value = med.ppv || 0;
+  document.getElementById('np-auto-ppv').checked = false;
+  document.getElementById('catalogue-search').value = med.name;
+  document.getElementById('catalogue-results').style.display = 'none';
+  // Focus sur stock
+  document.getElementById('np-stock').focus();
+}
 
 // NEW PRODUCT
 function openNewProductModal(barcode='') {
@@ -1586,7 +1647,7 @@ function searchProducts(q) {
   if(!q) { renderProdList(allProducts.slice(0,100)); return; }
   const ql = q.toLowerCase();
   const res = allProducts.filter(p => p.name.toLowerCase().includes(ql) || (p.barcode1&&p.barcode1.includes(q)) || (p.barcode2&&p.barcode2.includes(q))).slice(0,80);
-  renderProdList(res);
+  renderProdList(res, q);
 }
 
 function filterCaisse() {
@@ -1601,7 +1662,8 @@ function filterCaisse() {
   else if(stockF==='zero') res = res.filter(p => p.stock<=0);
   const display = document.getElementById('caisse-count-display');
   if(display) display.textContent = res.length + ' produits';
-  renderProdList(res.slice(0,100));
+  const sq = document.getElementById('caisse-search')?.value||'';
+  renderProdList(res.slice(0,100), sq);
 }
 
 function resetFiltresCaisse() {
@@ -1613,9 +1675,36 @@ function resetFiltresCaisse() {
   renderProdList(allProducts.slice(0,100));
 }
 
-function renderProdList(prods) {
+async function renderProdList(prods, searchQuery='') {
   const el = document.getElementById('prod-list');
-  if(!prods.length) { el.innerHTML = '<div style="padding:2rem;text-align:center;color:#94a3b8">Aucun résultat</div>'; return; }
+  if(!prods.length) {
+    // Chercher dans catalogue si aucun résultat local
+    if(searchQuery && searchQuery.length >= 2) {
+      el.innerHTML = '<div style="padding:1rem;text-align:center;color:#94a3b8;font-size:0.82rem">🔍 Recherche dans le catalogue...</div>';
+      const {data: catResults} = await db.from('catalogue_medicaments')
+        .select('name,category,pph,ppv')
+        .ilike('name', `%${searchQuery}%`)
+        .limit(20);
+
+      if(catResults && catResults.length) {
+        el.innerHTML = `
+          <div style="padding:0.4rem 0.85rem;font-size:0.7rem;font-weight:700;color:#6366f1;background:#f5f3ff;text-transform:uppercase">
+            📋 Résultats du catalogue — produit non en stock
+          </div>` +
+          catResults.map(m => `
+            <div class="prod-row" style="cursor:default;opacity:0.85">
+              <div class="prod-name">${m.name}<span>${m.category||''}</span></div>
+              <span style="font-size:0.7rem;background:#f1f5f9;color:#64748b;border-radius:10px;padding:1px 7px">Hors stock</span>
+              <div class="prod-price" style="color:#6366f1">${m.ppv||0} MAD</div>
+            </div>`).join('');
+      } else {
+        el.innerHTML = '<div style="padding:2rem;text-align:center;color:#94a3b8">Aucun résultat</div>';
+      }
+    } else {
+      el.innerHTML = '<div style="padding:2rem;text-align:center;color:#94a3b8">Aucun résultat</div>';
+    }
+    return;
+  }
   el.innerHTML = prods.map(p => {
     const sb = p.stock<=0 ? `<span class="prod-stock-zero">Rupture</span>` : p.stock<=5 ? `<span class="prod-stock-low">${p.stock}</span>` : `<span class="prod-stock-ok">${p.stock}</span>`;
     return `<div class="prod-row" onclick='quickAdd(${JSON.stringify(p).replace(/'/g,"&#39;")})' style="cursor:pointer">
@@ -2093,24 +2182,78 @@ function hideNewAchat() {
   document.getElementById('achats-form-view').style.display = 'none';
 }
 
-function searchBLProduct(q) {
+let blSearchTimeout = null;
+async function searchBLProduct(q) {
   const res = document.getElementById('bl-search-results');
   if(!q || q.length < 1) { res.style.display='none'; return; }
   const ql = q.toLowerCase();
-  const matches = allProducts.filter(p => 
-    p.name.toLowerCase().startsWith(ql) || 
+
+  // 1. Chercher d'abord dans les produits existants
+  const localMatches = allProducts.filter(p =>
+    p.name.toLowerCase().startsWith(ql) ||
     p.name.toLowerCase().includes(' '+ql) ||
     p.barcode1?.includes(q)
-  ).slice(0,12);
-  if(!matches.length) { res.style.display='none'; return; }
-  res.style.display = 'block';
-  res.innerHTML = matches.map(p => {
-    const stockBadge = p.stock<=0 ? `<span style="font-size:0.7rem;background:#fee2e2;color:#991b1b;border-radius:10px;padding:1px 7px">0</span>` : `<span style="font-size:0.7rem;background:#dcfce7;color:#166534;border-radius:10px;padding:1px 7px">${p.stock}</span>`;
-    return `<div onclick='addBLItem(${JSON.stringify(p).replace(/'/g,"&#39;")})' style="padding:0.55rem 1rem;cursor:pointer;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;font-size:0.83rem" onmouseover="this.style.background='#f0fdf9'" onmouseout="this.style.background='white'">
-      <span style="font-weight:500;flex:1">${p.name}</span>
-      <span style="display:flex;align-items:center;gap:0.5rem">${stockBadge}<span style="color:#0f766e;font-weight:600;min-width:70px;text-align:right">${p.pph?.toFixed(2)||0} MAD</span></span>
-    </div>`;
-  }).join('');
+  ).slice(0, 8);
+
+  // 2. Chercher aussi dans le catalogue
+  clearTimeout(blSearchTimeout);
+  blSearchTimeout = setTimeout(async () => {
+    const {data: catalogMatches} = await db.from('catalogue_medicaments')
+      .select('id,name,category,pph,ppv')
+      .ilike('name', `%${q}%`)
+      .limit(8);
+
+    // Combiner — produits locaux en premier
+    const localIds = new Set(localMatches.map(p => p.name.toLowerCase()));
+    const catalogOnly = (catalogMatches || []).filter(m => !localIds.has(m.name.toLowerCase()));
+
+    let html = '';
+
+    if(localMatches.length) {
+      html += `<div style="padding:0.35rem 0.85rem;font-size:0.7rem;font-weight:700;color:#0f766e;background:#f0fdf9;text-transform:uppercase">✅ Dans votre stock</div>`;
+      html += localMatches.map(p => {
+        const stockBadge = p.stock<=0
+          ? `<span style="font-size:0.7rem;background:#fee2e2;color:#991b1b;border-radius:10px;padding:1px 7px">0</span>`
+          : `<span style="font-size:0.7rem;background:#dcfce7;color:#166534;border-radius:10px;padding:1px 7px">${p.stock}</span>`;
+        return `<div onclick='addBLItem(${JSON.stringify(p).replace(/'/g,"&#39;")})' style="padding:0.55rem 1rem;cursor:pointer;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;font-size:0.83rem" onmouseover="this.style.background='#f0fdf9'" onmouseout="this.style.background='white'">
+          <span style="font-weight:500;flex:1">${p.name}</span>
+          <span style="display:flex;align-items:center;gap:0.5rem">${stockBadge}<span style="color:#0f766e;font-weight:600;min-width:70px;text-align:right">${p.pph?.toFixed(2)||0} MAD</span></span>
+        </div>`;
+      }).join('');
+    }
+
+    if(catalogOnly.length) {
+      html += `<div style="padding:0.35rem 0.85rem;font-size:0.7rem;font-weight:700;color:#6366f1;background:#f5f3ff;text-transform:uppercase">📋 Catalogue (nouveau)</div>`;
+      html += catalogOnly.map(m => {
+        const safe = JSON.stringify({fromCatalogue:true, name:m.name, category:m.category, pph:m.pph||0, ppv:m.ppv||0}).replace(/'/g,"&#39;");
+        return `<div onclick='addBLFromCatalogue(${safe})' style="padding:0.55rem 1rem;cursor:pointer;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;font-size:0.83rem" onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background='white'">
+          <span style="font-weight:500;flex:1">${m.name}</span>
+          <span style="color:#6366f1;font-weight:600;min-width:70px;text-align:right">${m.ppv||0} MAD PPV</span>
+        </div>`;
+      }).join('');
+    }
+
+    if(!html) { res.style.display='none'; return; }
+    res.innerHTML = html;
+    res.style.display = 'block';
+  }, 300);
+}
+
+function addBLFromCatalogue(m) {
+  // Produit du catalogue — demander confirmation prix
+  blItems.push({
+    product_id: null,
+    product_name: m.name,
+    pph: m.pph || 0,
+    quantity: 1,
+    total: m.pph || 0,
+    expiry: '',
+    fromCatalogue: true
+  });
+  document.getElementById('bl-search').value = '';
+  document.getElementById('bl-search-results').style.display = 'none';
+  renderBLItems();
+  toast(`📋 ${m.name} ajouté depuis le catalogue — vérifiez le PPH`,'info');
 }
 
 function addBLItem(p) {
