@@ -2,17 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pharmacie Aman Ouchen</title>
-
-<!-- PWA -->
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f172a">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Aman Ouchen">
-<link rel="apple-touch-icon" href="icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
 <style>
@@ -1248,35 +1239,15 @@ async function saveNewProduct() {
 // USER MANAGEMENT
 let currentUser = null; // 'admin' or 'caissiere'
 
-// Codes par défaut (utilisés si Supabase non disponible)
-const DEFAULT_ADMIN_CODE = '1234';
-const DEFAULT_CAISSIERE_CODE = '0000';
+function getAdminCode() { return localStorage.getItem('pharma_admin_code') || '1234'; }
+function getCaissiereCode() { return localStorage.getItem('pharma_caissiere_code') || '0000'; }
 
-async function getAdminCode() {
-  try {
-    const {data} = await db.from('settings').select('value').eq('key','admin_code').single();
-    return data?.value || localStorage.getItem('pharma_admin_code') || DEFAULT_ADMIN_CODE;
-  } catch(e) { return localStorage.getItem('pharma_admin_code') || DEFAULT_ADMIN_CODE; }
-}
-async function getCaissiereCode() {
-  try {
-    const {data} = await db.from('settings').select('value').eq('key','caissiere_code').single();
-    return data?.value || localStorage.getItem('pharma_caissiere_code') || DEFAULT_CAISSIERE_CODE;
-  } catch(e) { return localStorage.getItem('pharma_caissiere_code') || DEFAULT_CAISSIERE_CODE; }
-}
-async function saveCode(key, value) {
-  try {
-    await db.from('settings').upsert({key, value}, {onConflict:'key'});
-    localStorage.setItem('pharma_' + key, value); // backup local
-  } catch(e) { localStorage.setItem('pharma_' + key, value); }
-}
-
-async function doLogin() {
+function doLogin() {
   const user = document.getElementById('login-user').value;
   const code = document.getElementById('login-code').value;
   const errEl = document.getElementById('login-error');
   
-  const validCode = user==='admin' ? await getAdminCode() : await getCaissiereCode();
+  const validCode = user==='admin' ? getAdminCode() : getCaissiereCode();
   
   if(code !== validCode) {
     errEl.style.display = 'block';
@@ -2800,7 +2771,7 @@ async function importFile(type, input) {
 }
 
 // SECURITY CODE (stored in localStorage)
-async function getSecCode() { return await getAdminCode(); }
+function getSecCode() { return getAdminCode(); }
 
 function checkCode(inputId) {
   const val = document.getElementById(inputId)?.value;
@@ -2808,22 +2779,22 @@ function checkCode(inputId) {
   return true;
 }
 
-async function changeSecurityCode(type) {
+function changeSecurityCode(type) {
   if(type==='admin') {
     const current = document.getElementById('current-code').value;
     const newCode = document.getElementById('new-code').value;
-    if(current !== await getAdminCode()) { toast('Code admin incorrect!','error'); return; }
+    if(current !== getAdminCode()) { toast('Code admin incorrect!','error'); return; }
     if(!newCode || newCode.length < 3) { toast('Nouveau code trop court!','error'); return; }
-    await saveCode('admin_code', newCode);
+    localStorage.setItem('pharma_admin_code', newCode);
     document.getElementById('current-code').value = '';
     document.getElementById('new-code').value = '';
     toast('✅ Code admin modifié!');
   } else {
     const current = document.getElementById('current-caissiere-code').value;
     const newCode = document.getElementById('new-caissiere-code').value;
-    if(current !== await getAdminCode()) { toast('Code admin incorrect!','error'); return; }
+    if(current !== getAdminCode()) { toast('Code admin incorrect!','error'); return; }
     if(!newCode || newCode.length < 3) { toast('Nouveau code trop court!','error'); return; }
-    await saveCode('caissiere_code', newCode);
+    localStorage.setItem('pharma_caissiere_code', newCode);
     document.getElementById('current-caissiere-code').value = '';
     document.getElementById('new-caissiere-code').value = '';
     toast('✅ Code caissière modifié!');
@@ -3298,15 +3269,345 @@ function printCommande() {
   </table>
   <p class="total" style="margin-top:12px">Total produits: ${commandeItems.reduce((s,i)=>s+i.qty,0)} unités</p>
   <p class="footer">Pharmacie Aman Ouchen — Imprimé le ${now}</p>
-  
-<script>
-if('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(() => console.log('SW registered'))
-      .catch(err => console.log('SW error:', err));
-  });
+  </body></html>`;
+  const w = window.open('', '_blank', 'width=750,height=600');
+  w.document.write(html);
+  w.document.close();
+  w.print();
 }
+
+// RAPPORTS DROPDOWN (clic)
+function toggleRapportsMenu(e) {
+  e.stopPropagation();
+  const sub = document.getElementById('rapports-submenu');
+  const btn = document.getElementById('nav-rapports-toggle');
+  const arrow = document.getElementById('rapports-arrow');
+  const isOpen = sub.style.display === 'flex';
+  if(isOpen) {
+    sub.style.display = 'none';
+    arrow.textContent = '▼';
+  } else {
+    // Positionner sous le bouton
+    const rect = btn.getBoundingClientRect();
+    sub.style.top = rect.bottom + 4 + 'px';
+    sub.style.left = rect.left + 'px';
+    sub.style.display = 'flex';
+    arrow.textContent = '▲';
+  }
+}
+
+function closeRapportsMenu() {
+  document.getElementById('rapports-submenu').style.display = 'none';
+  const arrow = document.getElementById('rapports-arrow');
+  if(arrow) arrow.textContent = '▼';
+}
+
+// Fermer si clic ailleurs
+document.addEventListener('click', function(e) {
+  const toggle = document.getElementById('nav-rapports-toggle');
+  const sub = document.getElementById('rapports-submenu');
+  if(sub && toggle && !toggle.contains(e.target) && !sub.contains(e.target)) {
+    sub.style.display = 'none';
+    const arrow = document.getElementById('rapports-arrow');
+    if(arrow) arrow.textContent = '▼';
+  }
+});
+
+// Auto-ouvrir rapports si on est sur une page rapport
+function openRapportsIfNeeded(page) {
+  // rien à faire — dropdown au clic maintenant
+}
+
+// =====================
+// SCAN BL (Claude Vision AI)
+// =====================
+function openScanBL() {
+  document.getElementById('modal-scan-bl').classList.add('show');
+  document.getElementById('scan-bl-result').style.display = 'none';
+  document.getElementById('scan-bl-preview').style.display = 'none';
+  document.getElementById('scan-bl-input').value = '';
+  document.getElementById('scan-bl-error').style.display = 'none';
+  document.getElementById('scan-bl-loading').style.display = 'none';
+}
+
+function closeScanBL() {
+  document.getElementById('modal-scan-bl').classList.remove('show');
+}
+
+function onScanImageChange(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const preview = document.getElementById('scan-bl-preview');
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+    document.getElementById('scan-bl-result').style.display = 'none';
+    document.getElementById('scan-bl-error').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+async function lancerScanBL() {
+  const apiKey = document.getElementById('scan-api-key').value.trim();
+  const file = document.getElementById('scan-bl-input').files[0];
+  const errEl = document.getElementById('scan-bl-error');
+  const loadEl = document.getElementById('scan-bl-loading');
+
+  errEl.style.display = 'none';
+
+  if(!apiKey) { errEl.textContent = '⚠️ Entrez votre clé API Anthropic'; errEl.style.display = 'block'; return; }
+  if(!file)   { errEl.textContent = '⚠️ Sélectionnez une image du BL'; errEl.style.display = 'block'; return; }
+
+  loadEl.style.display = 'flex';
+  document.getElementById('scan-bl-result').style.display = 'none';
+
+  try {
+    // Convert image to base64
+    const base64 = await new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result.split(',')[1]);
+      r.onerror = () => rej(new Error('Lecture fichier échouée'));
+      r.readAsDataURL(file);
+    });
+
+    const mediaType = file.type || 'image/jpeg';
+
+    const prompt = `Tu es un assistant qui analyse des bons de livraison (BL) de pharmacie marocaine.
+Extrait les informations suivantes de cette image de BL et réponds UNIQUEMENT en JSON valide, sans texte avant ou après:
+
+{
+  "reference": "numéro/référence du BL",
+  "fournisseur": "nom du fournisseur",
+  "date": "date au format YYYY-MM-DD si possible",
+  "produits": [
+    {
+      "nom": "nom du produit",
+      "quantite": 0,
+      "pph": 0.00
+    }
+  ]
+}
+
+Règles:
+- Si une information n'est pas visible, mets null
+- quantite doit être un nombre entier
+- pph (prix d'achat) doit être un nombre décimal
+- Inclure TOUS les produits visibles dans le BL
+- Pour le nom du produit, garde le nom exact tel qu'écrit dans le BL`;
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: 2000,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64 } },
+            { type: 'text', text: prompt }
+          ]
+        }]
+      })
+    });
+
+    if(!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || 'Erreur API');
+    }
+
+    const data = await response.json();
+    const text = data.content.map(c => c.text || '').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    const parsed = JSON.parse(clean);
+
+    // Afficher résultat
+    renderScanResult(parsed);
+
+  } catch(e) {
+    errEl.textContent = '❌ Erreur: ' + e.message;
+    errEl.style.display = 'block';
+  } finally {
+    loadEl.style.display = 'none';
+  }
+}
+
+let scanResultData = null;
+
+function renderScanResult(data) {
+  scanResultData = data;
+  const box = document.getElementById('scan-bl-result');
+  box.style.display = 'block';
+
+  document.getElementById('scan-res-ref').textContent = data.reference || '—';
+  document.getElementById('scan-res-fourn').textContent = data.fournisseur || '—';
+  document.getElementById('scan-res-date').textContent = data.date || '—';
+
+  const prods = data.produits || [];
+  document.getElementById('scan-res-tbody').innerHTML = prods.length
+    ? prods.map((p, i) => `<tr>
+        <td style="font-size:0.85rem;font-weight:500">${p.nom || '—'}</td>
+        <td style="text-align:center">
+          <input type="number" value="${p.quantite || 0}" min="0"
+            onchange="scanResultData.produits[${i}].quantite=+this.value"
+            style="width:65px;padding:3px 6px;border:1.5px solid #e2e8f0;border-radius:6px;text-align:center;font-weight:700;outline:none">
+        </td>
+        <td style="text-align:center">
+          <input type="number" value="${p.pph || 0}" min="0" step="0.01"
+            onchange="scanResultData.produits[${i}].pph=+this.value"
+            style="width:80px;padding:3px 6px;border:1.5px solid #e2e8f0;border-radius:6px;text-align:center;font-weight:700;outline:none">
+        </td>
+        <td style="text-align:center">
+          <button onclick="scanResultData.produits.splice(${i},1);renderScanResult(scanResultData)"
+            style="background:#fee2e2;border:none;color:#dc2626;width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:0.85rem">✕</button>
+        </td>
+      </tr>`).join('')
+    : '<tr><td colspan="4" style="text-align:center;padding:1rem;color:#94a3b8">Aucun produit détecté</td></tr>';
+}
+
+function appliquerScanBL() {
+  if(!scanResultData) return;
+
+  // Remplir le formulaire
+  if(scanResultData.reference) document.getElementById('bl-ref').value = scanResultData.reference;
+  if(scanResultData.fournisseur) document.getElementById('bl-fournisseur').value = scanResultData.fournisseur;
+  if(scanResultData.date) document.getElementById('bl-date').value = scanResultData.date;
+
+  // Ajouter les produits au BL
+  const prods = scanResultData.produits || [];
+  let added = 0, notFound = [];
+
+  for(const sp of prods) {
+    if(!sp.nom) continue;
+    // Chercher dans allProducts
+    const match = allProducts.find(p =>
+      p.name.toLowerCase().includes(sp.nom.toLowerCase()) ||
+      sp.nom.toLowerCase().includes(p.name.toLowerCase().split(' ')[0])
+    );
+
+    if(match) {
+      const existing = blItems.find(i => i.product_id === match.id);
+      if(existing) {
+        existing.quantity = sp.quantite || 1;
+        existing.pph = sp.pph || match.pph || 0;
+      } else {
+        blItems.push({
+          product_id: match.id,
+          product_name: match.name,
+          quantity: sp.quantite || 1,
+          pph: sp.pph || match.pph || 0,
+          expiry: ''
+        });
+      }
+      added++;
+    } else {
+      notFound.push(sp.nom);
+    }
+  }
+
+  renderBLItems();
+  closeScanBL();
+
+  let msg = `✅ ${added} produit(s) importé(s) depuis le BL scanné`;
+  if(notFound.length) msg += ` — ⚠️ ${notFound.length} non trouvé(s): ${notFound.slice(0,3).join(', ')}`;
+  toast(msg, added > 0 ? 'success' : 'error');
+}
+
+// KEYBOARD SHORTCUTS
+document.addEventListener('keydown', e => {
+  if(e.key==='Escape') closeModal();
+  if(e.key==='F2') { showPage('caisse'); setTimeout(()=>document.getElementById('barcode-in').focus(),100); }
+});
+
+// INIT
+setQuickDate('today','rc');
+setQuickDate('month','v');
+setQuickDate('month','a');
+setQuickDate('month','rv');
+setQuickDate('month','rp');
+loadDashboard();
 </script>
+
+<!-- MODAL SCAN BL -->
+<div class="modal-overlay" id="modal-scan-bl">
+  <div style="background:white;border-radius:20px;padding:1.75rem;width:580px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 25px 70px rgba(0,0,0,0.25)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div>
+        <h3 style="font-size:1.1rem;font-weight:700;color:#0f172a;display:flex;align-items:center;gap:0.5rem">
+          📷 Scanner un BL <span style="font-size:0.72rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border-radius:20px;padding:2px 9px;font-weight:600">IA</span>
+        </h3>
+        <p style="font-size:0.78rem;color:#94a3b8;margin-top:2px">Photographiez ou uploadez votre BL — l'IA extrait automatiquement les données</p>
+      </div>
+      <button onclick="closeScanBL()" style="background:#f1f5f9;border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1.1rem;color:#64748b">✕</button>
+    </div>
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:0.85rem;margin-bottom:1rem">
+      <label style="font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.4rem">🔑 Clé API Anthropic</label>
+      <input type="password" id="scan-api-key" placeholder="sk-ant-api03-..."
+        style="width:100%;padding:0.6rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.88rem;outline:none;font-family:monospace">
+      <p style="font-size:0.72rem;color:#94a3b8;margin-top:0.35rem">Obtenez votre clé sur <strong>console.anthropic.com</strong> → API Keys</p>
+    </div>
+    <div style="margin-bottom:1rem">
+      <label style="font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.5rem">📄 Image du BL</label>
+      <label for="scan-bl-input" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;border:2px dashed #c7d2fe;border-radius:12px;padding:1.5rem;cursor:pointer;background:#f5f3ff;transition:all 0.15s">
+        <span style="font-size:2rem">📷</span>
+        <span style="font-size:0.88rem;font-weight:600;color:#6366f1">Cliquez pour choisir une image</span>
+        <span style="font-size:0.75rem;color:#94a3b8">JPG, PNG, WEBP — Photo ou scan du BL</span>
+      </label>
+      <input type="file" id="scan-bl-input" accept="image/*" style="display:none" onchange="onScanImageChange(this)">
+    </div>
+    <img id="scan-bl-preview" style="display:none;width:100%;max-height:280px;object-fit:contain;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:1rem">
+    <div id="scan-bl-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:0.65rem 0.85rem;font-size:0.83rem;color:#dc2626;margin-bottom:1rem"></div>
+    <div id="scan-bl-loading" style="display:none;align-items:center;justify-content:center;gap:0.75rem;padding:1rem;background:#f0fdf9;border-radius:10px;margin-bottom:1rem">
+      <div class="spinner"></div>
+      <span style="font-size:0.88rem;color:#0f766e;font-weight:600">Analyse du BL en cours...</span>
+    </div>
+    <button onclick="lancerScanBL()"
+      style="width:100%;padding:0.75rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;border-radius:10px;font-size:0.95rem;font-weight:700;cursor:pointer;margin-bottom:1rem;display:flex;align-items:center;justify-content:center;gap:0.5rem">
+      🔍 Analyser le BL
+    </button>
+    <div id="scan-bl-result" style="display:none">
+      <div style="background:#f0fdf9;border:1.5px solid #6ee7b7;border-radius:12px;padding:1rem;margin-bottom:1rem">
+        <div style="font-size:0.78rem;font-weight:700;color:#065f46;margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:0.5px">✅ Données extraites — vérifiez avant d'importer</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:0.75rem">
+          <div style="background:white;border-radius:8px;padding:0.6rem 0.85rem">
+            <div style="font-size:0.68rem;color:#94a3b8;font-weight:600;text-transform:uppercase">Référence</div>
+            <div style="font-size:0.92rem;font-weight:700;color:#0f172a" id="scan-res-ref">—</div>
+          </div>
+          <div style="background:white;border-radius:8px;padding:0.6rem 0.85rem">
+            <div style="font-size:0.68rem;color:#94a3b8;font-weight:600;text-transform:uppercase">Fournisseur</div>
+            <div style="font-size:0.92rem;font-weight:700;color:#0f172a" id="scan-res-fourn">—</div>
+          </div>
+          <div style="background:white;border-radius:8px;padding:0.6rem 0.85rem;grid-column:1/-1">
+            <div style="font-size:0.68rem;color:#94a3b8;font-weight:600;text-transform:uppercase">Date</div>
+            <div style="font-size:0.92rem;font-weight:700;color:#0f172a" id="scan-res-date">—</div>
+          </div>
+        </div>
+        <div style="font-size:0.78rem;font-weight:700;color:#065f46;margin-bottom:0.5rem">Produits détectés:</div>
+        <div style="background:white;border-radius:8px;overflow:hidden">
+          <table style="width:100%;border-collapse:collapse">
+            <thead><tr>
+              <th style="padding:0.5rem 0.75rem;font-size:0.72rem;color:#64748b;text-align:left;border-bottom:1px solid #f1f5f9">Produit</th>
+              <th style="padding:0.5rem 0.75rem;font-size:0.72rem;color:#64748b;text-align:center;border-bottom:1px solid #f1f5f9">Qté</th>
+              <th style="padding:0.5rem 0.75rem;font-size:0.72rem;color:#64748b;text-align:center;border-bottom:1px solid #f1f5f9">PPH</th>
+              <th style="padding:0.5rem;border-bottom:1px solid #f1f5f9"></th>
+            </tr></thead>
+            <tbody id="scan-res-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.75rem">
+        <button onclick="closeScanBL()" style="flex:1;padding:0.65rem;border-radius:8px;border:1px solid #e2e8f0;background:white;font-size:0.9rem;font-weight:600;cursor:pointer;color:#64748b">Annuler</button>
+        <button onclick="appliquerScanBL()" style="flex:2;padding:0.65rem;border-radius:8px;border:none;background:#0f766e;color:white;font-size:0.95rem;font-weight:700;cursor:pointer">⬇️ Importer dans le BL</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
