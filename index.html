@@ -1429,43 +1429,7 @@ async function saveCode(key, value) {
   } catch(e) {}
 }
 
-async function doLogin() {
-  const user = document.getElementById('login-user').value;
-  const code = document.getElementById('login-code').value;
-  const errEl = document.getElementById('login-error');
-
-  // Toujours lire depuis Supabase en priorité
-  let validCode = user==='admin' ? getAdminCode() : getCaissiereCode();
-  try {
-    const {data} = await Promise.race([
-      db.from('settings').select('value').eq('key', user==='admin' ? 'admin_code' : 'caissiere_code').single(),
-      new Promise((_,rej) => setTimeout(()=>rej('timeout'), 4000))
-    ]);
-    if(data?.value) {
-      validCode = data.value;
-      localStorage.setItem('pharma_' + (user==='admin'?'admin':'caissiere') + '_code', data.value);
-    }
-  } catch(e) {}
-
-  if(code !== validCode) {
-    errEl.style.display = 'block';
-    document.getElementById('login-code').value = '';
-    return;
-  }
-  
-  currentUser = user;
-  errEl.style.display = 'none';
-  document.getElementById('login-page').style.display = 'none';
-  document.getElementById('app-container').style.display = 'block';
-  
-  // Apply role restrictions
-  applyRole();
-  
-  // Update sidebar user info
-  document.getElementById('current-user-display').textContent = user==='admin' ? '👑 Admin' : '💊 Caissière';
-  
-  loadDashboard();
-}
+// old doLogin removed
 
 document.addEventListener('keydown', function(e) {
   if(e.key==='Enter' && document.getElementById('login-page').style.display!=='none') doLogin();
@@ -1485,12 +1449,7 @@ function applyRole() {
 
 function isAdmin() { return currentUser === 'admin'; }
 
-function logout() {
-  currentUser = null;
-  document.getElementById('app-container').style.display = 'none';
-  document.getElementById('login-page').style.display = 'flex';
-  document.getElementById('login-code').value = '';
-}
+
 
 // STATE
 let products = [], allProducts = [], filteredProducts = [];
