@@ -996,7 +996,7 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
             📋 Ajouter un produit depuis le catalogue
           </div>
           <div style="display:flex;gap:0.5rem;align-items:center">
-            <input type="text" id="jerd-catalogue-search" placeholder="🔍 Chercher dans le catalogue (7000+ médicaments)..."
+            <input type="text" id="jerd-catalogue-search" placeholder="🔍 Nom ou code barre..."
               oninput="searchJerdCatalogue(this.value)"
               style="flex:1;padding:0.5rem 0.85rem;border:1.5px solid #c7d2fe;border-radius:8px;font-size:0.88rem;outline:none;background:white">
             <button onclick="document.getElementById('jerd-catalogue-search').value='';document.getElementById('jerd-catalogue-results').style.display='none'"
@@ -3633,45 +3633,58 @@ function resetJerd() {
 async function validerJerd() {
   const toUpdate = jerdData.filter(i => i.qteComptee !== '' && parseInt(i.qteComptee) !== i.product.stock);
   if(!toUpdate.length) { toast('Aucune différence à corriger', 'info'); return; }
-  if(!confirm(`Confirmer la mise à jour de ${toUpdate.length} produit(s) avec les quantités comptées ?`)) return;
+  if(!confirm(`Confirmer la mise à jour de ${toUpdate.length} produit(s) ?`)) return;
 
   toast('⏳ Mise à jour en cours...', 'info');
   let ok = 0, erreurs = 0;
   const ref = 'INV-' + new Date().toISOString().split('T')[0];
+
+  // Récupérer userId une seule fois
+  const { data: { user } } = await db.auth.getUser();
+  const userId = user?.id;
+  if(!userId) { toast('❌ Session expirée — reconnectez-vous', 'error'); return; }
 
   for(const item of toUpdate) {
     const p = item.product;
     const newStock = parseInt(item.qteComptee);
     const diff = newStock - p.stock;
 
-    if(p.isNew || !p.id) {
-      // Nouveau produit — créer dans products
-      const userId = (await db.auth.getUser()).data.user?.id;
-      const {data: newProd, error} = await db.from('products').insert({
-        name: p.name,
-        category: p.category,
-        pph: p.pph || 0,
-        ppv: p.ppv || 0,
-        stock: newStock,
-        user_id: userId
-      }).select().single();
-      if(error) { erreurs++; continue; }
-      await logMouvement(newProd.id, p.name, 'ajustement', 0, newStock, ref, `Inventaire physique — nouveau produit`);
-      p.id = newProd.id;
-      p.isNew = false;
-    } else {
-      const { error } = await db.from('products').update({ stock: newStock }).eq('id', p.id);
-      if(error) { erreurs++; continue; }
-      await logMouvement(p.id, p.name, 'ajustement', p.stock, diff, ref, `Inventaire physique — compté: ${newStock}`);
+    try {
+      if(p.isNew || !p.id) {
+        // Nouveau produit — créer dans products
+        const {data: newProd, error} = await db.from('products').insert({
+          name: p.name,
+          category: p.category || 'Médicament',
+          pph: p.pph || 0,
+          ppv: p.ppv || 0,
+          stock: newStock,
+          user_id: userId
+        }).select().single();
+        if(error) { console.error('Insert error:', error); erreurs++; continue; }
+        await logMouvement(newProd.id, p.name, 'ajustement', 0, newStock, ref, 'Inventaire — nouveau produit');
+        p.id = newProd.id;
+        p.isNew = false;
+        // Ajouter aux produits locaux
+        allProducts.push({...p, id: newProd.id, stock: newStock});
+      } else {
+        const { error } = await db.from('products').update({ stock: newStock }).eq('id', p.id).eq('user_id', userId);
+        if(error) { console.error('Update error:', error); erreurs++; continue; }
+        await logMouvement(p.id, p.name, 'ajustement', p.stock, diff, ref, `Inventaire — compté: ${newStock}`);
+        // Mettre à jour localement
+        const local = allProducts.find(pr => pr.id === p.id);
+        if(local) local.stock = newStock;
+      }
+      p.stock = newStock;
+      item.qteComptee = '';
+      ok++;
+    } catch(e) {
+      console.error('Error:', e);
+      erreurs++;
     }
-
-    p.stock = newStock;
-    item.qteComptee = '';
-    ok++;
   }
 
   if(ok > 0) toast(`✅ ${ok} produit(s) mis à jour`);
-  if(erreurs > 0) toast(`⚠️ ${erreurs} erreur(s)`, 'error');
+  if(erreurs > 0) toast(`⚠️ ${erreurs} erreur(s) — vérifiez la console`, 'error');
 
   document.getElementById('jerd-diff-count').textContent = '';
   filterJerd(document.getElementById('jerd-search').value);
