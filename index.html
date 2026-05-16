@@ -1248,15 +1248,35 @@ async function saveNewProduct() {
 // USER MANAGEMENT
 let currentUser = null; // 'admin' or 'caissiere'
 
-function getAdminCode() { return localStorage.getItem('pharma_admin_code') || '1234'; }
-function getCaissiereCode() { return localStorage.getItem('pharma_caissiere_code') || '0000'; }
+// Codes par défaut (utilisés si Supabase non disponible)
+const DEFAULT_ADMIN_CODE = '1234';
+const DEFAULT_CAISSIERE_CODE = '0000';
 
-function doLogin() {
+async function getAdminCode() {
+  try {
+    const {data} = await db.from('settings').select('value').eq('key','admin_code').single();
+    return data?.value || localStorage.getItem('pharma_admin_code') || DEFAULT_ADMIN_CODE;
+  } catch(e) { return localStorage.getItem('pharma_admin_code') || DEFAULT_ADMIN_CODE; }
+}
+async function getCaissiereCode() {
+  try {
+    const {data} = await db.from('settings').select('value').eq('key','caissiere_code').single();
+    return data?.value || localStorage.getItem('pharma_caissiere_code') || DEFAULT_CAISSIERE_CODE;
+  } catch(e) { return localStorage.getItem('pharma_caissiere_code') || DEFAULT_CAISSIERE_CODE; }
+}
+async function saveCode(key, value) {
+  try {
+    await db.from('settings').upsert({key, value}, {onConflict:'key'});
+    localStorage.setItem('pharma_' + key, value); // backup local
+  } catch(e) { localStorage.setItem('pharma_' + key, value); }
+}
+
+async function doLogin() {
   const user = document.getElementById('login-user').value;
   const code = document.getElementById('login-code').value;
   const errEl = document.getElementById('login-error');
   
-  const validCode = user==='admin' ? getAdminCode() : getCaissiereCode();
+  const validCode = user==='admin' ? await getAdminCode() : await getCaissiereCode();
   
   if(code !== validCode) {
     errEl.style.display = 'block';
@@ -2780,7 +2800,7 @@ async function importFile(type, input) {
 }
 
 // SECURITY CODE (stored in localStorage)
-function getSecCode() { return getAdminCode(); }
+async function getSecCode() { return await getAdminCode(); }
 
 function checkCode(inputId) {
   const val = document.getElementById(inputId)?.value;
@@ -2788,22 +2808,22 @@ function checkCode(inputId) {
   return true;
 }
 
-function changeSecurityCode(type) {
+async function changeSecurityCode(type) {
   if(type==='admin') {
     const current = document.getElementById('current-code').value;
     const newCode = document.getElementById('new-code').value;
-    if(current !== getAdminCode()) { toast('Code admin incorrect!','error'); return; }
+    if(current !== await getAdminCode()) { toast('Code admin incorrect!','error'); return; }
     if(!newCode || newCode.length < 3) { toast('Nouveau code trop court!','error'); return; }
-    localStorage.setItem('pharma_admin_code', newCode);
+    await saveCode('admin_code', newCode);
     document.getElementById('current-code').value = '';
     document.getElementById('new-code').value = '';
     toast('✅ Code admin modifié!');
   } else {
     const current = document.getElementById('current-caissiere-code').value;
     const newCode = document.getElementById('new-caissiere-code').value;
-    if(current !== getAdminCode()) { toast('Code admin incorrect!','error'); return; }
+    if(current !== await getAdminCode()) { toast('Code admin incorrect!','error'); return; }
     if(!newCode || newCode.length < 3) { toast('Nouveau code trop court!','error'); return; }
-    localStorage.setItem('pharma_caissiere_code', newCode);
+    await saveCode('caissiere_code', newCode);
     document.getElementById('current-caissiere-code').value = '';
     document.getElementById('new-caissiere-code').value = '';
     toast('✅ Code caissière modifié!');
