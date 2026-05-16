@@ -195,7 +195,7 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
 <!-- LOGIN PAGE -->
 <div id="login-page" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#0f172a 0%,#0f766e 100%);padding:1rem">
   <div style="background:white;border-radius:20px;padding:2.5rem;width:380px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3)">
-    
+
     <!-- Logo -->
     <div style="text-align:center;margin-bottom:1.75rem">
       <div style="font-size:2.5rem;margin-bottom:0.5rem">🏥</div>
@@ -205,18 +205,18 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
 
     <!-- TABS -->
     <div style="display:flex;background:#f1f5f9;border-radius:10px;padding:3px;margin-bottom:1.5rem">
-      <button id="tab-login-btn" onclick="switchAuthTab('login')"
+      <button id="tab-admin-btn" onclick="switchLoginTab('admin')"
         style="flex:1;padding:0.55rem;border:none;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;background:#0f766e;color:white;transition:all 0.2s">
-        Connexion
+        👑 Admin
       </button>
-      <button id="tab-register-btn" onclick="switchAuthTab('register')"
+      <button id="tab-user-btn" onclick="switchLoginTab('user')"
         style="flex:1;padding:0.55rem;border:none;border-radius:8px;font-size:0.88rem;font-weight:600;cursor:pointer;background:transparent;color:#64748b;transition:all 0.2s">
-        Inscription
+        👤 User
       </button>
     </div>
 
-    <!-- CONNEXION FORM -->
-    <div id="auth-login-form">
+    <!-- ADMIN FORM -->
+    <div id="auth-admin-form">
       <div style="display:flex;flex-direction:column;gap:1rem">
         <div>
           <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Email</label>
@@ -229,56 +229,41 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
             style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box"
             onkeydown="if(event.key==='Enter') doLogin()">
         </div>
-        <div id="login-role-row" style="display:none">
-          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Rôle</label>
-          <select id="login-user" style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none">
-            <option value="admin">👑 Admin</option>
-            <option value="caissiere">💊 Caissière</option>
-          </select>
-        </div>
-        <button onclick="doLogin()"
-          id="login-btn"
-          style="background:#0f766e;color:white;border:none;border-radius:8px;padding:0.85rem;font-size:1rem;font-weight:600;cursor:pointer;margin-top:0.25rem;display:flex;align-items:center;justify-content:center;gap:0.5rem">
+        <button onclick="doLogin()" id="login-btn"
+          style="background:#0f766e;color:white;border:none;border-radius:8px;padding:0.85rem;font-size:1rem;font-weight:600;cursor:pointer;margin-top:0.25rem">
           Se connecter
         </button>
         <p id="login-error" style="color:#dc2626;text-align:center;font-size:0.82rem;display:none;margin:0"></p>
       </div>
     </div>
 
-    <!-- INSCRIPTION FORM -->
-    <div id="auth-register-form" style="display:none">
+    <!-- USER (PIN) FORM -->
+    <div id="auth-user-form" style="display:none">
       <div style="display:flex;flex-direction:column;gap:1rem">
         <div>
-          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Nom de la pharmacie *</label>
-          <input type="text" id="reg-pharmacy" placeholder="Ex: Pharmacie Aman Ouchen"
-            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Email du propriétaire (pharmacien)</label>
+          <input type="email" id="user-owner-email" placeholder="email@pharmacie.com"
+            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box"
+            onchange="loadUsersForLogin()">
         </div>
-        <div>
-          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Nom du pharmacien *</label>
-          <input type="text" id="reg-name" placeholder="Dr. Prénom Nom"
-            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        <div id="user-select-box" style="display:none">
+          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Utilisateur</label>
+          <select id="user-select"
+            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;background:white">
+            <option value="">Sélectionner...</option>
+          </select>
         </div>
-        <div>
-          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Email *</label>
-          <input type="email" id="reg-email" placeholder="votre@email.com"
-            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        <div id="user-pin-box" style="display:none">
+          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Code PIN</label>
+          <input type="password" id="user-pin-input" placeholder="••••" maxlength="6"
+            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:1.2rem;outline:none;letter-spacing:6px;text-align:center;box-sizing:border-box"
+            onkeydown="if(event.key==='Enter') doUserLogin()">
         </div>
-        <div>
-          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Mot de passe *</label>
-          <input type="password" id="reg-password" placeholder="Min. 8 caractères"
-            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
-        </div>
-        <div>
-          <label style="font-size:0.78rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Ville</label>
-          <input type="text" id="reg-city" placeholder="Ex: Casablanca"
-            style="width:100%;padding:0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
-        </div>
-        <button onclick="doRegister()"
-          style="background:#0f766e;color:white;border:none;border-radius:8px;padding:0.85rem;font-size:1rem;font-weight:600;cursor:pointer;margin-top:0.25rem">
-          Créer mon compte
+        <button onclick="doUserLogin()" id="user-login-btn"
+          style="background:#6366f1;color:white;border:none;border-radius:8px;padding:0.85rem;font-size:1rem;font-weight:600;cursor:pointer;margin-top:0.25rem;display:none">
+          Se connecter
         </button>
-        <p id="register-error" style="color:#dc2626;text-align:center;font-size:0.82rem;display:none;margin:0"></p>
-        <p id="register-success" style="color:#16a34a;text-align:center;font-size:0.82rem;display:none;margin:0"></p>
+        <p id="user-login-error" style="color:#dc2626;text-align:center;font-size:0.82rem;display:none;margin:0"></p>
       </div>
     </div>
 
@@ -905,13 +890,14 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
             </div>
           </div>
           
+          <!-- GESTION UTILISATEURS -->
           <div style="background:#f0fdf9;border-radius:10px;padding:1.25rem;border:1px solid #99f6e4">
-            <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.75rem">💊 Code Caissière</h3>
-            <p style="font-size:0.85rem;color:#64748b;margin-bottom:0.75rem">Code pour accès caissière (ventes uniquement).</p>
-            <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap">
-              <input type="password" id="current-caissiere-code" placeholder="Code admin requis" style="padding:0.6rem;border:1.5px solid #99f6e4;border-radius:8px;font-size:0.9rem;width:150px;outline:none">
-              <input type="password" id="new-caissiere-code" placeholder="Nouveau code caissière" style="padding:0.6rem;border:1.5px solid #99f6e4;border-radius:8px;font-size:0.9rem;width:180px;outline:none">
-              <button class="btn btn-primary" onclick="changeSecurityCode('caissiere')">Modifier</button>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+              <h3 style="font-size:0.95rem;font-weight:600">👥 Gestion des utilisateurs</h3>
+              <button onclick="openAddUserModal()" style="background:#0f766e;color:white;border:none;border-radius:8px;padding:0.4rem 0.85rem;font-size:0.82rem;font-weight:600;cursor:pointer">+ Ajouter</button>
+            </div>
+            <div id="users-list">
+              <div style="text-align:center;padding:1rem;color:#94a3b8;font-size:0.85rem">Chargement...</div>
             </div>
           </div>
 
@@ -1003,6 +989,21 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
 
       <!-- ===== TAB JERD (INVENTAIRE PHYSIQUE) ===== -->
       <div id="inv-panel-jerd" style="display:none">
+
+        <!-- RECHERCHE CATALOGUE POUR NOUVEAU PRODUIT -->
+        <div style="background:#f5f3ff;border:1.5px solid #c7d2fe;border-radius:12px;padding:0.85rem 1.1rem;margin-bottom:1rem">
+          <div style="font-size:0.78rem;font-weight:700;color:#4338ca;margin-bottom:0.5rem">
+            📋 Ajouter un produit depuis le catalogue
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <input type="text" id="jerd-catalogue-search" placeholder="🔍 Chercher dans le catalogue (7000+ médicaments)..."
+              oninput="searchJerdCatalogue(this.value)"
+              style="flex:1;padding:0.5rem 0.85rem;border:1.5px solid #c7d2fe;border-radius:8px;font-size:0.88rem;outline:none;background:white">
+            <button onclick="document.getElementById('jerd-catalogue-search').value='';document.getElementById('jerd-catalogue-results').style.display='none'"
+              style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;border-radius:8px;background:white;cursor:pointer;color:#94a3b8">✕</button>
+          </div>
+          <div id="jerd-catalogue-results" style="display:none;margin-top:0.5rem;max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;background:white"></div>
+        </div>
 
         <!-- HEADER ACTIONS -->
         <div style="background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.07);padding:0.85rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
@@ -1368,13 +1369,210 @@ async function saveNewProduct() {
 }
 
 // USER MANAGEMENT
-let currentUser = null; // 'admin' or 'caissiere'
+let currentUser = null;
+let currentPharmacyUser = null;
 
+
+// =====================
+// GESTION UTILISATEURS
+// =====================
+let editingUserId = null;
+
+async function loadPharmacyUsers() {
+  const {data} = await db.from('pharmacy_users').select('*').order('created_at');
+  const el = document.getElementById('users-list');
+  if(!data || !data.length) {
+    el.innerHTML = '<div style="text-align:center;padding:1rem;color:#94a3b8;font-size:0.85rem">Aucun utilisateur ajouté</div>';
+    return;
+  }
+  const roleLabel = {admin:'👑 Admin', gestionnaire:'📦 Gestionnaire', caissier:'💊 Caissier'};
+  const roleColor = {admin:'#0f766e', gestionnaire:'#6366f1', caissier:'#d97706'};
+  el.innerHTML = data.map(u => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0.65rem 0;border-bottom:1px solid #f1f5f9">
+      <div>
+        <div style="font-size:0.88rem;font-weight:600;color:#0f172a">${u.name}</div>
+        <div style="font-size:0.72rem;color:#94a3b8">${u.email||u.phone||'—'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem">
+        <span style="background:${roleColor[u.role]}20;color:${roleColor[u.role]};border-radius:20px;padding:2px 10px;font-size:0.72rem;font-weight:600">${roleLabel[u.role]||u.role}</span>
+        <span style="background:${u.active?'#dcfce7':'#fee2e2'};color:${u.active?'#166534':'#991b1b'};border-radius:20px;padding:2px 8px;font-size:0.7rem">${u.active?'Actif':'Inactif'}</span>
+        <button onclick="editUser('${u.id}')" style="background:#f1f5f9;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:0.75rem">✏️</button>
+        <button onclick="toggleUserActive('${u.id}',${u.active})" style="background:#f1f5f9;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;font-size:0.75rem">${u.active?'🚫':'✅'}</button>
+      </div>
+    </div>`).join('');
+}
+
+function openAddUserModal() {
+  editingUserId = null;
+  document.getElementById('add-user-title').textContent = '👤 Ajouter un utilisateur';
+  document.getElementById('user-name').value = '';
+  document.getElementById('user-email').value = '';
+  document.getElementById('user-phone').value = '';
+  document.getElementById('user-role').value = 'caissier';
+  document.getElementById('user-pin').value = '';
+  document.getElementById('add-user-error').style.display = 'none';
+  document.getElementById('modal-add-user').classList.add('show');
+}
+
+async function editUser(id) {
+  const {data} = await db.from('pharmacy_users').select('*').eq('id', id).single();
+  if(!data) return;
+  editingUserId = id;
+  document.getElementById('add-user-title').textContent = '✏️ Modifier l'utilisateur';
+  document.getElementById('user-name').value = data.name;
+  document.getElementById('user-email').value = data.email || '';
+  document.getElementById('user-phone').value = data.phone || '';
+  document.getElementById('user-role').value = data.role;
+  document.getElementById('user-pin').value = '';
+  document.getElementById('add-user-error').style.display = 'none';
+  document.getElementById('modal-add-user').classList.add('show');
+}
+
+async function saveUser() {
+  const name = document.getElementById('user-name').value.trim();
+  const email = document.getElementById('user-email').value.trim();
+  const phone = document.getElementById('user-phone').value.trim();
+  const role = document.getElementById('user-role').value;
+  const pin = document.getElementById('user-pin').value;
+  const errEl = document.getElementById('add-user-error');
+
+  errEl.style.display = 'none';
+  if(!name) { errEl.textContent = 'Nom requis'; errEl.style.display = 'block'; return; }
+  if(!editingUserId && (!pin || pin.length < 4)) { errEl.textContent = 'PIN requis (min 4 chiffres)'; errEl.style.display = 'block'; return; }
+
+  const userId = (await db.auth.getUser()).data.user?.id;
+  const payload = { name, email: email||null, phone: phone||null, role, owner_id: userId, active: true };
+  if(pin) payload.pin = pin;
+
+  let error;
+  if(editingUserId) {
+    ({error} = await db.from('pharmacy_users').update(payload).eq('id', editingUserId));
+  } else {
+    ({error} = await db.from('pharmacy_users').insert(payload));
+  }
+
+  if(error) { errEl.textContent = 'Erreur: ' + error.message; errEl.style.display = 'block'; return; }
+
+  document.getElementById('modal-add-user').classList.remove('show');
+  toast(editingUserId ? '✅ Utilisateur modifié' : '✅ Utilisateur ajouté');
+  loadPharmacyUsers();
+}
+
+async function toggleUserActive(id, currentActive) {
+  await db.from('pharmacy_users').update({active: !currentActive}).eq('id', id);
+  loadPharmacyUsers();
+}
+
+// Permissions par rôle
+const ROLE_PERMISSIONS = {
+  caissier:     ['caisse'],
+  gestionnaire: ['caisse','ventes','achats','clients','produits'],
+  admin:        ['caisse','ventes','achats','clients','produits','rapports','commande','inventaire','paramètres']
+};
+
+// =====================
 // =====================
 // SUPABASE AUTH - Multi-tenant
 // =====================
 
-function switchAuthTab(tab) {
+function switchLoginTab(tab) {
+  const isAdmin = tab === 'admin';
+  document.getElementById('auth-admin-form').style.display = isAdmin ? '' : 'none';
+  document.getElementById('auth-user-form').style.display = isAdmin ? 'none' : '';
+  document.getElementById('tab-admin-btn').style.background = isAdmin ? '#0f766e' : 'transparent';
+  document.getElementById('tab-admin-btn').style.color = isAdmin ? 'white' : '#64748b';
+  document.getElementById('tab-user-btn').style.background = !isAdmin ? '#6366f1' : 'transparent';
+  document.getElementById('tab-user-btn').style.color = !isAdmin ? 'white' : '#64748b';
+  document.getElementById('login-error').style.display = 'none';
+  document.getElementById('user-login-error').style.display = 'none';
+}
+
+// old switchAuthTab kept for compatibility
+function switchAuthTab(tab) { switchLoginTab(tab === 'login' ? 'admin' : 'user'); }
+
+let cachedOwnerUsers = [];
+
+async function loadUsersForLogin() {
+  const email = document.getElementById('user-owner-email').value.trim();
+  if(!email || !email.includes('@')) return;
+
+  // Trouver le owner_id par email
+  const {data: authData} = await db.from('pharmacy_users').select('*').limit(1);
+  // On doit chercher via une RPC ou chercher owner via email
+  // Alternative: chercher tous les users publics par owner email
+  const {data} = await db.rpc('get_users_by_owner_email', {owner_email: email}).catch(() => ({data:null}));
+
+  // Fallback: chercher directement
+  if(!data) {
+    // On va stocker pharmacy_name dans settings et chercher par email
+    document.getElementById('user-select-box').style.display = 'none';
+    document.getElementById('user-pin-box').style.display = 'none';
+    document.getElementById('user-login-btn').style.display = 'none';
+    document.getElementById('user-login-error').textContent = 'Pharmacie non trouvée';
+    document.getElementById('user-login-error').style.display = 'block';
+    return;
+  }
+
+  cachedOwnerUsers = data;
+  const sel = document.getElementById('user-select');
+  sel.innerHTML = '<option value="">Sélectionner...</option>' +
+    data.filter(u => u.active).map(u => `<option value="${u.id}">${u.name} (${u.role})</option>`).join('');
+  document.getElementById('user-select-box').style.display = 'block';
+  document.getElementById('user-login-error').style.display = 'none';
+
+  sel.onchange = () => {
+    const show = !!sel.value;
+    document.getElementById('user-pin-box').style.display = show ? '' : 'none';
+    document.getElementById('user-login-btn').style.display = show ? '' : 'none';
+    if(show) document.getElementById('user-pin-input').focus();
+  };
+}
+
+async function doUserLogin() {
+  const userId = document.getElementById('user-select').value;
+  const pin = document.getElementById('user-pin-input').value;
+  const errEl = document.getElementById('user-login-error');
+  errEl.style.display = 'none';
+
+  if(!userId || !pin) { errEl.textContent = 'Sélectionnez un utilisateur et entrez le PIN'; errEl.style.display = 'block'; return; }
+
+  const user = cachedOwnerUsers.find(u => u.id === userId);
+  if(!user) { errEl.textContent = 'Utilisateur introuvable'; errEl.style.display = 'block'; return; }
+  if(user.pin !== pin) { errEl.textContent = 'PIN incorrect'; errEl.style.display = 'block'; return; }
+
+  // Login réussi — charger les données du owner
+  currentUser = user.role;
+  currentPharmacyUser = user;
+
+  // Se connecter avec le compte owner pour accéder aux données
+  // On utilise un mode "user session" sans auth Supabase
+  document.getElementById('login-page').style.display = 'none';
+  document.getElementById('app-container').style.display = 'block';
+  applyRolePermissions(user.role);
+  loadDashboard();
+  toast(`Bienvenue ${user.name}! 👋`);
+}
+
+function applyRolePermissions(role) {
+  const perms = ROLE_PERMISSIONS[role] || ROLE_PERMISSIONS['caissier'];
+  // Hide nav items not in permissions
+  const navMap = {
+    'ventes': 'Ventes', 'achats': 'Achats', 'clients': 'Clients',
+    'produits': 'Produits', 'rapports': 'Rapports', 'commande': 'Commande',
+    'inventaire': 'Inventaire', 'parametres': 'Paramètres'
+  };
+  document.querySelectorAll('.nav-item').forEach(el => {
+    const text = el.textContent.trim();
+    const key = Object.keys(navMap).find(k => text.includes(navMap[k]));
+    if(key && !perms.includes(key)) el.style.display = 'none';
+    else if(key) el.style.display = '';
+  });
+  // Show first allowed page
+  const firstPage = perms[0] || 'caisse';
+  showPage(firstPage === 'caisse' ? 'caisse' : firstPage);
+}
+
+
   const isLogin = tab === 'login';
   document.getElementById('auth-login-form').style.display = isLogin ? '' : 'none';
   document.getElementById('auth-register-form').style.display = isLogin ? 'none' : '';
@@ -1556,6 +1754,7 @@ function showPage(id) {
   if(id==='rapport-produits') { setQuickDate('month','rp'); }
   if(id==='commande') initCommande();
   if(id==='inventaire') initInventaire();
+  if(id==='parametres') loadPharmacyUsers();
   openRapportsIfNeeded(id);
 }
 
@@ -3273,6 +3472,71 @@ function switchInvTab(tab) {
   if(!isHistorique) initJerd();
 }
 
+let jerdCatalogueTimeout = null;
+async function searchJerdCatalogue(q) {
+  const res = document.getElementById('jerd-catalogue-results');
+  if(!q || q.length < 2) { res.style.display='none'; return; }
+
+  clearTimeout(jerdCatalogueTimeout);
+  jerdCatalogueTimeout = setTimeout(async () => {
+    const {data} = await db.from('catalogue_medicaments')
+      .select('name,category,pph,ppv')
+      .ilike('name', `%${q}%`)
+      .limit(15);
+
+    if(!data || !data.length) {
+      res.innerHTML = '<div style="padding:1rem;text-align:center;color:#94a3b8;font-size:0.82rem">Aucun résultat</div>';
+      res.style.display = 'block';
+      return;
+    }
+
+    // Filtrer ceux déjà dans jerdData
+    const existingNames = new Set(jerdData.map(i => i.product.name.toLowerCase()));
+
+    res.innerHTML = data.map(m => {
+      const alreadyIn = existingNames.has(m.name.toLowerCase());
+      return `<div onclick="${alreadyIn ? '' : `addFromCatalogueToJerd(${JSON.stringify(m).replace(/"/g,'&quot;')})`}"
+        style="padding:0.6rem 0.85rem;border-bottom:1px solid #f1f5f9;cursor:${alreadyIn?'default':'pointer'};display:flex;justify-content:space-between;align-items:center;opacity:${alreadyIn?'0.5':'1'}"
+        onmouseover="if(!${alreadyIn}) this.style.background='#f5f3ff'" onmouseout="this.style.background='white'">
+        <div>
+          <div style="font-size:0.85rem;font-weight:600;color:#0f172a">${m.name}</div>
+          <div style="font-size:0.7rem;color:#94a3b8">${m.category||'—'}</div>
+        </div>
+        <div style="text-align:right">
+          ${alreadyIn
+            ? '<span style="font-size:0.72rem;background:#dcfce7;color:#166534;border-radius:20px;padding:2px 8px">Déjà ajouté</span>'
+            : `<span style="font-size:0.78rem;font-weight:600;color:#6366f1">${m.ppv||0} MAD</span>`
+          }
+        </div>
+      </div>`;
+    }).join('');
+    res.style.display = 'block';
+  }, 300);
+}
+
+function addFromCatalogueToJerd(m) {
+  // Créer un produit temporaire pour le jerd
+  const tempProduct = {
+    id: null,
+    name: m.name,
+    category: m.category || 'Médicament',
+    stock: 0,
+    pph: m.pph || 0,
+    ppv: m.ppv || 0,
+    isNew: true // marqueur produit nouveau
+  };
+
+  jerdData.unshift({ product: tempProduct, qteComptee: '' });
+  jerdFiltered = [...jerdData];
+
+  document.getElementById('jerd-catalogue-search').value = '';
+  document.getElementById('jerd-catalogue-results').style.display = 'none';
+  document.getElementById('jerd-total-count').textContent = jerdData.length + ' produits';
+
+  renderJerd();
+  toast(`✅ ${m.name} ajouté — entrez la quantité`);
+}
+
 function initJerd() {
   // Charger catégories dans le select
   const cats = [...new Set(allProducts.map(p => p.category).filter(Boolean))].sort();
@@ -3321,7 +3585,8 @@ function renderJerd() {
     const ecartText = ecart === null ? '—' : (ecart > 0 ? '+' : '') + ecart;
     const rowBg = ecart !== null && ecart !== 0 ? (ecart > 0 ? '#f0fdf4' : '#fef2f2') : 'white';
 
-    let statutBadge = '<span style="font-size:0.75rem;color:#94a3b8">Non compté</span>';
+    const isNew = item.product.isNew;
+    let statutBadge = isNew ? '<span style="background:#f5f3ff;color:#6366f1;border-radius:20px;padding:2px 10px;font-size:0.75rem;font-weight:600">🆕 Nouveau</span>' : '<span style="font-size:0.75rem;color:#94a3b8">Non compté</span>';
     if(qte !== '') {
       if(ecart === 0) statutBadge = '<span style="background:#dcfce7;color:#166534;border-radius:20px;padding:2px 10px;font-size:0.75rem;font-weight:600">✅ OK</span>';
       else if(ecart > 0) statutBadge = '<span style="background:#dcfce7;color:#166534;border-radius:20px;padding:2px 10px;font-size:0.75rem;font-weight:600">📈 Excédent</span>';
@@ -3388,13 +3653,27 @@ async function validerJerd() {
     const newStock = parseInt(item.qteComptee);
     const diff = newStock - p.stock;
 
-    const { error } = await db.from('products').update({ stock: newStock }).eq('id', p.id);
-    if(error) { erreurs++; continue; }
+    if(p.isNew || !p.id) {
+      // Nouveau produit — créer dans products
+      const userId = (await db.auth.getUser()).data.user?.id;
+      const {data: newProd, error} = await db.from('products').insert({
+        name: p.name,
+        category: p.category,
+        pph: p.pph || 0,
+        ppv: p.ppv || 0,
+        stock: newStock,
+        user_id: userId
+      }).select().single();
+      if(error) { erreurs++; continue; }
+      await logMouvement(newProd.id, p.name, 'ajustement', 0, newStock, ref, `Inventaire physique — nouveau produit`);
+      p.id = newProd.id;
+      p.isNew = false;
+    } else {
+      const { error } = await db.from('products').update({ stock: newStock }).eq('id', p.id);
+      if(error) { erreurs++; continue; }
+      await logMouvement(p.id, p.name, 'ajustement', p.stock, diff, ref, `Inventaire physique — compté: ${newStock}`);
+    }
 
-    // Log mouvement
-    await logMouvement(p.id, p.name, 'ajustement', p.stock, diff, ref, `Inventaire physique — compté: ${newStock}`);
-
-    // Mettre à jour localement
     p.stock = newStock;
     item.qteComptee = '';
     ok++;
@@ -3904,6 +4183,47 @@ checkSession();
       <div style="display:flex;gap:0.75rem">
         <button onclick="closeScanBL()" style="flex:1;padding:0.65rem;border-radius:8px;border:1px solid #e2e8f0;background:white;font-size:0.9rem;font-weight:600;cursor:pointer;color:#64748b">Annuler</button>
         <button onclick="appliquerScanBL()" style="flex:2;padding:0.65rem;border-radius:8px;border:none;background:#0f766e;color:white;font-size:0.95rem;font-weight:700;cursor:pointer">⬇️ Importer dans le BL</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADD USER -->
+<div class="modal-overlay" id="modal-add-user">
+  <div style="background:white;border-radius:20px;padding:1.75rem;width:420px;max-width:95vw;box-shadow:0 25px 70px rgba(0,0,0,0.25)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <h3 style="font-size:1.05rem;font-weight:700;color:#0f172a" id="add-user-title">👤 Ajouter un utilisateur</h3>
+      <button onclick="document.getElementById('modal-add-user').classList.remove('show')" style="background:#f1f5f9;border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1.1rem;color:#64748b">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.85rem">
+      <div>
+        <label style="font-size:0.75rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Nom complet *</label>
+        <input id="user-name" placeholder="Ex: Ahmed Benali" style="width:100%;padding:0.6rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Email</label>
+        <input id="user-email" type="email" placeholder="email@exemple.com" style="width:100%;padding:0.6rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Téléphone</label>
+        <input id="user-phone" placeholder="06XXXXXXXX" style="width:100%;padding:0.6rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Rôle *</label>
+        <select id="user-role" style="width:100%;padding:0.6rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;background:white">
+          <option value="caissier">💊 Caissier (Ventes uniquement)</option>
+          <option value="gestionnaire">📦 Gestionnaire (Ventes + Achats)</option>
+          <option value="admin">👑 Admin (Accès complet)</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Code PIN (4-6 chiffres) *</label>
+        <input id="user-pin" type="password" placeholder="••••" maxlength="6" style="width:100%;padding:0.6rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:1rem;outline:none;letter-spacing:4px;box-sizing:border-box">
+      </div>
+      <div id="add-user-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:0.6rem 0.85rem;font-size:0.82rem;color:#dc2626"></div>
+      <div style="display:flex;gap:0.75rem;margin-top:0.5rem">
+        <button onclick="document.getElementById('modal-add-user').classList.remove('show')" style="flex:1;padding:0.65rem;border-radius:8px;border:1px solid #e2e8f0;background:white;font-size:0.9rem;font-weight:600;cursor:pointer;color:#64748b">Annuler</button>
+        <button onclick="saveUser()" id="save-user-btn" style="flex:2;padding:0.65rem;border-radius:8px;border:none;background:#0f766e;color:white;font-size:0.95rem;font-weight:700;cursor:pointer">✅ Enregistrer</button>
       </div>
     </div>
   </div>
