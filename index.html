@@ -1573,15 +1573,6 @@ function applyRolePermissions(role) {
 }
 
 
-  const isLogin = tab === 'login';
-  document.getElementById('auth-login-form').style.display = isLogin ? '' : 'none';
-  document.getElementById('auth-register-form').style.display = isLogin ? 'none' : '';
-  document.getElementById('tab-login-btn').style.background = isLogin ? '#0f766e' : 'transparent';
-  document.getElementById('tab-login-btn').style.color = isLogin ? 'white' : '#64748b';
-  document.getElementById('tab-register-btn').style.background = !isLogin ? '#0f766e' : 'transparent';
-  document.getElementById('tab-register-btn').style.color = !isLogin ? 'white' : '#64748b';
-}
-
 async function doLogin() {
   const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
