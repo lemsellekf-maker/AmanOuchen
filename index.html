@@ -1418,7 +1418,7 @@ async function editUser(id) {
   const {data} = await db.from('pharmacy_users').select('*').eq('id', id).single();
   if(!data) return;
   editingUserId = id;
-  document.getElementById('add-user-title').textContent = '✏️ Modifier l'utilisateur';
+  document.getElementById('add-user-title').textContent = "✏️ Modifier l'utilisateur";
   document.getElementById('user-name').value = data.name;
   document.getElementById('user-email').value = data.email || '';
   document.getElementById('user-phone').value = data.phone || '';
