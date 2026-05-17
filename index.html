@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+	<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -24,9 +24,8 @@ body{font-family:'Segoe UI',sans-serif;background:#f0f4f8;color:#1a202c;min-heig
 .sidebar-bottom{display:flex;align-items:center;gap:1rem;padding:0.4rem 1.25rem;border-top:1px solid rgba(255,255,255,0.08);font-size:0.75rem;color:rgba(255,255,255,0.4)}
 
 /* RAPPORTS SUBMENU */
-#rapports-submenu{position:absolute;top:100%;left:0;background:#6cc9d1;border-radius:0 0 10px 10px;box-shadow:0 8px 20px rgba(0,0,0,0.3);display:none;flex-direction:column;min-width:180px;z-index:200;padding:0.35rem 0}
 #nav-rapports-toggle{position:relative}
-#nav-rapports-toggle:hover #rapports-submenu{display:flex}
+#nav-rapports-toggle .nav-item:hover{background:rgba(255,255,255,0.1)}
 
 /* MAIN */
 .main{margin-left:0;margin-top:96px;min-height:calc(100vh - 96px);display:flex;flex-direction:column}
@@ -154,9 +153,17 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
 .report-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:1.5rem}
 .report-card{background:#fafafa;border-radius:12px;padding:1.25rem;box-shadow:0 1px 3px rgba(0,0,0,0.3);border:1px solid #e2e8f0;cursor:pointer;transition:all 0.15s;border:2px solid transparent}
 .report-card:hover{border-color:#0f766e;background:#f0fdf9}
+.report-card.active{border-color:#0f766e;background:#e6f7f6}
 .report-card .icon{font-size:1.5rem;margin-bottom:0.5rem}
-.report-card h3{font-size:0.9rem;font-weight:600;margin-bottom:0.25rem}
-.report-card p{font-size:0.78rem;color:#94a3b8}
+.report-card h3{font-size:0.9rem;font-weight:600;margin-bottom:0.25rem;color:#1a202c}
+.report-card p{font-size:0.78rem;color:#64748b}
+
+/* RAPPORT PAGES BACKGROUND */
+#page-rapport-caisse,#page-rapport-ventes,#page-rapport-stock,#page-rapport-produits,#page-rapport-achats{background:#f0f4f8;min-height:100%;padding-bottom:2rem}
+#page-rapport-caisse .stat-card,#page-rapport-ventes .stat-card,#page-rapport-stock .stat-card,#page-rapport-produits .stat-card,#page-rapport-achats .stat-card{background:#ffffff;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+#page-rapport-stock .report-card{background:#ffffff;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+#page-rapport-ventes .report-card{background:#ffffff;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+#page-rapport-produits .report-card{background:#ffffff;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
 
 /* TOAST */
 .toast{position:fixed;bottom:1.5rem;right:1.5rem;padding:0.75rem 1.25rem;border-radius:10px;font-size:0.875rem;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,0.15);opacity:0;transform:translateY(8px);transition:all 0.3s;z-index:999;pointer-events:none}
@@ -178,8 +185,8 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
 .quick-date:hover,.quick-date.active{background:#0f766e;color:white;border-color:#0f766e}
 
 /* CHART */
-.chart-box{background:linear-gradient(135deg,#0f766e,#134e4a);border-radius:12px;padding:1.25rem;box-shadow:0 2px 8px rgba(15,118,110,0.2);margin-bottom:1rem}
-.chart-box h3{font-size:0.9rem;font-weight:600;margin-bottom:1rem;color:white}
+.chart-box{background:white;border-radius:12px;padding:1.25rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:1rem;border:1px solid #e2e8f0}
+.chart-box h3{font-size:0.9rem;font-weight:600;margin-bottom:1rem;color:#1a202c}
 
 /* IMPORT */
 .import-box{background:white;border-radius:12px;padding:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.07);margin-bottom:1rem;border:1px solid #e2e8f0}
@@ -323,12 +330,14 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
     <div class="nav-item admin-only" id="nav-rapports-toggle" style="position:relative" onclick="toggleRapportsMenu(event)">
       <span class="icon">📊</span> Rapports <span id="rapports-arrow" style="font-size:0.65rem;margin-left:2px">▼</span>
     </div>
-    <div id="rapports-submenu" style="display:none;position:fixed;background:#fafafa;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,0.4);flex-direction:column;min-width:185px;z-index:999;padding:0.4rem 0;border:1px solid rgba(255,255,255,0.08)">
-      <div style="padding:0.4rem 1rem;font-size:0.65rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;font-weight:600">Rapports</div>
-      <div class="nav-item admin-only" onclick="showPage('rapport-caisse');closeRapportsMenu()" style="border-radius:0;margin:0 0.35rem;padding:0.55rem 0.85rem"><span class="icon">💰</span> Caisse</div>
-      <div class="nav-item admin-only" onclick="showPage('rapport-ventes');closeRapportsMenu()" style="border-radius:0;margin:0 0.35rem;padding:0.55rem 0.85rem"><span class="icon">📈</span> Ventes</div>
-      <div class="nav-item admin-only" onclick="showPage('rapport-stock');closeRapportsMenu()" style="border-radius:0;margin:0 0.35rem;padding:0.55rem 0.85rem"><span class="icon">📋</span> Stock</div>
-      <div class="nav-item admin-only" onclick="showPage('rapport-produits');closeRapportsMenu()" style="border-radius:0;margin:0 0.35rem;padding:0.55rem 0.85rem"><span class="icon">🔬</span> Produits</div>
+    <div id="rapports-submenu" style="display:none;position:fixed;background:#1e293b;border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,0.5);flex-direction:column;min-width:195px;z-index:999;padding:0.5rem 0;border:1px solid rgba(255,255,255,0.1)">
+      <div style="padding:0.45rem 1rem 0.35rem;font-size:0.63rem;color:#94a3b8;text-transform:uppercase;letter-spacing:1.2px;font-weight:700">📊 Rapports</div>
+      <div style="height:1px;background:rgba(255,255,255,0.08);margin:0.25rem 0.5rem 0.3rem"></div>
+      <div class="nav-item admin-only" onclick="showPage('rapport-caisse');closeRapportsMenu()" style="border-radius:8px;margin:0 0.4rem;padding:0.6rem 0.9rem;color:white;font-size:0.88rem"><span class="icon">💰</span> Caisse</div>
+      <div class="nav-item admin-only" onclick="showPage('rapport-ventes');closeRapportsMenu()" style="border-radius:8px;margin:0 0.4rem;padding:0.6rem 0.9rem;color:white;font-size:0.88rem"><span class="icon">📈</span> Ventes</div>
+      <div class="nav-item admin-only" onclick="showPage('rapport-stock');closeRapportsMenu()" style="border-radius:8px;margin:0 0.4rem;padding:0.6rem 0.9rem;color:white;font-size:0.88rem"><span class="icon">📋</span> Stock</div>
+      <div class="nav-item admin-only" onclick="showPage('rapport-produits');closeRapportsMenu()" style="border-radius:8px;margin:0 0.4rem;padding:0.6rem 0.9rem;color:white;font-size:0.88rem"><span class="icon">🔬</span> Produits</div>
+      <div class="nav-item admin-only" onclick="showPage('rapport-achats');closeRapportsMenu()" style="border-radius:8px;margin:0 0.4rem;padding:0.6rem 0.9rem;color:white;font-size:0.88rem"><span class="icon">🛒</span> Achats</div>
     </div>
 
     <div class="nav-item admin-only" onclick="showPage('commande')"><span class="icon">📋</span> Commande</div>
@@ -635,15 +644,19 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
             <button class="quick-date" onclick="setQuickDate('year','a')">Année</button>
           </div>
           <button class="btn btn-primary" onclick="showNewAchat()">+ Nouveau BL</button>
+          <button class="btn btn-outline" onclick="showNewAvoir()" style="border-color:#d97706;color:#d97706">↩ Nouvel Avoir</button>
         </div>
         <div class="table-card">
           <div class="table-header">
             <h2>Bons de livraison</h2>
             <span id="a-total-display" style="font-size:0.85rem;color:#0f766e;font-weight:600"></span>
           </div>
+          <div class="table-toolbar">
+            <input type="text" placeholder="🔍 Fournisseur, référence..." id="a-search" oninput="filterAchats()" style="width:260px">
+          </div>
           <div style="overflow-x:auto">
             <table>
-              <thead><tr><th>Référence BL</th><th>Fournisseur</th><th>Date</th><th>Nb produits</th><th>Total PPH</th><th></th></tr></thead>
+              <thead><tr><th onclick="sortAchats('reference')" style="cursor:pointer">Référence BL <span id="sort-a-reference">↕</span></th><th onclick="sortAchats('supplier')" style="cursor:pointer">Fournisseur <span id="sort-a-supplier">↕</span></th><th onclick="sortAchats('date')" style="cursor:pointer">Date <span id="sort-a-date">↓</span></th><th>Nb produits</th><th onclick="sortAchats('total')" style="cursor:pointer">Total PPH <span id="sort-a-total">↕</span></th><th></th></tr></thead>
               <tbody id="achats-tbody"></tbody>
             </table>
           </div>
@@ -743,7 +756,7 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
         </div>
         <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>Nom</th><th>Téléphone</th><th>Email</th><th id="th-credit" onclick="sortClientsByCredit()" style="cursor:pointer;user-select:none;white-space:nowrap">Crédit <span id="credit-sort-icon">↕</span></th><th>Avoir</th><th>Solde</th></tr></thead>
+            <thead><tr><th>Nom</th><th>Téléphone</th><th>Email</th><th id="th-credit" onclick="sortClientsByCredit()" style="cursor:pointer;user-select:none;white-space:nowrap">Crédit <span id="credit-sort-icon">↕</span></th><th>Avoir</th><th>Solde</th><th></th></tr></thead>
             <tbody id="clients-tbody"></tbody>
           </table>
         </div>
@@ -862,6 +875,46 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
         <div class="report-card" onclick="showProdRapport('historique')"><div class="icon">📜</div><h3>Historique produits</h3><p>Mouvements de stock</p></div>
       </div>
       <div id="prod-rapport-box"></div>
+    </div>
+
+    <!-- RAPPORT ACHATS -->
+    <div class="page" id="page-rapport-achats">
+      <div class="date-filter">
+        <input type="date" id="ra-from" onchange="loadRapportAchats()">
+        <input type="date" id="ra-to" onchange="loadRapportAchats()">
+        <div class="quick-dates">
+          <button class="quick-date active" onclick="setQuickDate('month','ra');loadRapportAchats()">Ce mois</button>
+          <button class="quick-date" onclick="setQuickDate('year','ra');loadRapportAchats()">Année</button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="loadRapportAchats()">🔍 Calculer</button>
+      </div>
+      <div id="ra-stats" class="stat-grid" style="margin-bottom:1.5rem"></div>
+      <div class="table-card">
+        <div class="table-header"><h2>📋 Détail par fournisseur</h2></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr>
+              <th>Fournisseur</th>
+              <th>Nb BL</th>
+              <th>Total acheté (PPH)</th>
+            </tr></thead>
+            <tbody id="ra-tbody"><tr><td colspan="3" style="text-align:center;padding:2rem;color:#94a3b8">Sélectionnez une période</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="table-card" style="margin-top:1rem">
+        <div class="table-header"><h2>📅 Détail par mois</h2></div>
+        <div style="overflow-x:auto">
+          <table>
+            <thead><tr>
+              <th>Mois</th>
+              <th>Nb BL</th>
+              <th>Total acheté (PPH)</th>
+            </tr></thead>
+            <tbody id="ra-month-tbody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- IMPORT -->
@@ -995,6 +1048,12 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
             </div>
           </div>
 
+          <div style="background:#fef2f2;border-radius:10px;padding:1.25rem;border:1px solid #fecaca">
+            <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.5rem;color:#991b1b">🗑️ Supprimer tous les achats</h3>
+            <p style="font-size:0.85rem;color:#7f1d1d;margin-bottom:0.75rem">Supprime tous les BL et articles d'achat. Le stock ne sera pas remis à jour.</p>
+            <button class="btn btn-danger" onclick="deleteAllPurchases()">🗑 Supprimer tous les achats</button>
+          </div>
+
         </div>
       </div>
     </div>
@@ -1003,14 +1062,14 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
     <div class="page" id="page-inventaire">
 
       <!-- TABS -->
-      <div style="display:flex;gap:0.5rem;margin-bottom:1rem">
+      <div style="display:flex;gap:0.5rem;margin-bottom:1rem;align-items:center;flex-wrap:wrap">
         <button id="inv-tab-historique" onclick="switchInvTab('historique')"
-          style="padding:0.55rem 1.25rem;border-radius:8px;border:none;font-size:0.88rem;font-weight:600;cursor:pointer;background:#0f766e;color:white">
-          📜 Historique
+          style="padding:0.6rem 1.4rem;border-radius:8px;border:none;font-size:0.92rem;font-weight:700;cursor:pointer;background:#0f766e;color:white;box-shadow:0 2px 6px rgba(15,118,110,0.3)">
+          📜 Historique des mouvements
         </button>
         <button id="inv-tab-jerd" onclick="switchInvTab('jerd')"
-          style="padding:0.55rem 1.25rem;border-radius:8px;border:1px solid #e2e8f0;font-size:0.88rem;font-weight:600;cursor:pointer;background:white;color:#64748b">
-          📋 Faire un Inventaire
+          style="padding:0.6rem 1.4rem;border-radius:8px;border:1px solid #e2e8f0;font-size:0.92rem;font-weight:700;cursor:pointer;background:white;color:#64748b">
+          📋 Faire un Inventaire (Jerd)
         </button>
       </div>
 
@@ -1921,7 +1980,8 @@ function getCaissiereCode() { return localStorage.getItem('pharma_caissiere_code
 // Sync codes from Supabase au démarrage
 async function syncCodesFromSupabase() {
   try {
-    const {data, error} = await db.from('settings').select('*');
+    const uid = currentUserId || localStorage.getItem('owner_user_id');
+    const {data, error} = await db.from('settings').select('*').eq('user_id', uid);
     if(error || !data) return;
     data.forEach(row => {
       if(row.key === 'admin_code') localStorage.setItem('pharma_admin_code', row.value);
@@ -1931,10 +1991,14 @@ async function syncCodesFromSupabase() {
 }
 
 async function saveCode(key, value) {
+  const uid = currentUserId || localStorage.getItem('owner_user_id');
   localStorage.setItem('pharma_' + key, value);
   try {
-    await db.from('settings').upsert({key, value}, {onConflict:'key'});
-  } catch(e) {}
+    await db.from('settings').upsert({key, value, user_id: uid}, {onConflict:'key,user_id'});
+  } catch(e) {
+    // fallback: try without user_id conflict key
+    try { await db.from('settings').upsert({key, value, user_id: uid}); } catch(e2) {}
+  }
 }
 
 // old doLogin removed
@@ -1983,7 +2047,7 @@ const titles = {
   dashboard:'Tableau de bord', caisse:'Caisse', ventes:'Ventes', achats:'Achats',
   clients:'Clients', produits:'Produits', 'rapport-caisse':'Rapport Caisse',
   'rapport-ventes':'Rapports Ventes', 'rapport-stock':'Rapports Stock',
-  'rapport-produits':'Rapports Produits', import:'Importer données'
+  'rapport-produits':'Rapports Produits', 'rapport-achats':'Rapport Achats', import:'Importer données'
 , 'commande':'📋 Commande', 'inventaire':'📜 Inventaire des mouvements'};
 function showPage(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -2001,6 +2065,7 @@ function showPage(id) {
   if(id==='rapport-caisse') { setQuickDate('today','rc'); loadRapportCaisse(); }
   if(id==='rapport-ventes') { setQuickDate('month','rv'); }
   if(id==='rapport-produits') { setQuickDate('month','rp'); }
+  if(id==='rapport-achats') { setQuickDate('month','ra'); loadRapportAchats(); }
   if(id==='commande') initCommande();
   if(id==='inventaire') initInventaire();
   if(id==='parametres') { loadPharmacyUsers(); loadPharmacyInfo(); }
@@ -2114,8 +2179,9 @@ async function loadDashboard() {
     query('products', {select:'stock,expiry,ppv'})
   ]);
   
-  const caToday = ventesToday.reduce((s,v)=>s+v.total,0);
-  const caMonth = ventesMonth.reduce((s,v)=>s+v.total,0);
+  // CA = montant réellement payé (paid_amount), pas le total (évite de compter le crédit non payé)
+  const caToday = ventesToday.reduce((s,v)=>s+(v.paid_amount!==undefined&&v.paid_amount!==null ? v.paid_amount : v.total),0);
+  const caMonth = ventesMonth.reduce((s,v)=>s+(v.paid_amount!==undefined&&v.paid_amount!==null ? v.paid_amount : v.total),0);
   const zeroStock = stockData.filter(p=>p.stock<=0).length;
   const in3months = new Date(); in3months.setMonth(in3months.getMonth()+3);
   const expiry = stockData.filter(p=>p.expiry && new Date(p.expiry)<=in3months && p.stock>0).length;
@@ -2137,8 +2203,8 @@ async function loadDashboard() {
   const ctx = document.getElementById('chart-dash').getContext('2d');
   if(window._dashChart) window._dashChart.destroy();
   window._dashChart = new Chart(ctx, {
-    type:'line', data:{labels, datasets:[{label:'CA (MAD)',data:vals,borderColor:'#2dd4bf',backgroundColor:'rgba(45,212,191,0.15)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#2dd4bf',borderWidth:2}]},
-    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v+' MAD',color:'rgba(255,255,255,0.7)'},grid:{color:'rgba(255,255,255,0.1)'}},x:{ticks:{color:'rgba(255,255,255,0.7)'},grid:{color:'rgba(255,255,255,0.05)'}}}}
+    type:'line', data:{labels, datasets:[{label:'CA (MAD)',data:vals,borderColor:'#0f766e',backgroundColor:'rgba(15,118,110,0.1)',tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#0f766e',borderWidth:2.5}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{callback:v=>v+' MAD',color:'#64748b'},grid:{color:'rgba(0,0,0,0.06)'}},x:{ticks:{color:'#64748b'},grid:{color:'rgba(0,0,0,0.04)'}}}}
   });
   // Toujours recharger les infos pharmacie après le dashboard
   loadPharmacyInfo();
@@ -2835,6 +2901,46 @@ async function loadAchats() {
   renderAchats();
 }
 
+function filterAchats() {
+  const q = (document.getElementById('a-search')?.value||'').toLowerCase().trim();
+  if(!q) { filteredAchats = [...allAchats]; }
+  else {
+    filteredAchats = allAchats.filter(a =>
+      (a.supplier||'').toLowerCase().includes(q) ||
+      (a.reference||'').toLowerCase().includes(q)
+    );
+  }
+  // Réappliquer le tri actuel
+  filteredAchats.sort((a,b) => {
+    let va, vb;
+    if(aSortField==='date') { va=new Date(a.created_at); vb=new Date(b.created_at); }
+    else if(aSortField==='total') { va=a.total||0; vb=b.total||0; }
+    else if(aSortField==='supplier') { va=(a.supplier||'').toLowerCase(); vb=(b.supplier||'').toLowerCase(); }
+    else { va=(a.reference||'').toLowerCase(); vb=(b.reference||'').toLowerCase(); }
+    return aSortAsc ? (va>vb?1:-1) : (va<vb?1:-1);
+  });
+  pages.a = 1; renderAchats();
+}
+
+let aSortField = 'date', aSortAsc = false;
+function sortAchats(field) {
+  if(aSortField === field) aSortAsc = !aSortAsc;
+  else { aSortField = field; aSortAsc = field==='reference'; }
+  filteredAchats.sort((a,b) => {
+    let va, vb;
+    if(field==='date') { va = new Date(a.created_at); vb = new Date(b.created_at); }
+    else if(field==='total') { va = a.total||0; vb = b.total||0; }
+    else if(field==='supplier') { va = (a.supplier||'').toLowerCase(); vb = (b.supplier||'').toLowerCase(); }
+    else { va = (a.reference||'').toLowerCase(); vb = (b.reference||'').toLowerCase(); }
+    return aSortAsc ? (va>vb?1:-1) : (va<vb?1:-1);
+  });
+  ['reference','supplier','date','total'].forEach(f => {
+    const el = document.getElementById('sort-a-'+f);
+    if(el) el.textContent = f===field ? (aSortAsc?'↑':'↓') : '↕';
+  });
+  pages.a = 1; renderAchats();
+}
+
 function renderAchats() {
   const start=(pages.a-1)*PER_PAGE, slice=filteredAchats.slice(start,start+PER_PAGE);
   document.getElementById('achats-tbody').innerHTML = slice.map(a => `<tr>
@@ -3284,15 +3390,26 @@ function sortClientsByCredit() {
 
 function renderClients() {
   const start=(pages.c-1)*PER_PAGE, slice=filteredClients.slice(start,start+PER_PAGE);
-  document.getElementById('clients-tbody').innerHTML = slice.map(c => `<tr onclick="openClientDetail('${c.id}')" style="cursor:pointer">
-    <td style="font-weight:600;color:#1a202c">${c.name}</td>
-    <td>${c.phone||'—'}</td>
-    <td>${c.email||'—'}</td>
-    <td style="color:${(c.credit||0)>0?'#dc2626':'#16a34a'};font-weight:600">${(c.credit||0).toFixed(2)} MAD</td>
-    <td style="color:#16a34a">${(c.avoir||0).toFixed(2)} MAD</td>
-    <td style="font-weight:700;color:${((c.credit||0)-(c.avoir||0))>0?'#dc2626':'#0f766e'}">${((c.credit||0)-(c.avoir||0)).toFixed(2)} MAD</td>
-  </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8">Aucun client</td></tr>';
+  document.getElementById('clients-tbody').innerHTML = slice.map(c => `<tr>
+    <td style="font-weight:600;color:#1a202c;cursor:pointer" onclick="openClientDetail('${c.id}')">${c.name}</td>
+    <td style="cursor:pointer" onclick="openClientDetail('${c.id}')">${c.phone||'—'}</td>
+    <td style="cursor:pointer" onclick="openClientDetail('${c.id}')">${c.email||'—'}</td>
+    <td style="color:${(c.credit||0)>0?'#dc2626':'#16a34a'};font-weight:600;cursor:pointer" onclick="openClientDetail('${c.id}')">${(c.credit||0).toFixed(2)} MAD</td>
+    <td style="color:#16a34a;cursor:pointer" onclick="openClientDetail('${c.id}')">${(c.avoir||0).toFixed(2)} MAD</td>
+    <td style="font-weight:700;color:${((c.credit||0)-(c.avoir||0))>0?'#dc2626':'#0f766e'};cursor:pointer" onclick="openClientDetail('${c.id}')">${((c.credit||0)-(c.avoir||0)).toFixed(2)} MAD</td>
+    <td><button class="btn btn-danger btn-sm" onclick="deleteClient('${c.id}','${c.name.replace(/'/g,'')}')">🗑</button></td>
+  </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;padding:2rem;color:#94a3b8">Aucun client</td></tr>';
   document.getElementById('c-info').textContent = `${filteredClients.length} clients`;
+}
+
+async function deleteClient(id, name) {
+  if(!confirm(`Supprimer le client "${name}" ?\nToutes ses données seront supprimées.`)) return;
+  const {error} = await db.from('customers').delete().eq('id', id);
+  if(error) { toast('Erreur suppression client!','error'); return; }
+  allClients = allClients.filter(c=>c.id!==id);
+  filteredClients = filteredClients.filter(c=>c.id!==id);
+  renderClients();
+  toast(`✅ Client "${name}" supprimé!`);
 }
 
 let currentDetailClient = null;
@@ -3404,19 +3521,48 @@ async function confirmerPayerCredit() {
   if(error) { toast('Erreur!','error'); return; }
 
   // 2. Enregistrer le paiement comme transaction dans sales (visible dans Ventes)
-  const ref = 'PAY-' + Date.now();
-  await db.from('sales').insert({
-    reference: ref,
-    customer_id: c.id,
-    customer_name: c.name,
-    total: paid,
-    paid_amount: paid,
-    credit_amount: 0,
-    discount: 0,
-    status: 'completed',
-    created_at: new Date().toISOString(),
-    user_id: uid
-  });
+  // Chercher dernière facture en attente
+const { data: lastSale, error: saleError } = await db
+  .from('sales')
+  .select('*')
+  .eq('customer_id', c.id)
+  .eq('status', 'en_attente')
+  .order('created_at', { ascending: false })
+  .limit(1)
+  .single();
+
+if(saleError || !lastSale){
+  toast('Aucune facture en attente trouvée!','error');
+  return;
+}
+
+// Nouveaux montants
+const newPaidAmount = (lastSale.paid_amount || 0) + paid;
+const newCreditAmount = Math.max(
+  0,
+  (lastSale.credit_amount || 0) - paid
+);
+
+// Nouveau status
+const newStatus =
+  newCreditAmount <= 0
+    ? 'completed'
+    : 'en_attente';
+
+// Update facture
+const { error: updateSaleError } = await db
+  .from('sales')
+  .update({
+    paid_amount: newPaidAmount,
+    credit_amount: newCreditAmount,
+    status: newStatus
+  })
+  .eq('id', lastSale.id);
+
+if(updateSaleError){
+  toast('Erreur mise à jour facture!','error');
+  return;
+}
 
   // 3. Mettre à jour cache local
   c.credit = newCredit;
@@ -3835,18 +3981,22 @@ async function loadRapportCaisse() {
   const to = document.getElementById('rc-to').value;
   const ventes = await fetchAllSales(from, to);
   
-  const total = ventes.reduce((s,v)=>s+v.total,0);
+  // CA = montant payé uniquement (paid_amount). Le crédit non payé ne compte pas.
+  const totalPaye = ventes.filter(v=>v.status!=='retour').reduce((s,v)=>s+(v.paid_amount!==undefined&&v.paid_amount!==null ? v.paid_amount : v.total),0);
+  const totalCredit = ventes.filter(v=>v.status!=='retour').reduce((s,v)=>s+(v.credit_amount||0),0);
+  const totalRetours = ventes.filter(v=>v.status==='retour').reduce((s,v)=>s+Math.abs(v.total),0);
   const remises = ventes.reduce((s,v)=>s+(v.discount||0),0);
   
   document.getElementById('rc-stats').innerHTML = `
-    <div class="stat-card"><div class="label">Nombre de ventes</div><div class="value">${ventes.length}</div></div>
-    <div class="stat-card"><div class="label">CA brut</div><div class="value">${total.toFixed(2)}</div><div class="sub">MAD</div></div>
+    <div class="stat-card"><div class="label">Nombre de ventes</div><div class="value">${ventes.filter(v=>v.status!=='retour').length}</div></div>
+    <div class="stat-card"><div class="label">CA encaissé</div><div class="value">${totalPaye.toFixed(2)}</div><div class="sub">MAD — montant reçu</div></div>
+    <div class="stat-card"><div class="label">Crédit non payé</div><div class="value" style="color:#dc2626">${totalCredit.toFixed(2)}</div><div class="sub">MAD</div></div>
     <div class="stat-card"><div class="label">Remises</div><div class="value" style="color:#d97706">${remises.toFixed(2)}</div><div class="sub">MAD</div></div>
-    <div class="stat-card"><div class="label">CA net</div><div class="value">${(total-remises).toFixed(2)}</div><div class="sub">MAD</div></div>
+    <div class="stat-card"><div class="label">Retours</div><div class="value" style="color:#7c3aed">${totalRetours.toFixed(2)}</div><div class="sub">MAD</div></div>
   `;
   
   const byDay = {};
-  ventes.forEach(v => { const d=v.created_at.split('T')[0]; if(!byDay[d]) byDay[d]={nb:0,total:0,remise:0}; byDay[d].nb++; byDay[d].total+=v.total; byDay[d].remise+=(v.discount||0); });
+  ventes.forEach(v => { const d=v.created_at.split('T')[0]; if(!byDay[d]) byDay[d]={nb:0,total:0,remise:0,credit:0}; if(v.status!=='retour'){byDay[d].nb++;byDay[d].total+=(v.paid_amount!==undefined&&v.paid_amount!==null?v.paid_amount:v.total);byDay[d].credit+=(v.credit_amount||0);} byDay[d].remise+=(v.discount||0); });
   const days = Object.keys(byDay).sort();
   
   document.getElementById('rc-tbody').innerHTML = days.reverse().map(d => `<tr>
@@ -3859,8 +4009,8 @@ async function loadRapportCaisse() {
   const ctx = document.getElementById('chart-rc').getContext('2d');
   if(window._rcChart) window._rcChart.destroy();
   window._rcChart = new Chart(ctx, {
-    type:'bar', data:{labels:days.reverse().map(d=>d.slice(5)), datasets:[{label:'CA (MAD)',data:days.map(d=>byDay[d].total),backgroundColor:'rgba(15,118,110,0.7)',borderRadius:4}]},
-    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+    type:'bar', data:{labels:days.reverse().map(d=>d.slice(5)), datasets:[{label:'CA (MAD)',data:days.map(d=>byDay[d].total),backgroundColor:'rgba(15,118,110,0.75)',borderRadius:5,borderSkipped:false}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#64748b',callback:v=>v+' MAD'},grid:{color:'rgba(0,0,0,0.06)'}},x:{ticks:{color:'#64748b'},grid:{color:'rgba(0,0,0,0.04)'}}}}
   });
 }
 
@@ -3874,18 +4024,33 @@ async function showRapportDetail(type) {
   if(type==='ventes-par-jour') {
     const sales = await fetchAllSales(from, to);
     const byDay = {};
-    sales.forEach(v => { const d=v.created_at.split('T')[0]; if(!byDay[d]) byDay[d]={nb:0,total:0,remise:0}; byDay[d].nb++; byDay[d].total+=v.total; byDay[d].remise+=(v.discount||0); });
+    sales.filter(v=>v.status!=='retour').forEach(v => {
+      const d=v.created_at.split('T')[0];
+      if(!byDay[d]) byDay[d]={nb:0,total:0,remise:0,paye:0,credit:0};
+      byDay[d].nb++;
+      byDay[d].total+=v.total;
+      byDay[d].remise+=(v.discount||0);
+      byDay[d].paye+=(v.paid_amount!==undefined&&v.paid_amount!==null ? v.paid_amount : v.total);
+      byDay[d].credit+=(v.credit_amount||0);
+    });
     const days = Object.keys(byDay).sort().reverse();
     const grandTotal = days.reduce((s,d)=>s+byDay[d].total,0);
-    box.innerHTML = `<div class="chart-box"><h3>📅 Ventes par jour (${from} → ${to})</h3><canvas id="chart-rv-jour" height="70"></canvas></div>
+    const grandPaye = days.reduce((s,d)=>s+byDay[d].paye,0);
+    const grandCredit = days.reduce((s,d)=>s+byDay[d].credit,0);
+    box.innerHTML = `<div class="stat-grid" style="margin-bottom:1rem">
+      <div class="stat-card"><div class="label">CA brut total</div><div class="value">${grandTotal.toFixed(2)}</div><div class="sub">MAD</div></div>
+      <div class="stat-card"><div class="label">✅ Payé (encaissé)</div><div class="value" style="color:#16a34a">${grandPaye.toFixed(2)}</div><div class="sub">MAD</div></div>
+      <div class="stat-card"><div class="label">📋 Crédit non payé</div><div class="value" style="color:#dc2626">${grandCredit.toFixed(2)}</div><div class="sub">MAD</div></div>
+    </div>
+    <div class="chart-box"><h3>📅 Ventes par jour (${from} → ${to})</h3><canvas id="chart-rv-jour" height="70"></canvas></div>
     <div class="table-card"><div class="table-header"><h2>Détail journalier</h2><span style="color:#0f766e;font-weight:600">${grandTotal.toFixed(2)} MAD</span></div>
-    <table><thead><tr><th>Date</th><th>Nb ventes</th><th>CA brut</th><th>Remises</th><th>CA net</th></tr></thead><tbody>
-    ${days.map(d=>`<tr><td style="font-weight:500">${d}</td><td>${byDay[d].nb}</td><td>${byDay[d].total.toFixed(2)} MAD</td><td style="color:#d97706">${byDay[d].remise.toFixed(2)} MAD</td><td style="font-weight:700;color:#0f766e">${(byDay[d].total-byDay[d].remise).toFixed(2)} MAD</td></tr>`).join('')||'<tr><td colspan="5" style="text-align:center;padding:2rem;color:#94a3b8">Aucune donnée</td></tr>'}
+    <table><thead><tr><th>Date</th><th>Nb ventes</th><th>CA brut</th><th>✅ Payé</th><th style="color:#dc2626">📋 Crédit</th><th>Remises</th></tr></thead><tbody>
+    ${days.map(d=>`<tr><td style="font-weight:500">${d}</td><td>${byDay[d].nb}</td><td>${byDay[d].total.toFixed(2)} MAD</td><td style="font-weight:700;color:#16a34a">${byDay[d].paye.toFixed(2)} MAD</td><td style="font-weight:700;color:#dc2626">${byDay[d].credit.toFixed(2)} MAD</td><td style="color:#d97706">${byDay[d].remise.toFixed(2)} MAD</td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8">Aucune donnée</td></tr>'}
     </tbody></table></div>`;
     setTimeout(()=>{
       const sortedDays = [...days].reverse();
       const ctx = document.getElementById('chart-rv-jour')?.getContext('2d');
-      if(ctx) new Chart(ctx,{type:'bar',data:{labels:sortedDays.map(d=>d.slice(5)),datasets:[{label:'CA (MAD)',data:sortedDays.map(d=>byDay[d].total),backgroundColor:'rgba(15,118,110,0.7)',borderRadius:4}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+      if(ctx) new Chart(ctx,{type:'bar',data:{labels:sortedDays.map(d=>d.slice(5)),datasets:[{label:'CA (MAD)',data:sortedDays.map(d=>byDay[d].total),backgroundColor:'rgba(15,118,110,0.75)',borderRadius:5,borderSkipped:false}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{color:'#64748b',callback:v=>v+' MAD'},grid:{color:'rgba(0,0,0,0.06)'}},x:{ticks:{color:'#64748b'},grid:{color:'rgba(0,0,0,0.04)'}}}}});
     },100);
   } else if(type==='top-produits') {
     // نجيبو sales IDs أولاً ثم sale_items
@@ -3940,12 +4105,31 @@ async function showRapportDetail(type) {
     </tbody></table></div>`;
   } else if(type==='ventes-par-heure') {
     const sales = await fetchAllSales(from, to);
-    const byH = Array(24).fill(0).map(()=>({nb:0,total:0}));
-    sales.forEach(v=>{ const h=new Date(v.created_at).getHours(); byH[h].nb++; byH[h].total+=v.total; });
-    box.innerHTML = `<div class="chart-box"><h3>🕐 Ventes par heure</h3><canvas id="chart-heure" height="80"></canvas></div>`;
+    const byH = Array(24).fill(0).map(()=>({nb:0,total:0,paye:0,credit:0}));
+    sales.filter(v=>v.status!=='retour').forEach(v=>{
+      const h=new Date(v.created_at).getHours();
+      byH[h].nb++;
+      byH[h].total+=v.total;
+      byH[h].paye+=(v.paid_amount!==undefined&&v.paid_amount!==null ? v.paid_amount : v.total);
+      byH[h].credit+=(v.credit_amount||0);
+    });
+    const grandPayeH = byH.reduce((s,h)=>s+h.paye,0);
+    const grandCreditH = byH.reduce((s,h)=>s+h.credit,0);
+    box.innerHTML = `<div class="stat-grid" style="margin-bottom:1rem">
+      <div class="stat-card"><div class="label">✅ Total payé</div><div class="value" style="color:#16a34a">${grandPayeH.toFixed(2)}</div><div class="sub">MAD</div></div>
+      <div class="stat-card"><div class="label">📋 Total crédit</div><div class="value" style="color:#dc2626">${grandCreditH.toFixed(2)}</div><div class="sub">MAD</div></div>
+    </div>
+    <div class="chart-box"><h3>🕐 Ventes par heure — Payé vs Crédit</h3><canvas id="chart-heure" height="80"></canvas></div>
+    <div class="table-card" style="margin-top:1rem"><div class="table-header"><h2>Détail par heure</h2></div>
+    <table><thead><tr><th>Heure</th><th>Nb ventes</th><th>CA brut</th><th style="color:#16a34a">✅ Payé</th><th style="color:#dc2626">📋 Crédit</th></tr></thead><tbody>
+    ${byH.map((h,i)=>h.nb>0?`<tr><td style="font-weight:700">${String(i).padStart(2,'0')}h</td><td>${h.nb}</td><td>${h.total.toFixed(2)} MAD</td><td style="font-weight:700;color:#16a34a">${h.paye.toFixed(2)} MAD</td><td style="font-weight:700;color:#dc2626">${h.credit.toFixed(2)} MAD</td></tr>`:'').join('')||'<tr><td colspan="5" style="text-align:center;padding:2rem;color:#94a3b8">Aucune donnée</td></tr>'}
+    </tbody></table></div>`;
     setTimeout(()=>{
       const ctx = document.getElementById('chart-heure')?.getContext('2d');
-      if(ctx) new Chart(ctx,{type:'bar',data:{labels:Array.from({length:24},(_,i)=>i+'h'),datasets:[{label:'CA (MAD)',data:byH.map(h=>h.total),backgroundColor:'rgba(15,118,110,0.65)',borderRadius:3}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+      if(ctx) new Chart(ctx,{type:'bar',data:{labels:Array.from({length:24},(_,i)=>i+'h'),datasets:[
+        {label:'✅ Payé',data:byH.map(h=>h.paye),backgroundColor:'rgba(22,163,74,0.75)',borderRadius:3,borderSkipped:false},
+        {label:'📋 Crédit',data:byH.map(h=>h.credit),backgroundColor:'rgba(220,38,38,0.65)',borderRadius:3,borderSkipped:false}
+      ]},options:{plugins:{legend:{display:true,labels:{color:'#1a202c',font:{size:13}}}},scales:{y:{beginAtZero:true,stacked:true,ticks:{color:'#64748b',callback:v=>v+' MAD'},grid:{color:'rgba(0,0,0,0.06)'}},x:{stacked:true,ticks:{color:'#64748b'},grid:{color:'rgba(0,0,0,0.04)'}}}}});
     },100);
   } else if(type==='ventes-par-cat') {
     const saleIds_cat = await fetchAllSaleIds(from, to);
@@ -3975,11 +4159,14 @@ function showStockRapport(type) {
     document.getElementById('stock-rapport-box').innerHTML = `<div class="table-card" style="margin-top:1rem"><div class="table-header"><h2>Stock par catégorie</h2></div><table><thead><tr><th>Catégorie</th><th>Nb produits</th><th>Valeur stock</th></tr></thead><tbody>${Object.entries(byCat).sort((a,b)=>b[1].value-a[1].value).map(([c,v])=>`<tr><td>${c}</td><td>${v.count}</td><td style="font-weight:600">${v.value.toFixed(2)} MAD</td></tr>`).join('')}</tbody></table></div>`;
     return;
   } else {
-    const totalVal = allProducts.reduce((s,p)=>s+p.stock*p.ppv,0);
-    document.getElementById('stock-rapport-box').innerHTML = `<div class="stat-grid" style="margin-top:1rem"><div class="stat-card"><div class="label">Total produits</div><div class="value">${allProducts.length}</div></div><div class="stat-card"><div class="label">Valeur stock PPV</div><div class="value">${totalVal.toFixed(0)}</div><div class="sub">MAD</div></div><div class="stat-card"><div class="label">Ruptures</div><div class="value" style="color:#dc2626">${allProducts.filter(p=>p.stock<=0).length}</div></div></div>`;
+    const totalValPPV = allProducts.reduce((s,p)=>s+p.stock*p.ppv,0);
+    const totalValPPH = allProducts.reduce((s,p)=>s+p.stock*(p.pph||0),0);
+    document.getElementById('stock-rapport-box').innerHTML = `<div class="stat-grid" style="margin-top:1rem"><div class="stat-card"><div class="label">Total produits</div><div class="value">${allProducts.length}</div></div><div class="stat-card"><div class="label">Valeur stock PPV</div><div class="value">${totalValPPV.toFixed(0)}</div><div class="sub">MAD</div></div><div class="stat-card"><div class="label">Valeur stock PPH</div><div class="value" style="color:#d97706">${totalValPPH.toFixed(0)}</div><div class="sub">MAD</div></div><div class="stat-card"><div class="label">Ruptures</div><div class="value" style="color:#dc2626">${allProducts.filter(p=>p.stock<=0).length}</div></div></div>`;
     return;
   }
-  document.getElementById('stock-rapport-box').innerHTML = `<div class="table-card" style="margin-top:1rem"><div class="table-header"><h2>${title} (${prods.length})</h2></div><table><thead><tr><th>PID</th><th>Produit</th><th>Stock</th><th>PPV</th></tr></thead><tbody>${prods.slice(0,100).map(p=>`<tr><td style="color:#94a3b8">${p.id}</td><td>${p.name}</td><td style="color:#dc2626;font-weight:600">${p.stock}</td><td>${p.ppv?.toFixed(2)} MAD</td></tr>`).join('')}</tbody></table></div>`;
+  const totalPPH = prods.reduce((s,p)=>s+(p.stock*(p.pph||0)),0);
+  const totalPPV = prods.reduce((s,p)=>s+(p.stock*(p.ppv||0)),0);
+  document.getElementById('stock-rapport-box').innerHTML = `<div class="stat-grid" style="margin-top:1rem"><div class="stat-card"><div class="label">Nb produits</div><div class="value">${prods.length}</div></div><div class="stat-card"><div class="label">Valeur totale PPV</div><div class="value">${totalPPV.toFixed(2)}</div><div class="sub">MAD</div></div><div class="stat-card"><div class="label">Valeur totale PPH</div><div class="value" style="color:#d97706">${totalPPH.toFixed(2)}</div><div class="sub">MAD</div></div></div><div class="table-card" style="margin-top:1rem"><div class="table-header"><h2>${title} (${prods.length})</h2></div><table><thead><tr><th>PID</th><th>Produit</th><th>Stock</th><th>PPH</th><th>PPV</th><th>Val. PPH</th><th>Val. PPV</th></tr></thead><tbody>${prods.slice(0,200).map(p=>`<tr><td style="color:#94a3b8">${p.id}</td><td>${p.name}</td><td style="color:#dc2626;font-weight:600">${p.stock}</td><td style="color:#d97706">${(p.pph||0).toFixed(2)} MAD</td><td>${(p.ppv||0).toFixed(2)} MAD</td><td style="color:#d97706;font-weight:600">${(p.stock*(p.pph||0)).toFixed(2)} MAD</td><td style="font-weight:600;color:#0f766e">${(p.stock*(p.ppv||0)).toFixed(2)} MAD</td></tr>`).join('')}</tbody></table></div>`;
 }
 
 // RAPPORT PRODUITS
@@ -4240,8 +4427,20 @@ async function importFile(type, input) {
 // SECURITY CODE (stored in localStorage)
 function getSecCode() { return getAdminCode(); }
 
-function checkCode(inputId) {
-  return true; // Code de sécurité désactivé
+async function checkCode(inputId) {
+  const entered = document.getElementById(inputId)?.value?.trim();
+  if(!entered) { toast('⚠️ Entrez le code de sécurité', 'error'); return false; }
+  try {
+    const uid = currentUserId || localStorage.getItem('owner_user_id');
+    const {data} = await db.from('settings').select('value').eq('key','admin_code').eq('user_id', uid).single();
+    const stored = data?.value || localStorage.getItem('pharma_admin_code') || '1234';
+    if(entered !== stored) { toast('❌ Code incorrect!', 'error'); return false; }
+    return true;
+  } catch(e) {
+    const stored = localStorage.getItem('pharma_admin_code') || '1234';
+    if(entered !== stored) { toast('❌ Code incorrect!', 'error'); return false; }
+    return true;
+  }
 }
 
 async function changePassword() {
@@ -4285,27 +4484,207 @@ async function changeSecurityCode(type) {
 }
 
 async function resetAllStock() {
-  if(!checkCode('reset-stock-code')) return;
-  if(!confirm('⚠️ ATTENTION! Remettre TOUT le stock à zéro?')) return;
-  const {error} = await db.from('products').update({stock:0}).neq('id','');
-  if(error) { toast('Erreur!','error'); return; }
-  allProducts.forEach(p=>p.stock=0);
+  if(!await checkCode('reset-stock-code')) return;
+  if(!confirm('⚠️ ATTENTION! Remettre TOUT votre stock à zéro?\n\nCette action ne concerne que VOS produits.')) return;
+  const uid = currentUserId || localStorage.getItem('owner_user_id');
+  // Récupérer seulement les IDs des produits de cet utilisateur
+  const {data: userProds} = await db.from('products').select('id').eq('user_id', uid);
+  if(!userProds || !userProds.length) { toast('Aucun produit trouvé', 'info'); return; }
+  const ids = userProds.map(p => p.id);
+  // Mettre à zéro par chunks
+  for(let i = 0; i < ids.length; i += 200) {
+    const chunk = ids.slice(i, i + 200);
+    await db.from('products').update({stock: 0}).in('id', chunk);
+  }
+  allProducts.forEach(p => p.stock = 0);
   document.getElementById('reset-stock-code').value = '';
-  toast('✅ Tout le stock remis à zéro!');
+  filterProduits();
+  toast('✅ Votre stock remis à zéro!');
 }
 
 async function deleteAllSales() {
-  if(!checkCode('delete-sales-code')) return;
-  if(!confirm('⚠️ ATTENTION! Supprimer TOUTES les ventes?')) return;
-  await db.from('sale_items').delete().neq('id','00000000-0000-0000-0000-000000000000');
-  await db.from('sales').delete().neq('id','00000000-0000-0000-0000-000000000000');
-  allVentes=[]; filteredVentes=[];
+  if(!await checkCode('delete-sales-code')) return;
+  if(!confirm('⚠️ ATTENTION! Supprimer TOUTES vos ventes?\n\nCette action ne concerne que VOS données.')) return;
+  const uid = currentUserId || localStorage.getItem('owner_user_id');
+  // Récupérer seulement les IDs des ventes de cet utilisateur
+  const {data: userSales} = await db.from('sales').select('id').eq('user_id', uid);
+  if(userSales && userSales.length) {
+    const ids = userSales.map(s => s.id);
+    for(let i = 0; i < ids.length; i += 200) {
+      await db.from('sale_items').delete().in('sale_id', ids.slice(i, i + 200));
+    }
+    await db.from('sales').delete().eq('user_id', uid);
+  }
+  allVentes = []; filteredVentes = [];
   document.getElementById('delete-sales-code').value = '';
-  toast('✅ Toutes les ventes supprimées!');
+  toast('✅ Vos ventes supprimées!');
+}
+
+async function deleteAllPurchases() {
+  if(!confirm('⚠️ ATTENTION! Supprimer TOUS les achats?\nLe stock NE sera PAS remis à jour automatiquement.')) return;
+  const uid = currentUserId || localStorage.getItem('owner_user_id');
+  const {data: allPurch} = await db.from('purchases').select('id').eq('user_id', uid);
+  if(allPurch && allPurch.length) {
+    const ids = allPurch.map(p=>p.id);
+    for(let i=0;i<ids.length;i+=200) {
+      await db.from('purchase_items').delete().in('purchase_id', ids.slice(i,i+200));
+    }
+  }
+  const {error} = await db.from('purchases').delete().eq('user_id', uid);
+  if(error) { toast('Erreur suppression!','error'); return; }
+  allAchats=[]; filteredAchats=[];
+  toast('✅ Tous les achats supprimés!');
 }
 
 // Also add code check to deleteVente and resetStock product
 const _origDeleteVente = window.deleteVente;
+
+
+// =====================
+// AVOIR FOURNISSEUR
+// =====================
+let avoirItems = []; // {product_id, product_name, qty, pph}
+
+function showNewAvoir() {
+  avoirItems = [];
+  document.getElementById('avoir-ref').value = 'AV-' + Date.now();
+  document.getElementById('avoir-fournisseur').value = '';
+  document.getElementById('avoir-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('avoir-montant').value = '';
+  document.getElementById('avoir-items-list').innerHTML = '';
+  document.getElementById('avoir-prod-results').style.display = 'none';
+  document.getElementById('avoir-prod-search').value = '';
+  document.getElementById('avoir-error').style.display = 'none';
+  document.getElementById('modal-avoir').classList.add('show');
+}
+
+let avoirSearchTimeout = null;
+function searchAvoirProd(q) {
+  clearTimeout(avoirSearchTimeout);
+  const res = document.getElementById('avoir-prod-results');
+  if(!q || q.length < 1) { res.style.display='none'; return; }
+  avoirSearchTimeout = setTimeout(() => {
+    const ql = q.toLowerCase();
+    const matches = allProducts.filter(p => p.name.toLowerCase().includes(ql)).slice(0, 10);
+    if(!matches.length) { res.style.display='none'; return; }
+    res.innerHTML = matches.map(p => `<div onclick='addAvoirItem(${JSON.stringify({id:p.id,name:p.name,pph:p.pph||0,stock:p.stock}).replace(/'/g,"&#39;")})'
+      style="padding:0.5rem 0.75rem;cursor:pointer;border-bottom:1px solid #fde68a;font-size:0.85rem;display:flex;justify-content:space-between"
+      onmouseover="this.style.background='#fef9c3'" onmouseout="this.style.background='transparent'">
+      <span style="font-weight:500">${p.name}</span>
+      <span style="color:#d97706;font-weight:600">${p.pph?.toFixed(2)||0} MAD — Stock: ${p.stock}</span>
+    </div>`).join('');
+    res.style.display = 'block';
+  }, 250);
+}
+
+function addAvoirItem(p) {
+  const existing = avoirItems.find(i => i.product_id === p.id);
+  if(existing) { existing.qty++; }
+  else { avoirItems.push({product_id: p.id, product_name: p.name, qty: 1, pph: p.pph||0}); }
+  document.getElementById('avoir-prod-search').value = '';
+  document.getElementById('avoir-prod-results').style.display = 'none';
+  renderAvoirItems();
+  // Auto-calcul montant
+  calcAvoirTotal();
+}
+
+function removeAvoirItem(i) {
+  avoirItems.splice(i, 1);
+  renderAvoirItems();
+  calcAvoirTotal();
+}
+
+function updateAvoirQty(i, val) {
+  avoirItems[i].qty = Math.max(1, parseInt(val)||1);
+  calcAvoirTotal();
+}
+
+function updateAvoirPph(i, val) {
+  avoirItems[i].pph = parseFloat(val)||0;
+  calcAvoirTotal();
+}
+
+function renderAvoirItems() {
+  const el = document.getElementById('avoir-items-list');
+  if(!avoirItems.length) { el.innerHTML=''; return; }
+  el.innerHTML = avoirItems.map((item,i) => `
+    <div style="display:flex;align-items:center;gap:0.5rem;padding:0.4rem 0.6rem;background:white;border:1px solid #fde68a;border-radius:8px;font-size:0.82rem">
+      <span style="flex:1;font-weight:500">${item.product_name}</span>
+      <span style="color:#64748b;font-size:0.72rem">PPH:</span>
+      <input type="number" value="${item.pph}" step="0.01" min="0" onchange="updateAvoirPph(${i},this.value)"
+        style="width:65px;padding:2px 5px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;font-size:0.82rem;outline:none">
+      <span style="color:#64748b;font-size:0.72rem">Qté:</span>
+      <input type="number" value="${item.qty}" min="1" onchange="updateAvoirQty(${i},this.value)"
+        style="width:45px;padding:2px 5px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;font-size:0.82rem;outline:none">
+      <span style="font-weight:700;color:#d97706;min-width:60px;text-align:right">${(item.pph*item.qty).toFixed(2)} MAD</span>
+      <button onclick="removeAvoirItem(${i})" style="background:#fee2e2;border:none;color:#dc2626;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:0.75rem">✕</button>
+    </div>`).join('');
+}
+
+function calcAvoirTotal() {
+  const total = avoirItems.reduce((s,i)=>s+(i.pph*i.qty),0);
+  if(total > 0) document.getElementById('avoir-montant').value = total.toFixed(2);
+}
+
+function calcAvoirItems() {} // placeholder
+
+async function saveAvoir() {
+  const ref = document.getElementById('avoir-ref').value.trim();
+  const fournisseur = document.getElementById('avoir-fournisseur').value.trim();
+  const date = document.getElementById('avoir-date').value;
+  const montant = parseFloat(document.getElementById('avoir-montant').value) || 0;
+  const errEl = document.getElementById('avoir-error');
+
+  errEl.style.display = 'none';
+  if(!ref) { errEl.textContent='Référence requise'; errEl.style.display='block'; return; }
+  if(!fournisseur) { errEl.textContent='Fournisseur requis'; errEl.style.display='block'; return; }
+  if(montant <= 0) { errEl.textContent='Montant avoir requis (> 0)'; errEl.style.display='block'; return; }
+
+  const uid = currentUserId || localStorage.getItem('owner_user_id');
+  const dateISO = date ? new Date(date + 'T12:00:00').toISOString() : new Date().toISOString();
+
+  // Enregistrer comme achat négatif (avoir)
+  const {data: avoir, error} = await db.from('purchases').insert({
+    reference: ref,
+    supplier: fournisseur,
+    created_at: dateISO,
+    total: -montant,
+    user_id: uid,
+    type: 'avoir'
+  }).select().single();
+
+  if(error) { errEl.textContent='Erreur: '+error.message; errEl.style.display='block'; return; }
+
+  // Enregistrer les articles et diminuer le stock
+  if(avoirItems.length) {
+    await db.from('purchase_items').insert(avoirItems.map(i=>({
+      purchase_id: avoir.id,
+      product_id: i.product_id,
+      product_name: i.product_name,
+      quantity: -i.qty,
+      unit_price: i.pph,
+      total: -(i.pph * i.qty),
+      user_id: uid
+    })));
+
+    // Diminuer stock
+    for(const item of avoirItems) {
+      const p = allProducts.find(x=>x.id===item.product_id);
+      if(p) {
+        const newStock = Math.max(0, (p.stock||0) - item.qty);
+        await db.from('products').update({stock: newStock}).eq('id', item.product_id);
+        const before = p.stock;
+        p.stock = newStock;
+        await logMouvement(item.product_id, item.product_name, 'retour', before, -item.qty, ref, `Avoir fournisseur — ${fournisseur}`);
+      }
+    }
+  }
+
+  document.getElementById('modal-avoir').classList.remove('show');
+  toast(`✅ Avoir ${ref} enregistré — −${montant.toFixed(2)} MAD`);
+  setQuickDate('month','a');
+  loadAchats();
+}
 
 // =====================
 // INVENTAIRE — MOUVEMENTS STOCK
@@ -4315,10 +4694,71 @@ const INV_PER_PAGE = 50;
 let allMovements = [];
 let filteredMovements = [];
 
+async function loadRapportAchats() {
+  const from = document.getElementById('ra-from').value || monthStart();
+  const to = document.getElementById('ra-to').value || today();
+  const uid = currentUserId || localStorage.getItem('owner_user_id');
+
+  document.getElementById('ra-tbody').innerHTML = '<tr><td colspan="3" style="text-align:center;padding:2rem;color:#94a3b8"><div class="spinner" style="margin:0 auto 0.5rem"></div> Chargement...</td></tr>';
+
+  const PAGE_SIZE = 1000;
+  let allData = [], offset = 0;
+  while(true) {
+    let q = db.from('purchases').select('*').eq('user_id', uid).order('created_at',{ascending:false}).range(offset, offset+PAGE_SIZE-1);
+    if(from) q = q.gte('created_at', from + ' 00:00:00');
+    if(to)   q = q.lte('created_at', to + ' 23:59:59');
+    const {data} = await q;
+    if(!data || !data.length) break;
+    allData = allData.concat(data);
+    if(data.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
+  }
+
+  const blOnly = allData.filter(a => a.total >= 0);
+  const avoirOnly = allData.filter(a => a.total < 0);
+  const totalAchats = blOnly.reduce((s,a)=>s+(a.total||0),0);
+  const totalAvoirs = avoirOnly.reduce((s,a)=>s+Math.abs(a.total||0),0);
+  const nbBL = blOnly.length;
+
+  document.getElementById('ra-stats').innerHTML = `
+    <div class="stat-card"><div class="label">Nombre de BL</div><div class="value">${nbBL}</div></div>
+    <div class="stat-card"><div class="label">Total achats (PPH)</div><div class="value">${totalAchats.toFixed(2)}</div><div class="sub">MAD</div></div>
+    <div class="stat-card"><div class="label">Total avoirs</div><div class="value" style="color:#d97706">−${totalAvoirs.toFixed(2)}</div><div class="sub">MAD</div></div>
+    <div class="stat-card"><div class="label">Net (après avoirs)</div><div class="value">${(totalAchats-totalAvoirs).toFixed(2)}</div><div class="sub">MAD</div></div>
+  `;
+
+  // Par fournisseur
+  const byFourn = {};
+  allData.forEach(a => {
+    const f = a.supplier || 'Inconnu';
+    if(!byFourn[f]) byFourn[f] = {nb:0, total:0};
+    byFourn[f].nb++;
+    byFourn[f].total += (a.total||0);
+  });
+  const sortedFourn = Object.entries(byFourn).sort((a,b)=>b[1].total-a[1].total);
+  document.getElementById('ra-tbody').innerHTML = sortedFourn.map(([f,v]) =>
+    `<tr><td style="font-weight:500">${f}</td><td style="text-align:center">${v.nb}</td><td style="font-weight:700;color:#0f766e">${v.total.toFixed(2)} MAD</td></tr>`
+  ).join('') || '<tr><td colspan="3" style="text-align:center;padding:2rem;color:#94a3b8">Aucun achat</td></tr>';
+
+  // Par mois
+  const byMonth = {};
+  allData.forEach(a => {
+    const m = a.created_at?.substring(0,7) || '—';
+    if(!byMonth[m]) byMonth[m] = {nb:0, total:0};
+    byMonth[m].nb++;
+    byMonth[m].total += (a.total||0);
+  });
+  const sortedMonth = Object.entries(byMonth).sort((a,b)=>b[0].localeCompare(a[0]));
+  const raMonthTbody = document.getElementById('ra-month-tbody');
+  if(raMonthTbody) raMonthTbody.innerHTML = sortedMonth.map(([m,v]) =>
+    `<tr><td style="font-weight:500">${m}</td><td style="text-align:center">${v.nb}</td><td style="font-weight:700;color:#0f766e">${v.total.toFixed(2)} MAD</td></tr>`
+  ).join('') || '<tr><td colspan="3" style="text-align:center;padding:2rem;color:#94a3b8">Aucune donnée</td></tr>';
+}
+
 async function logMouvement(productId, productName, type, qtyBefore, qtyChange, reference='', note='') {
   try {
     const qtyAfter = qtyBefore + qtyChange;
-    const { data: { user } } = await db.auth.getUser();
+    const uid = currentUserId || localStorage.getItem('owner_user_id');
     await db.from('stock_movements').insert({
       product_id: productId,
       product_name: productName,
@@ -4328,7 +4768,7 @@ async function logMouvement(productId, productName, type, qtyBefore, qtyChange, 
       qty_after: qtyAfter,
       reference,
       note,
-      user_id: user?.id
+      user_id: uid
     });
   } catch(e) {
     console.warn('stock_movements:', e.message);
@@ -4372,7 +4812,8 @@ async function loadInventaire() {
     const PAGE_SIZE = 1000;
     let allData = [], offset = 0;
     while(true) {
-      let q = db.from('stock_movements').select('*').order('created_at', {ascending: false}).range(offset, offset+PAGE_SIZE-1);
+      const invUid = currentUserId || localStorage.getItem('owner_user_id');
+      let q = db.from('stock_movements').select('*').eq('user_id', invUid).order('created_at', {ascending: false}).range(offset, offset+PAGE_SIZE-1);
       if(from) q = q.gte('created_at', from + ' 00:00:00');
       if(to)   q = q.lte('created_at', to   + ' 23:59:59');
       if(type) q = q.eq('type', type);
@@ -5014,13 +5455,12 @@ function printCommande() {
   <h2>📋 Bon de Commande — Pharmacie Aman Ouchen</h2>
   <p style="color:#64748b;font-size:12px">Date: ${now} &nbsp;|&nbsp; ${commandeItems.length} produits</p>
   <table>
-    <thead><tr><th>#</th><th>Produit</th><th>Catégorie</th><th>Stock actuel</th><th>Qté à commander</th></tr></thead>
+    <thead><tr><th>#</th><th>Produit</th><th>Catégorie</th><th>Qté à commander</th></tr></thead>
     <tbody>
       ${commandeItems.map((item, i) => `<tr>
         <td>${i+1}</td>
         <td><strong>${item.name}</strong></td>
         <td>${item.category || '—'}</td>
-        <td>${item.stock}</td>
         <td style="font-weight:700;color:#0f766e;font-size:1rem">${item.qty}</td>
       </tr>`).join('')}
     </tbody>
@@ -5404,6 +5844,54 @@ autoFillLogin();
       <div style="display:flex;gap:0.75rem;margin-top:0.5rem">
         <button onclick="document.getElementById('modal-add-user').classList.remove('show')" style="flex:1;padding:0.65rem;border-radius:8px;border:1px solid #e2e8f0;background:white;font-size:0.9rem;font-weight:600;cursor:pointer;color:#64748b">Annuler</button>
         <button onclick="saveUser()" id="save-user-btn" style="flex:2;padding:0.65rem;border-radius:8px;border:none;background:#0f766e;color:white;font-size:0.95rem;font-weight:700;cursor:pointer">✅ Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AVOIR FOURNISSEUR -->
+<div class="modal-overlay" id="modal-avoir">
+  <div style="background:white;border-radius:20px;padding:1.75rem;width:520px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 25px 70px rgba(0,0,0,0.25)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div>
+        <h3 style="font-size:1.05rem;font-weight:700;color:#d97706">↩ Avoir Fournisseur</h3>
+        <p style="font-size:0.82rem;color:#94a3b8;margin-top:2px">Retour marchandise → diminue stock et rapport achats</p>
+      </div>
+      <button onclick="document.getElementById('modal-avoir').classList.remove('show')"
+        style="background:#f1f5f9;border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1.1rem;color:#64748b">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:1rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+        <div>
+          <label style="font-size:0.75rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Référence Avoir *</label>
+          <input id="avoir-ref" placeholder="AV-2026-001" style="width:100%;padding:0.6rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="font-size:0.75rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Fournisseur *</label>
+          <input id="avoir-fournisseur" placeholder="Ex: SOREMED" list="fournisseurs-list" style="width:100%;padding:0.6rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="font-size:0.75rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Date</label>
+          <input type="date" id="avoir-date" style="width:100%;padding:0.6rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        </div>
+        <div>
+          <label style="font-size:0.75rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Montant total avoir (MAD) *</label>
+          <input type="number" id="avoir-montant" placeholder="0.00" step="0.01" min="0" onchange="calcAvoirItems()" style="width:100%;padding:0.6rem 0.85rem;border:1.5px solid #fde68a;border-radius:8px;font-size:0.9rem;outline:none;box-sizing:border-box">
+        </div>
+      </div>
+      <div style="background:#fff7ed;border-radius:10px;padding:0.85rem">
+        <div style="font-size:0.78rem;font-weight:600;color:#92400e;margin-bottom:0.5rem">🔍 Produits retournés (optionnel — pour mise à jour stock)</div>
+        <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem">
+          <input id="avoir-prod-search" placeholder="Chercher un produit..." oninput="searchAvoirProd(this.value)"
+            style="flex:1;padding:0.5rem 0.75rem;border:1.5px solid #fde68a;border-radius:8px;font-size:0.85rem;outline:none">
+        </div>
+        <div id="avoir-prod-results" style="display:none;max-height:150px;overflow-y:auto;border:1px solid #fde68a;border-radius:8px;background:white;margin-bottom:0.5rem"></div>
+        <div id="avoir-items-list" style="display:flex;flex-direction:column;gap:0.35rem"></div>
+      </div>
+      <div id="avoir-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:0.6rem 0.85rem;font-size:0.82rem;color:#dc2626"></div>
+      <div style="display:flex;gap:0.75rem;margin-top:0.25rem">
+        <button onclick="document.getElementById('modal-avoir').classList.remove('show')" style="flex:1;padding:0.65rem;border-radius:8px;border:1px solid #e2e8f0;background:white;font-size:0.9rem;font-weight:600;cursor:pointer;color:#64748b">Annuler</button>
+        <button onclick="saveAvoir()" style="flex:2;padding:0.65rem;border-radius:8px;border:none;background:#d97706;color:white;font-size:0.95rem;font-weight:700;cursor:pointer">↩ Enregistrer l'Avoir</button>
       </div>
     </div>
   </div>
