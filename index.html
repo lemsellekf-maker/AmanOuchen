@@ -637,67 +637,80 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
 
       <!-- NEW BL FORM -->
       <div id="achats-form-view" style="display:none">
-        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;flex-wrap:wrap">
+
+        <!-- HEADER -->
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap">
           <button class="btn btn-outline" onclick="hideNewAchat()">◀ Retour</button>
-          <h2 style="font-size:1.1rem;font-weight:600">Nouveau Bon de Livraison</h2>
-          <button onclick="openScanBL()" style="margin-left:auto;display:flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;border-radius:10px;padding:0.6rem 1.2rem;font-size:0.88rem;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(99,102,241,0.35)">
-            📷 Scanner un BL <span style="font-size:0.7rem;background:rgba(255,255,255,0.2);border-radius:20px;padding:2px 7px">IA</span>
-          </button>
+          <h2 style="font-size:1rem;font-weight:700">Nouveau Bon de Livraison</h2>
+          <div style="display:flex;gap:0.5rem;margin-left:auto;align-items:center">
+            <button onclick="openScanBL()" style="display:flex;align-items:center;gap:0.4rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;border-radius:8px;padding:0.5rem 0.9rem;font-size:0.82rem;font-weight:700;cursor:pointer">
+              📷 Scanner IA
+            </button>
+            <button class="btn btn-primary" onclick="saveBL()" style="padding:0.5rem 1.25rem">✅ Enregistrer</button>
+          </div>
         </div>
 
-        <div class="table-card" style="margin-bottom:1rem">
-          <div style="padding:1.25rem">
-            <div class="form-grid">
-              <div class="form-group">
-                <label>Référence BL *</label>
-                <input id="bl-ref" placeholder="Ex: BL-2026-001">
-              </div>
-              <div class="form-group">
-                <label>Fournisseur *</label>
-                <input id="bl-fournisseur" placeholder="Ex: SOREMED" list="fournisseurs-list">
-                <datalist id="fournisseurs-list">
-                  <option value="SOREMED">
-                  <option value="COOPER MAROC">
-                  <option value="PHARMA 5">
-                  <option value="LAPROPHAN">
-                </datalist>
-              </div>
-              <div class="form-group">
-                <label>Date BL</label>
-                <input type="date" id="bl-date">
+        <!-- INFO BL -->
+        <div style="background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.07);padding:0.85rem 1rem;margin-bottom:1rem;display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center">
+          <div style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:140px">
+            <label style="font-size:0.7rem;font-weight:600;color:#64748b;text-transform:uppercase">Référence BL *</label>
+            <input id="bl-ref" placeholder="BL-2026-001" style="border:1.5px solid #e2e8f0;border-radius:8px;padding:0.45rem 0.75rem;font-size:0.9rem;outline:none">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px;flex:1;min-width:140px">
+            <label style="font-size:0.7rem;font-weight:600;color:#64748b;text-transform:uppercase">Fournisseur *</label>
+            <input id="bl-fournisseur" placeholder="Ex: SOREMED" list="fournisseurs-list" style="border:1.5px solid #e2e8f0;border-radius:8px;padding:0.45rem 0.75rem;font-size:0.9rem;outline:none">
+            <datalist id="fournisseurs-list">
+              <option value="SOREMED"><option value="COOPER MAROC"><option value="PHARMA 5"><option value="LAPROPHAN">
+            </datalist>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:2px;min-width:130px">
+            <label style="font-size:0.7rem;font-weight:600;color:#64748b;text-transform:uppercase">Date BL</label>
+            <input type="date" id="bl-date" style="border:1.5px solid #e2e8f0;border-radius:8px;padding:0.45rem 0.75rem;font-size:0.9rem;outline:none">
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <span id="bl-total-display" style="font-size:1rem;font-weight:700;color:#0f766e">Total: 0.00 MAD</span>
+          </div>
+        </div>
+
+        <!-- SPLIT: Recherche gauche + Cart droite -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start">
+
+          <!-- GAUCHE: Recherche -->
+          <div style="background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.07);overflow:hidden">
+            <div style="background:#0f172a;padding:0.75rem 1rem">
+              <span style="color:white;font-size:0.88rem;font-weight:600">🔍 Recherche produits</span>
+            </div>
+            <div style="padding:0.75rem">
+              <input type="text" id="bl-search" placeholder="🔍 Nom ou code barre..."
+                oninput="searchBLProduct(this.value)"
+                style="width:100%;padding:0.55rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.88rem;outline:none;box-sizing:border-box;margin-bottom:0.5rem">
+              <div id="bl-search-results" style="max-height:calc(100vh - 320px);overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;display:none"></div>
+              <div id="bl-search-empty" style="text-align:center;padding:3rem 1rem;color:#94a3b8;font-size:0.85rem">
+                Tapez un nom ou scannez un code barre
               </div>
             </div>
           </div>
+
+          <!-- DROITE: Produits BL -->
+          <div style="background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.07);overflow:hidden;position:sticky;top:70px">
+            <div style="background:#0f172a;padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between">
+              <span style="color:white;font-size:0.88rem;font-weight:600">📦 Produits du BL</span>
+              <span id="bl-items-count" style="font-size:0.75rem;color:rgba(255,255,255,0.5)"></span>
+            </div>
+            <div id="bl-items-cart" style="max-height:calc(100vh - 320px);overflow-y:auto">
+              <div style="text-align:center;padding:3rem 1rem;color:#94a3b8;font-size:0.85rem">
+                🔍 Cliquez sur un produit pour l\'ajouter
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <!-- SEARCH PRODUCT -->
-        <div class="search-box" style="margin-bottom:1rem">
-          <label>Ajouter un produit</label>
-          <div class="input-row">
-            <input type="text" id="bl-search" placeholder="Nom du produit ou code barre..." oninput="searchBLProduct(this.value)">
-          </div>
-          <div id="bl-search-results" style="margin-top:0.5rem;max-height:200px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;display:none"></div>
-        </div>
+        <!-- hidden tbody for compatibility -->
+        <tbody id="bl-items-tbody" style="display:none"></tbody>
 
-        <!-- BL ITEMS TABLE -->
-        <div class="table-card" style="margin-bottom:1rem">
-          <div class="table-header">
-            <h2>Produits du BL</h2>
-            <span id="bl-total-display" style="font-weight:700;color:#0f766e;font-size:1rem">Total PPH: 0.00 MAD</span>
-          </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr><th>Produit</th><th>PPH unitaire</th><th>Quantité</th><th>Total PPH</th><th>Péremption</th><th></th></tr></thead>
-              <tbody id="bl-items-tbody">
-                <tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8">Aucun produit ajouté</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div style="display:flex;justify-content:flex-end;gap:1rem">
-          <button class="btn btn-outline" onclick="hideNewAchat()">Annuler</button>
-          <button class="btn btn-primary" onclick="saveBL()" style="padding:0.75rem 2rem;font-size:1rem">✅ Enregistrer le BL</button>
+        <div style="display:none">
+          <button onclick="saveBL()">save</button>
         </div>
       </div>
     </div>
@@ -725,7 +738,7 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
     <!-- PRODUITS -->
     <div class="page" id="page-produits">
       <div class="table-card">
-        <div class="table-header"><h2>Liste des produits</h2><div style="display:flex;gap:0.5rem;align-items:center"><span id="prod-count-display" style="font-size:0.85rem;color:#94a3b8"></span><button class="btn btn-outline btn-sm" style="color:#dc2626;border-color:#dc2626" onclick="cleanExpiredStock()">🗑 Périmés → 0</button></div></div>
+        <div class="table-header"><h2>Liste des produits</h2><div style="display:flex;gap:0.5rem;align-items:center"><span id="prod-count-display" style="font-size:0.85rem;color:#94a3b8"></span><button class="btn btn-outline btn-sm" style="color:#dc2626;border-color:#dc2626" onclick="openPerimesModal()">🗑 Périmés</button></div></div>
         <div class="table-toolbar">
           <input type="text" placeholder="Nom ou code barre..." id="p-search" oninput="filterProduits()" style="width:250px">
           <select id="p-cat" onchange="filterProduits()">
@@ -738,6 +751,7 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
           </select>
           <select id="p-stock-filter" onchange="filterProduits()">
             <option value="">Tous les stocks</option>
+            <option value="negatif">⚠️ Stock négatif</option>
             <option value="zero">Stock à zéro</option>
             <option value="low">Stock faible (≤5)</option>
             <option value="ok">Stock OK</option>
@@ -990,74 +1004,61 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
       <!-- ===== TAB JERD (INVENTAIRE PHYSIQUE) ===== -->
       <div id="inv-panel-jerd" style="display:none">
 
-        <!-- RECHERCHE CATALOGUE POUR NOUVEAU PRODUIT -->
-        <div style="background:#f5f3ff;border:1.5px solid #c7d2fe;border-radius:12px;padding:0.85rem 1.1rem;margin-bottom:1rem">
-          <div style="font-size:0.78rem;font-weight:700;color:#4338ca;margin-bottom:0.5rem">
-            📋 Ajouter un produit depuis le catalogue
-          </div>
-          <div style="display:flex;gap:0.5rem;align-items:center">
-            <input type="text" id="jerd-catalogue-search" placeholder="🔍 Nom ou code barre..."
-              oninput="searchJerdCatalogue(this.value)"
-              style="flex:1;padding:0.5rem 0.85rem;border:1.5px solid #c7d2fe;border-radius:8px;font-size:0.88rem;outline:none;background:white">
-            <button onclick="document.getElementById('jerd-catalogue-search').value='';document.getElementById('jerd-catalogue-results').style.display='none'"
-              style="padding:0.5rem 0.75rem;border:1px solid #e2e8f0;border-radius:8px;background:white;cursor:pointer;color:#94a3b8">✕</button>
-          </div>
-          <div id="jerd-catalogue-results" style="display:none;margin-top:0.5rem;max-height:220px;overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px;background:white"></div>
-        </div>
-
         <!-- HEADER ACTIONS -->
-        <div style="background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.07);padding:0.85rem 1.1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
-          <input type="text" id="jerd-search" placeholder="🔍 Filtrer les produits..."
-            oninput="filterJerd(this.value)"
-            style="flex:1;min-width:200px;padding:0.5rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.88rem;outline:none">
-          <select id="jerd-cat" onchange="filterJerd(document.getElementById('jerd-search').value)"
-            style="padding:0.5rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.85rem;outline:none;background:white">
-            <option value="">Toutes catégories</option>
-          </select>
-          <select id="jerd-filter-diff" onchange="filterJerd(document.getElementById('jerd-search').value)"
-            style="padding:0.5rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.85rem;outline:none;background:white">
-            <option value="">Tous les produits</option>
-            <option value="diff">⚠️ Différences seulement</option>
-          </select>
+        <div style="background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.07);padding:0.75rem 1rem;margin-bottom:1rem;display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
           <span id="jerd-diff-count" style="font-size:0.82rem;font-weight:600;color:#d97706"></span>
-          <button onclick="validerJerd()"
-            style="background:#0f766e;color:white;border:none;border-radius:8px;padding:0.55rem 1.25rem;font-size:0.88rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:0.4rem">
-            ✅ Valider l'inventaire
-          </button>
-          <button onclick="resetJerd()"
-            style="background:white;border:1px solid #e2e8f0;color:#64748b;border-radius:8px;padding:0.55rem 0.85rem;font-size:0.85rem;cursor:pointer">
-            🔄 Réinitialiser
-          </button>
+          <div style="margin-left:auto;display:flex;gap:0.5rem">
+            <button onclick="validerJerd()"
+              style="background:#0f766e;color:white;border:none;border-radius:8px;padding:0.5rem 1.1rem;font-size:0.85rem;font-weight:700;cursor:pointer">
+              ✅ Valider
+            </button>
+            <button onclick="resetJerd()"
+              style="background:white;border:1px solid #e2e8f0;color:#64748b;border-radius:8px;padding:0.5rem 0.85rem;font-size:0.85rem;cursor:pointer">
+              🔄 Reset
+            </button>
+          </div>
         </div>
 
-        <!-- INFO BANNER -->
-        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:0.75rem 1rem;margin-bottom:1rem;font-size:0.83rem;color:#1e40af;display:flex;align-items:center;gap:0.5rem">
-          ℹ️ Entrez la quantité <strong>réelle comptée</strong> pour chaque produit. Les cases vides ne seront pas modifiées. Cliquez <strong>Valider</strong> pour mettre à jour le stock.
-        </div>
+        <!-- SPLIT LAYOUT: Recherche gauche + Cart droite -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start">
 
-        <!-- TABLEAU JERD -->
-        <div class="table-card">
-          <div class="table-header" style="background:#0f172a;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:space-between">
-            <h2 style="color:white">📋 Inventaire physique</h2>
-            <span id="jerd-total-count" style="font-size:0.78rem;color:rgba(255,255,255,0.5)"></span>
+          <!-- COLONNE GAUCHE: Recherche catalogue -->
+          <div style="background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.07);overflow:hidden">
+            <div style="background:#0f172a;padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between">
+              <span style="color:white;font-size:0.88rem;font-weight:600">🔍 Catalogue médicaments</span>
+              <select id="jerd-cat" onchange="searchJerdCatalogue(document.getElementById('jerd-catalogue-search').value)"
+                style="padding:0.3rem 0.5rem;border:none;border-radius:6px;font-size:0.75rem;outline:none;background:rgba(255,255,255,0.15);color:white">
+                <option value="" style="color:#0f172a">Toutes catégories</option>
+              </select>
+            </div>
+            <div style="padding:0.75rem">
+              <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem">
+                <input type="text" id="jerd-catalogue-search" placeholder="🔍 Nom ou code barre..."
+                  oninput="searchJerdCatalogue(this.value)"
+                  style="flex:1;padding:0.55rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.88rem;outline:none">
+                <button onclick="document.getElementById('jerd-catalogue-search').value='';document.getElementById('jerd-catalogue-results').innerHTML='';document.getElementById('jerd-catalogue-results').style.display='none'"
+                  style="padding:0.5rem 0.65rem;border:1px solid #e2e8f0;border-radius:8px;background:white;cursor:pointer;color:#94a3b8">✕</button>
+              </div>
+              <div id="jerd-catalogue-results" style="display:none;max-height:calc(100vh - 280px);overflow-y:auto;border:1px solid #e2e8f0;border-radius:8px"></div>
+              <div id="jerd-catalogue-empty" style="text-align:center;padding:3rem 1rem;color:#94a3b8;font-size:0.85rem">
+                Tapez un nom ou scannez un code barre
+              </div>
+            </div>
           </div>
-          <div style="overflow-x:auto">
-            <table>
-              <thead><tr>
-                <th>Produit</th>
-                <th>Catégorie</th>
-                <th style="text-align:center">Stock système</th>
-                <th style="text-align:center">Qté comptée</th>
-                <th style="text-align:center">Écart</th>
-                <th>Statut</th>
-              </tr></thead>
-              <tbody id="jerd-tbody">
-                <tr><td colspan="6" style="text-align:center;padding:3rem;color:#94a3b8">
-                  <div class="spinner" style="margin:0 auto 0.5rem"></div> Chargement...
-                </td></tr>
-              </tbody>
-            </table>
+
+          <!-- COLONNE DROITE: Cart inventaire -->
+          <div style="background:white;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.07);overflow:hidden;position:sticky;top:70px">
+            <div style="background:#0f172a;padding:0.75rem 1rem;display:flex;align-items:center;justify-content:space-between">
+              <span style="color:white;font-size:0.88rem;font-weight:600">📋 Produits scannés</span>
+              <span id="jerd-total-count" style="font-size:0.75rem;color:rgba(255,255,255,0.5)"></span>
+            </div>
+            <div id="jerd-cart" style="max-height:calc(100vh - 280px);overflow-y:auto">
+              <div style="text-align:center;padding:3rem 1rem;color:#94a3b8;font-size:0.85rem">
+                🔍 Cliquez sur un m\u00e9dicament pour l\'ajouter
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
 
@@ -1237,7 +1238,9 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
       </div>
       <div class="form-group">
         <label>Date de péremption</label>
-        <input id="np-expiry" type="date">
+        <input id="np-expiry" type="text" placeholder="MM/AAAA" maxlength="7"
+          oninput="formatExpiryInput(this)"
+          style="letter-spacing:1px">
       </div>
       <div class="form-group">
         <label>Stock min</label>
@@ -1315,9 +1318,38 @@ function openNewProductModal(barcode='') {
   document.getElementById('np-stock').value = '0';
   document.getElementById('np-stockmin').value = '0';
   document.getElementById('np-expiry').value = '';
+  document.getElementById('np-auto-ppv').checked = true;
   document.getElementById('np-category').value = 'Médicament';
   document.getElementById('modal-new-product').classList.add('show');
   setTimeout(()=>document.getElementById('np-name').focus(), 100);
+}
+
+// Format expiry: auto-add / after 2 digits
+function formatExpiryInput(el) {
+  let val = el.value.replace(/\D/g,'');
+  if(val.length > 2) val = val.substring(0,2) + '/' + val.substring(2,6);
+  // Validate month
+  if(val.length >= 2) {
+    const m = parseInt(val.substring(0,2));
+    if(m < 1) val = '01' + val.substring(2);
+    if(m > 12) val = '12' + val.substring(2);
+  }
+  el.value = val;
+}
+
+// Convert MM/YYYY to YYYY-MM for storage
+function expiryToISO(val) {
+  if(!val) return null;
+  const parts = val.split('/');
+  if(parts.length === 2 && parts[1].length === 4) return parts[1] + '-' + parts[0];
+  return val;
+}
+
+// Convert YYYY-MM to MM/YYYY for display
+function expiryFromISO(val) {
+  if(!val) return '';
+  if(val.includes('-') && val.length >= 7) return val.substring(5,7) + '/' + val.substring(0,4);
+  return val;
 }
 
 function calcFromPPH() {
@@ -1347,7 +1379,7 @@ async function saveNewProduct() {
     pph: parseFloat(document.getElementById('np-pph').value)||0,
     stock: parseInt(document.getElementById('np-stock').value)||0,
     stock_min: parseInt(document.getElementById('np-stockmin').value)||0,
-    expiry: document.getElementById('np-expiry').value||null,
+    expiry: expiryToISO(document.getElementById('np-expiry').value)||null,
     barcode1: barcode||null,
     barcode2: null
   };
@@ -1374,6 +1406,7 @@ async function saveNewProduct() {
 // USER MANAGEMENT
 let currentUser = null;
 let currentPharmacyUser = null;
+let currentUserId = null; // Stocké au login pour éviter les appels répétés
 
 
 // =====================
@@ -1630,6 +1663,7 @@ async function doRegister() {
 }
 
 function onLoginSuccess(user) {
+  currentUserId = user?.id;
   document.getElementById('login-page').style.display = 'none';
   document.getElementById('app-container').style.display = 'block';
   const meta = user.user_metadata || {};
@@ -1870,6 +1904,11 @@ function resetFiltresCaisse() {
 
 async function renderProdList(prods, searchQuery='') {
   const el = document.getElementById('prod-list');
+  // Filtrer les produits périmés
+  const nowDate = today();
+  prods = prods.filter(p => !p.expiry || p.expiry > nowDate);
+  // Hors stock shown but at bottom
+  prods.sort((a,b) => (b.stock>0?1:0) - (a.stock>0?1:0) || a.name.localeCompare(b.name));
   if(!prods.length) {
     // Chercher dans catalogue si aucun résultat local
     if(searchQuery && searchQuery.length >= 2) {
@@ -1884,12 +1923,14 @@ async function renderProdList(prods, searchQuery='') {
           <div style="padding:0.4rem 0.85rem;font-size:0.7rem;font-weight:700;color:#6366f1;background:#f5f3ff;text-transform:uppercase">
             📋 Résultats du catalogue — produit non en stock
           </div>` +
-          catResults.map(m => `
-            <div class="prod-row" style="cursor:default;opacity:0.85">
+          catResults.map(m => {
+            const catProd = {id:'CAT-'+m.name.replace(/\s/g,'-'), name:m.name, category:m.category||'', ppv:m.ppv||0, pph:m.pph||0, stock:0, barcode1:null, barcode2:null};
+            return `<div class="prod-row" style="cursor:pointer;opacity:0.85" onclick='quickAdd(${JSON.stringify(catProd).replace(/'/g,"&#39;")})'>
               <div class="prod-name">${m.name}<span>${m.category||''}</span></div>
-              <span style="font-size:0.7rem;background:#f1f5f9;color:#64748b;border-radius:10px;padding:1px 7px">Hors stock</span>
+              <span style="font-size:0.7rem;background:#fee2e2;color:#dc2626;border-radius:10px;padding:1px 7px">0 — Hors stock</span>
               <div class="prod-price" style="color:#6366f1">${m.ppv||0} MAD</div>
-            </div>`).join('');
+            </div>`;
+          }).join('');
       } else {
         el.innerHTML = '<div style="padding:2rem;text-align:center;color:#94a3b8">Aucun résultat</div>';
       }
@@ -1899,7 +1940,7 @@ async function renderProdList(prods, searchQuery='') {
     return;
   }
   el.innerHTML = prods.map(p => {
-    const sb = p.stock<=0 ? `<span class="prod-stock-zero">Rupture</span>` : p.stock<=5 ? `<span class="prod-stock-low">${p.stock}</span>` : `<span class="prod-stock-ok">${p.stock}</span>`;
+    const sb = p.stock<=0 ? `<span class="prod-stock-zero">${p.stock}</span>` : p.stock<=5 ? `<span class="prod-stock-low">${p.stock}</span>` : `<span class="prod-stock-ok">${p.stock}</span>`;
     return `<div class="prod-row" onclick='quickAdd(${JSON.stringify(p).replace(/'/g,"&#39;")})' style="cursor:pointer">
       <div class="prod-name">${p.name}<span>${p.category||''}</span></div>
       ${sb}
@@ -1919,7 +1960,9 @@ document.getElementById('caisse-search').addEventListener('keydown', e => { if(e
 
 function scanBarcode(code) {
   if(!code) return;
-  const p = allProducts.find(x => x.barcode1===code || x.barcode2===code);
+  const nowScan = today();
+  const nowScan2 = today();
+  const p = allProducts.find(x => (x.barcode1===code || x.barcode2===code) && (!x.expiry || x.expiry > nowScan2));
   if(p) { 
     addToCart(p,1); renderCart(); 
     toast(`✅ ${p.name.substring(0,30)} ajouté`); 
@@ -1976,6 +2019,7 @@ function renderCart() {
             <span style="font-size:0.72rem;background:#dbeafe;color:#1e40af;border-radius:20px;padding:2px 8px;font-weight:600">PPV: ${(item.ppv||0).toFixed(2)} MAD</span>
           </div>
         </div>
+        <button onclick="openRetourModal(${i})" title="Retour sur vente" style="background:#fef9c3;border:none;color:#854d0e;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:0.85rem;font-weight:700;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-right:2px">↩</button>
         <button onclick="removeItem(${i})" style="background:#fee2e2;border:none;color:#dc2626;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:0.85rem;font-weight:700;flex-shrink:0;display:flex;align-items:center;justify-content:center">✕</button>
       </div>
       <!-- QTÉ + PRIX + REMISE + TOTAL -->
@@ -2084,14 +2128,92 @@ async function confirmPaymentAndSave() {
   await validateSale();
 }
 
+// =====================
+// RETOUR SUR VENTE
+// =====================
+let retourCartIdx = null;
+
+function openRetourModal(cartIdx) {
+  retourCartIdx = cartIdx;
+  const item = cart[cartIdx];
+  document.getElementById('retour-product-name').textContent = item.name;
+  document.getElementById('retour-qty').value = 1;
+  document.getElementById('retour-qty').max = item.qty;
+  document.getElementById('retour-prix').value = (item.prix||item.ppv||0).toFixed(2);
+  document.getElementById('retour-modal').classList.add('show');
+}
+
+async function confirmerRetour() {
+  const item = cart[retourCartIdx];
+  const qtyRetour = parseInt(document.getElementById('retour-qty').value)||1;
+  const prixRetour = parseFloat(document.getElementById('retour-prix').value)||0;
+
+  if(qtyRetour <= 0 || qtyRetour > item.qty) {
+    toast('Quantité invalide', 'error'); return;
+  }
+
+  // 1. Enregistrer le retour comme vente négative
+  const { data: { user: retUser } } = await db.auth.getUser();
+  const userId = retUser?.id;
+  const ref = 'RET-' + Date.now();
+  const totalRetour = -(prixRetour * qtyRetour);
+
+  const {data: retourSale, error} = await db.from('sales').insert({
+    reference: ref,
+    total: totalRetour,
+    discount: 0,
+    status: 'retour',
+    created_at: new Date().toISOString(),
+    user_id: userId
+  }).select().single();
+
+  if(error) { toast('Erreur retour: ' + error.message, 'error'); return; }
+
+  await db.from('sale_items').insert([{
+    sale_id: retourSale.id,
+    product_id: item.id,
+    product_name: item.name,
+    quantity: -qtyRetour,
+    unit_price: prixRetour,
+    discount: 0,
+    total: totalRetour,
+    user_id: userId
+  }]);
+
+  // 2. Remettre en stock
+  const p = allProducts.find(x => x.id === item.id);
+  if(p) {
+    const newStock = (p.stock||0) + qtyRetour;
+    await db.from('products').update({stock: newStock}).eq('id', item.id);
+    p.stock = newStock;
+    await logMouvement(item.id, item.name, 'retour', p.stock - qtyRetour, qtyRetour, ref, `Retour client — ${qtyRetour} unité(s)`);
+  }
+
+  // 3. Mettre à jour le panier
+  if(qtyRetour >= item.qty) {
+    cart.splice(retourCartIdx, 1);
+  } else {
+    cart[retourCartIdx].qty -= qtyRetour;
+  }
+
+  document.getElementById('retour-modal').classList.remove('show');
+  renderCart();
+  toast(`✅ Retour enregistré — ${qtyRetour} × ${item.name.substring(0,25)} remis en stock`);
+}
+
 async function validateSale() {
   if(!cart.length) { toast('Panier vide!','error'); return; }
   const total = cart.reduce((s,i)=>s+itemTotal(i),0);
   const discount = cart.reduce((s,i)=>s+((i.prix||i.ppv)*i.qty*(i.remise||0)/100),0);
   const ref = 'FAC-'+Date.now();
   
+  const saleUserId = currentUserId;
+  if(!saleUserId) { toast('Session expirée — reconnectez-vous','error'); return; }
+
   const {data:sale, error:sErr} = await db.from('sales').insert({
-    reference: ref, total, discount, status:'completed', created_at: new Date().toISOString()
+    reference: ref, total, discount, status:'completed',
+    created_at: new Date().toISOString(),
+    user_id: saleUserId
   }).select().single();
   
   if(sErr) { toast('Erreur lors de la vente!','error'); console.error(sErr); return; }
@@ -2100,18 +2222,40 @@ async function validateSale() {
     sale_id:sale.id, product_id:i.id, product_name:i.name,
     quantity:i.qty, unit_price:i.prix||i.ppv,
     discount: i.remise||0,
-    total: itemTotal(i)
+    total: itemTotal(i),
+    user_id: saleUserId
   }));
   await db.from('sale_items').insert(items);
   
   // Update stock + log
+  const saleUser2 = {id: currentUserId};
   for(const i of cart) {
-    const p = allProducts.find(x=>x.id===i.id);
+    // Chercher le produit (par id ou par nom si produit catalogue)
+    let p = allProducts.find(x=>x.id===i.id);
+    if(!p && i.id?.startsWith('CAT-')) {
+      p = allProducts.find(x=>x.name.toLowerCase()===i.name.toLowerCase());
+    }
     const stockBefore = p?.stock || 0;
-    const newStock = Math.max(0, stockBefore - i.qty);
-    await db.from('products').update({stock: newStock}).eq('id',i.id);
-    if(p) p.stock = newStock;
-    await logMouvement(i.id, i.name, 'vente', stockBefore, -i.qty, ref, `Vente — ${i.qty} unité(s)`);
+    const newStock = stockBefore - i.qty; // Stock négatif autorisé
+
+    if(p?.id && !p.id.startsWith('CAT-')) {
+      const {error: stockErr} = await db.from('products').update({stock: newStock}).eq('id', p.id).eq('user_id', saleUser2?.id);
+      if(stockErr) {
+        console.error('Stock update error:', stockErr);
+        // Retry sans user_id filter
+        await db.from('products').update({stock: newStock}).eq('id', p.id);
+      }
+      p.stock = newStock;
+      await logMouvement(p.id, i.name, 'vente', stockBefore, -i.qty, ref, `Vente — ${i.qty} unité(s)`);
+    } else if(!p || i.id?.startsWith('CAT-')) {
+      // Nouveau produit hors stock — créer avec stock négatif
+      const newId = 'P' + Date.now() + Math.floor(Math.random()*1000);
+      const {data: newP} = await db.from('products').insert({
+        id: newId, name: i.name, category: i.category||'Médicament',
+        pph: i.pph||0, ppv: i.ppv||0, stock: -i.qty, user_id: saleUser2?.id
+      }).select().single();
+      if(newP) { allProducts.push({...newP}); }
+    }
   }
   
   toast(`✅ Vente ${ref} — ${total.toFixed(2)} MAD`);
@@ -2381,11 +2525,13 @@ async function searchBLProduct(q) {
   if(!q || q.length < 1) { res.style.display='none'; return; }
   const ql = q.toLowerCase();
 
-  // 1. Chercher d'abord dans les produits existants
+  // 1. Chercher d'abord dans les produits existants (exclure périmés)
+  const nowBL = today();
   const localMatches = allProducts.filter(p =>
-    p.name.toLowerCase().startsWith(ql) ||
+    (!p.expiry || p.expiry > nowBL) &&
+    (p.name.toLowerCase().startsWith(ql) ||
     p.name.toLowerCase().includes(' '+ql) ||
-    p.barcode1?.includes(q)
+    p.barcode1?.includes(q))
   ).slice(0, 8);
 
   // 2. Chercher aussi dans le catalogue
@@ -2450,35 +2596,157 @@ function addBLFromCatalogue(m) {
 }
 
 function addBLItem(p) {
+  const nowBL = today();
+  if(p.expiry && p.expiry <= nowBL) { toast('⚠️ Produit périmé!','error'); return; }
   const existing = blItems.find(i=>i.product_id===p.id);
-  if(existing) { existing.quantity++; existing.total = existing.quantity * existing.pph; }
-  else { blItems.push({ product_id:p.id, product_name:p.name, pph:p.pph||0, quantity:1, total:p.pph||0, expiry:'' }); }
-  document.getElementById('bl-search').value = '';
-  document.getElementById('bl-search-results').style.display = 'none';
+  if(existing) {
+    existing.quantity++;
+    existing.total = existing.quantity * existing.pph;
+  } else {
+    const pphV = p.pph||0;
+    const ppvV = (p.ppv && p.ppv>0) ? p.ppv : Math.round(pphV*1.5*100)/100;
+    blItems.push({ product_id:p.id, product_name:p.name, pph:pphV, ppv:ppvV, quantity:1, total:pphV, expiry:'', autoCalc:true });
+  }
   renderBLItems();
+  updateBLSearchBadge(p.name, blItems.find(i=>i.product_id===p.id)?.quantity||1);
 }
 
 function renderBLItems() {
-  const tbody = document.getElementById('bl-items-tbody');
+  const cart = document.getElementById('bl-items-cart');
+  if(!cart) return;
+
   if(!blItems.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8">Aucun produit ajouté</td></tr>';
-    document.getElementById('bl-total-display').textContent = 'Total PPH: 0.00 MAD';
+    cart.innerHTML = "<div style='text-align:center;padding:3rem 1rem;color:#94a3b8;font-size:0.85rem'>🔍 Cliquez sur un produit pour l'ajouter</div>";
+    document.getElementById('bl-total-display').textContent = 'Total: 0.00 MAD';
+    document.getElementById('bl-items-count').textContent = '';
     return;
   }
-  tbody.innerHTML = blItems.map((item,i) => `<tr>
-    <td style="font-weight:500;font-size:0.85rem">${item.product_name}</td>
-    <td><input type="number" value="${item.pph}" step="0.01" min="0" onchange="updateBLItem(${i},'pph',this.value)" style="width:90px;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:0.85rem"></td>
-    <td><div style="display:flex;align-items:center;gap:6px">
-      <button onclick="changeBLQty(${i},-1)" style="background:#f1f5f9;border:none;width:24px;height:24px;border-radius:5px;cursor:pointer;font-weight:700">−</button>
-      <span style="font-weight:600;min-width:24px;text-align:center">${item.quantity}</span>
-      <button onclick="changeBLQty(${i},1)" style="background:#f1f5f9;border:none;width:24px;height:24px;border-radius:5px;cursor:pointer;font-weight:700">+</button>
-    </div></td>
-    <td style="font-weight:600;color:#0f766e">${(item.pph*item.quantity).toFixed(2)} MAD</td>
-    <td><input type="date" value="${item.expiry}" onchange="updateBLItem(${i},'expiry',this.value)" style="padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:0.82rem"></td>
-    <td><button onclick="removeBLItem(${i})" style="background:none;border:none;color:#fca5a5;cursor:pointer;font-size:1.1rem">✕</button></td>
-  </tr>`).join('');
+
+  document.getElementById('bl-items-count').textContent = blItems.length + ' produit(s)';
   const total = blItems.reduce((s,i)=>s+i.pph*i.quantity,0);
   document.getElementById('bl-total-display').textContent = `Total PPH: ${total.toFixed(2)} MAD`;
+
+  cart.innerHTML = blItems.map((item,i) => {
+    const autoCalc = item.autoCalc !== false;
+    return `<div style="padding:0.75rem 0.85rem;border-bottom:1px solid #f1f5f9">
+      <!-- Nom + stock -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem">
+        <div style="font-size:0.85rem;font-weight:600;color:#0f172a;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.product_name}</div>
+        <button onclick="removeBLItem(${i})" style="background:#fee2e2;border:none;color:#dc2626;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:0.8rem;flex-shrink:0;margin-left:0.5rem">✕</button>
+      </div>
+      <!-- Controles -->
+      <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+        <!-- Quantité -->
+        <div style="display:flex;align-items:center;gap:0.25rem">
+          <button onclick="blQty(${i},-1)" style="width:26px;height:26px;border-radius:7px;border:none;background:#f1f5f9;font-size:1rem;font-weight:700;cursor:pointer">−</button>
+          <input type="number" min="1" value="${item.quantity}"
+            onchange="blSetQty(${i},this.value)"
+            style="width:50px;height:26px;border:2px solid #0f766e;border-radius:7px;text-align:center;font-size:0.9rem;font-weight:700;outline:none;padding:0">
+          <button onclick="blQty(${i},1)" style="width:26px;height:26px;border-radius:7px;border:none;background:#0f766e;color:white;font-size:1rem;font-weight:700;cursor:pointer">+</button>
+        </div>
+        <!-- PPH -->
+        <div style="text-align:center">
+          <div style="font-size:0.6rem;color:#94a3b8;font-weight:600">PPH</div>
+          <input type="number" min="0" step="0.01" value="${item.pph||0}" id="bl-pph-${i}"
+            onchange="blCalcPPV(${i},this.value)"
+            style="width:62px;height:24px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;font-size:0.8rem;outline:none;padding:0">
+        </div>
+        <!-- Auto toggle -->
+        <div style="text-align:center;cursor:pointer" onclick="blToggleAuto(${i})" title="Calcul auto PPH↔PPV">
+          <div style="font-size:0.6rem;color:#94a3b8;font-weight:600">Auto</div>
+          <div style="width:32px;height:18px;border-radius:9px;background:${autoCalc?'#0f766e':'#e2e8f0'};position:relative">
+            <div style="width:14px;height:14px;border-radius:50%;background:white;position:absolute;top:2px;${autoCalc?'right:2px':'left:2px'};box-shadow:0 1px 3px rgba(0,0,0,0.2)"></div>
+          </div>
+        </div>
+        <!-- PPV -->
+        <div style="text-align:center">
+          <div style="font-size:0.6rem;color:#94a3b8;font-weight:600">PPV</div>
+          <input type="number" min="0" step="0.01" value="${item.ppv||0}" id="bl-ppv-${i}"
+            onchange="blCalcPPH(${i},this.value)"
+            style="width:62px;height:24px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;font-size:0.8rem;outline:none;padding:0">
+        </div>
+        <!-- Péremption -->
+        <div style="text-align:center">
+          <div style="font-size:0.6rem;color:#94a3b8;font-weight:600">Péremption</div>
+          <input type="text" maxlength="7" placeholder="MM/YYYY" value="${item.expiry||''}" id="bl-exp-${i}"
+            oninput="blFormatExpiry(${i},this)"
+            style="width:82px;height:24px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;font-size:0.78rem;outline:none;padding:0 4px;letter-spacing:1px">
+        </div>
+        <!-- Total -->
+        <div style="margin-left:auto;font-size:0.85rem;font-weight:700;color:#0f766e">
+          ${(item.pph*item.quantity).toFixed(2)} MAD
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function blQty(i, d) {
+  blItems[i].quantity = Math.max(1, blItems[i].quantity + d);
+  blItems[i].total = blItems[i].pph * blItems[i].quantity;
+  const scrollY = window.scrollY;
+  renderBLItems();
+  window.scrollTo({top: scrollY, behavior: 'instant'});
+}
+
+function blSetQty(i, val) {
+  blItems[i].quantity = Math.max(1, parseInt(val)||1);
+  blItems[i].total = blItems[i].pph * blItems[i].quantity;
+  renderBLItems();
+}
+
+function blCalcPPV(i, pphVal) {
+  const pph = parseFloat(pphVal)||0;
+  blItems[i].pph = pph;
+  blItems[i].total = pph * blItems[i].quantity;
+  if(blItems[i].autoCalc !== false) {
+    blItems[i].ppv = Math.round(pph * 1.5 * 100) / 100;
+    const el = document.getElementById('bl-ppv-'+i);
+    if(el) el.value = blItems[i].ppv;
+  }
+  document.getElementById('bl-total-display').textContent = `Total PPH: ${blItems.reduce((s,x)=>s+x.pph*x.quantity,0).toFixed(2)} MAD`;
+}
+
+function blCalcPPH(i, ppvVal) {
+  const ppv = parseFloat(ppvVal)||0;
+  blItems[i].ppv = ppv;
+  if(blItems[i].autoCalc !== false) {
+    blItems[i].pph = Math.round(ppv / 1.5 * 100) / 100;
+    blItems[i].total = blItems[i].pph * blItems[i].quantity;
+    const el = document.getElementById('bl-pph-'+i);
+    if(el) el.value = blItems[i].pph;
+  }
+  document.getElementById('bl-total-display').textContent = `Total PPH: ${blItems.reduce((s,x)=>s+x.pph*x.quantity,0).toFixed(2)} MAD`;
+}
+
+function blToggleAuto(i) {
+  blItems[i].autoCalc = blItems[i].autoCalc === false ? true : false;
+  const scrollY = window.scrollY;
+  renderBLItems();
+  window.scrollTo({top: scrollY, behavior: 'instant'});
+}
+
+function blFormatExpiry(i, input) {
+  let val = input.value.replace(/\D/g,'');
+  if(val.length >= 2) {
+    const mm = val.substring(0,2);
+    const yyyy = val.substring(2,6);
+    input.value = yyyy ? mm + '/' + yyyy : (val.length===2 ? mm+'/' : mm);
+  }
+  blItems[i].expiry = input.value;
+}
+
+function updateBLSearchBadge(name, qty) {
+  const res = document.getElementById('bl-search-results');
+  if(!res) return;
+  res.querySelectorAll('div').forEach(row => {
+    const nameEl = row.querySelector('div:first-child div:first-child');
+    if(nameEl && nameEl.textContent.trim() === name) {
+      let badge = row.querySelector('.bl-qty-badge');
+      if(!badge) { badge = document.createElement('span'); badge.className='bl-qty-badge'; badge.style.cssText='font-size:0.78rem;font-weight:700;background:#dcfce7;color:#166534;border-radius:20px;padding:2px 10px'; row.querySelector('span:last-child')?.replaceWith(badge); }
+      badge.textContent = '✅ '+qty;
+    }
+  });
 }
 
 function updateBLItem(i, field, val) {
@@ -2493,7 +2761,12 @@ function changeBLQty(i, d) {
   renderBLItems();
 }
 
-function removeBLItem(i) { blItems.splice(i,1); renderBLItems(); }
+function removeBLItem(i) {
+  blItems.splice(i,1);
+  const scrollY = window.scrollY;
+  renderBLItems();
+  window.scrollTo({top: scrollY, behavior: 'instant'});
+}
 
 async function saveBL() {
   const ref = document.getElementById('bl-ref').value.trim();
@@ -2506,7 +2779,8 @@ async function saveBL() {
 
   if(editingBLId) {
     // MODE MODIFICATION
-    await db.from('purchases').update({reference:ref,supplier:fournisseur,created_at:date,total}).eq('id',editingBLId);
+    const { data: { user: userUpd } } = await db.auth.getUser();
+    await db.from('purchases').update({reference:ref,supplier:fournisseur,created_at:date,total}).eq('id',editingBLId).eq('user_id',userUpd?.id);
     // Reverse old stock
     const {data:oldItems} = await db.from('purchase_items').select('*').eq('purchase_id',editingBLId);
     if(oldItems) for(const oi of oldItems) {
@@ -2520,10 +2794,21 @@ async function saveBL() {
     editingBLId=null;
   } else {
     // MODE CRÉATION
-    const {data:purchase,error:pErr} = await db.from('purchases').insert({reference:ref,supplier:fournisseur,created_at:date,total}).select().single();
+    const { data: { user } } = await db.auth.getUser();
+    const userId = user?.id;
+    // Convert expiry MM/YYYY → YYYY-MM-01
+    const toISObL = (exp) => {
+      if(!exp) return null;
+      if(exp.includes('/')) { const [mm,yyyy]=exp.split('/'); return (yyyy&&yyyy.length===4)?`${yyyy}-${mm.padStart(2,'0')}-01`:null; }
+      return exp||null;
+    };
+    const {data:purchase,error:pErr} = await db.from('purchases').insert({reference:ref,supplier:fournisseur,created_at:date,total,user_id:userId}).select().single();
     if(pErr) { toast('Erreur: '+pErr.message,'error'); return; }
-    await db.from('purchase_items').insert(blItems.map(i=>({purchase_id:purchase.id,product_id:i.product_id,product_name:i.product_name,quantity:i.quantity,unit_price:i.pph,total:i.pph*i.quantity,expiry:i.expiry||null})));
-    for(const item of blItems) { const p=allProducts.find(x=>x.id===item.product_id); if(p){const before=p.stock||0;const s=before+item.quantity;await db.from('products').update({stock:s}).eq('id',item.product_id);p.stock=s;await logMouvement(item.product_id,item.product_name,'bl',before,item.quantity,ref,`BL ${fournisseur}`);} }
+    await db.from('purchase_items').insert(blItems.map(i=>({purchase_id:purchase.id,product_id:i.product_id,product_name:i.product_name,quantity:i.quantity,unit_price:i.pph,total:i.pph*i.quantity,expiry:toISObL(i.expiry),user_id:userId})));
+    for(const item of blItems) {
+      const p=allProducts.find(x=>x.id===item.product_id);
+      if(p){const before=p.stock||0;const s=before+item.quantity;await db.from('products').update({stock:s,pph:item.pph,ppv:item.ppv||0}).eq('id',item.product_id);p.stock=s;p.pph=item.pph;p.ppv=item.ppv||0;await logMouvement(item.product_id,item.product_name,'bl',before,item.quantity,ref,`BL ${fournisseur}`);}
+    }
     toast(`✅ BL ${ref} enregistré — ${total.toFixed(2)} MAD`);
   }
   hideNewAchat(); setQuickDate('month','a'); loadAchats();
@@ -2652,9 +2937,8 @@ async function fetchAllProducts() {
 }
 
 async function loadProduits() {
-  if(allProducts.length===0) {
-    allProducts = await fetchAllProducts();
-  }
+  // Toujours recharger depuis Supabase
+  allProducts = await fetchAllProducts();
   filteredProduits = [...allProducts]; pages.p=1;
   document.getElementById('prod-count-display').textContent = allProducts.length+' produits';
   renderProduits();
@@ -2667,6 +2951,7 @@ function filterProduits() {
   filteredProduits = allProducts.filter(p => {
     if(q && !p.name?.toLowerCase().includes(q) && !p.barcode1?.includes(q) && !p.barcode2?.includes(q)) return false;
     if(cat && p.category!==cat) return false;
+    if(sf==='negatif' && p.stock>=0) return false;
     if(sf==='zero' && p.stock>0) return false;
     if(sf==='low' && (p.stock<=0||p.stock>5)) return false;
     if(sf==='ok' && p.stock<=5) return false;
@@ -2678,7 +2963,7 @@ function filterProduits() {
 function renderProduits() {
   const start=(pages.p-1)*PER_PAGE, slice=filteredProduits.slice(start,start+PER_PAGE);
   document.getElementById('produits-tbody').innerHTML = slice.map(p => {
-    const sb = p.stock<=0?`<span class="badge badge-red">0</span>`:p.stock<=5?`<span class="badge badge-yellow">${p.stock}</span>`:`<span class="badge badge-green">${p.stock}</span>`;
+    const sb = p.stock<0?`<span class="badge badge-red">${p.stock}</span>`:p.stock===0?`<span class="badge badge-red">0</span>`:p.stock<=5?`<span class="badge badge-yellow">${p.stock}</span>`:`<span class="badge badge-green">${p.stock}</span>`;
     const now = new Date(); const exp3 = new Date(); exp3.setMonth(exp3.getMonth()+3);
     const expDate = p.expiry ? new Date(p.expiry) : null;
     const expBadge = !expDate ? '—' : expDate < now ? `<span class="badge badge-red">⚠️ ${p.expiry}</span>` : expDate < exp3 ? `<span class="badge badge-yellow">⏰ ${p.expiry}</span>` : `<span style="font-size:0.8rem">${p.expiry}</span>`;
@@ -2775,19 +3060,60 @@ async function showProductHistorique(prodId, prodName) {
 }
 
 // AUTO-EXPIRY: retire du stock les produits périmés
-async function cleanExpiredStock() {
+function openPerimesModal() {
   const now = today();
-  const expired = allProducts.filter(p => p.expiry && p.expiry < now && p.stock > 0);
-  if(!expired.length) { toast('Aucun produit périmé en stock','info'); return; }
-  if(!confirm(`⚠️ ${expired.length} produit(s) périmé(s) en stock.\nRemettre leurs stocks à 0 ?`)) return;
-  for(const p of expired) {
-    await db.from('products').update({stock:0}).eq('id',p.id);
-    await logMouvement(p.id, p.name, 'perime', p.stock, -p.stock, '', `Stock périmé remis à 0`);
-    p.stock = 0;
-  }
-  filterProduits();
-  toast(`✅ ${expired.length} produits périmés remis à zéro`);
+  const expired = allProducts.filter(p => p.expiry && p.expiry <= now);
+  const modal = document.getElementById('modal-perimes');
+  const tbody = document.getElementById('perimes-tbody');
+
+  if(!expired.length) { toast('Aucun produit périmé','info'); return; }
+
+  tbody.innerHTML = expired.map(p => {
+    const exp = p.expiry ? (p.expiry.substring(5,7) + '/' + p.expiry.substring(0,4)) : '—';
+    const stockBadge = p.stock > 0
+      ? `<span style="background:#fee2e2;color:#991b1b;border-radius:10px;padding:1px 8px;font-weight:600">${p.stock}</span>`
+      : `<span style="background:#f1f5f9;color:#94a3b8;border-radius:10px;padding:1px 8px">0</span>`;
+    return `<tr>
+      <td style="font-size:0.85rem;font-weight:500">${p.name}</td>
+      <td style="text-align:center;color:#dc2626;font-weight:600">${exp}</td>
+      <td style="text-align:center">${stockBadge}</td>
+      <td style="text-align:center;display:flex;gap:0.4rem;justify-content:center">
+        <button onclick="perimesSetZero('${p.id}')"
+          style="background:#fef9c3;border:none;color:#854d0e;border-radius:6px;padding:3px 10px;font-size:0.75rem;cursor:pointer;font-weight:600">→ 0</button>
+        <button onclick="perimesDelete('${p.id}')"
+          style="background:#fee2e2;border:none;color:#dc2626;border-radius:6px;padding:3px 10px;font-size:0.75rem;cursor:pointer;font-weight:600">🗑 Suppr.</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('perimes-count').textContent = expired.length + ' produit(s) périmé(s)';
+  modal.classList.add('show');
 }
+
+async function perimesSetZero(id) {
+  const p = allProducts.find(x => x.id === id);
+  if(!p || p.stock === 0) { toast('Stock déjà à 0','info'); return; }
+  const {error} = await db.from('products').update({stock:0}).eq('id', id);
+  if(error) { toast('Erreur','error'); return; }
+  await logMouvement(id, p.name, 'perime', p.stock, -p.stock, '', 'Stock périmé remis à 0');
+  p.stock = 0;
+  toast(`✅ ${p.name.substring(0,25)} → 0`);
+  openPerimesModal(); // refresh
+}
+
+async function perimesDelete(id) {
+  const p = allProducts.find(x => x.id === id);
+  if(!p) return;
+  if(!confirm(`Supprimer définitivement "${p.name}" ?`)) return;
+  const {error} = await db.from('products').delete().eq('id', id);
+  if(error) { toast('Erreur suppression','error'); return; }
+  allProducts = allProducts.filter(x => x.id !== id);
+  toast(`🗑 ${p.name.substring(0,25)} supprimé`);
+  filterProduits();
+  openPerimesModal();
+}
+
+async function cleanExpiredStock() { openPerimesModal(); }
 
 // PAGINATION
 function changePage(prefix, dir) {
@@ -3273,25 +3599,27 @@ function checkCode(inputId) {
 }
 
 async function changeSecurityCode(type) {
-  if(type==='admin') {
-    const current = document.getElementById('current-code').value;
-    const newCode = document.getElementById('new-code').value;
-    if(current !== getAdminCode()) { toast('Code admin incorrect!','error'); return; }
-    if(!newCode || newCode.length < 3) { toast('Nouveau code trop court!','error'); return; }
-    await saveCode('admin_code', newCode);
-    document.getElementById('current-code').value = '';
-    document.getElementById('new-code').value = '';
-    toast('✅ Code admin modifié!');
-  } else {
-    const current = document.getElementById('current-caissiere-code').value;
-    const newCode = document.getElementById('new-caissiere-code').value;
-    if(current !== getAdminCode()) { toast('Code admin incorrect!','error'); return; }
-    if(!newCode || newCode.length < 3) { toast('Nouveau code trop court!','error'); return; }
-    await saveCode('caissiere_code', newCode);
-    document.getElementById('current-caissiere-code').value = '';
-    document.getElementById('new-caissiere-code').value = '';
-    toast('✅ Code caissière modifié!');
+  const current = document.getElementById('current-code').value;
+  const newCode = document.getElementById('new-code').value;
+
+  if(!current) { toast('Entrez le code actuel', 'error'); return; }
+  if(!newCode || newCode.length < 3) { toast('Nouveau code trop court (min 3)', 'error'); return; }
+
+  // Vérifier code actuel depuis Supabase
+  let validCode;
+  try {
+    const {data} = await db.from('settings').select('value').eq('key','admin_code').single();
+    validCode = data?.value || getAdminCode();
+  } catch(e) {
+    validCode = getAdminCode();
   }
+
+  if(current !== validCode) { toast('Code actuel incorrect!', 'error'); return; }
+
+  await saveCode('admin_code', newCode);
+  document.getElementById('current-code').value = '';
+  document.getElementById('new-code').value = '';
+  toast('✅ Code de sécurité modifié!');
 }
 
 async function resetAllStock() {
@@ -3328,6 +3656,7 @@ let filteredMovements = [];
 async function logMouvement(productId, productName, type, qtyBefore, qtyChange, reference='', note='') {
   try {
     const qtyAfter = qtyBefore + qtyChange;
+    const { data: { user } } = await db.auth.getUser();
     await db.from('stock_movements').insert({
       product_id: productId,
       product_name: productName,
@@ -3336,11 +3665,11 @@ async function logMouvement(productId, productName, type, qtyBefore, qtyChange, 
       qty_change: qtyChange,
       qty_after: qtyAfter,
       reference,
-      note
+      note,
+      user_id: user?.id
     });
   } catch(e) {
-    // Table pas encore créée — pas bloquant
-    console.warn('stock_movements non disponible:', e.message);
+    console.warn('stock_movements:', e.message);
   }
 }
 
@@ -3478,28 +3807,36 @@ async function searchJerdCatalogue(q) {
       .ilike('name', `%${q}%`)
       .limit(15);
 
+    const emptyEl = document.getElementById('jerd-catalogue-empty');
     if(!data || !data.length) {
       res.innerHTML = '<div style="padding:1rem;text-align:center;color:#94a3b8;font-size:0.82rem">Aucun résultat</div>';
       res.style.display = 'block';
+      if(emptyEl) emptyEl.style.display = 'none';
       return;
     }
+    if(emptyEl) emptyEl.style.display = 'none';
 
     // Filtrer ceux déjà dans jerdData
     const existingNames = new Set(jerdData.map(i => i.product.name.toLowerCase()));
 
     res.innerHTML = data.map(m => {
       const alreadyIn = existingNames.has(m.name.toLowerCase());
-      return `<div onclick="${alreadyIn ? '' : `addFromCatalogueToJerd(${JSON.stringify(m).replace(/"/g,'&quot;')})`}"
-        style="padding:0.6rem 0.85rem;border-bottom:1px solid #f1f5f9;cursor:${alreadyIn?'default':'pointer'};display:flex;justify-content:space-between;align-items:center;opacity:${alreadyIn?'0.5':'1'}"
-        onmouseover="if(!${alreadyIn}) this.style.background='#f5f3ff'" onmouseout="this.style.background='white'">
-        <div>
+      const inJerd = jerdData.find(i => i.product.name.toLowerCase() === m.name.toLowerCase());
+      const currentQte = inJerd ? (inJerd.qteComptee || '0') : '0';
+      return `<div onclick="addFromCatalogueToJerd(${JSON.stringify(m).replace(/"/g,'&quot;')})"
+        style="padding:0.6rem 0.85rem;border-bottom:1px solid #f1f5f9;cursor:pointer;display:flex;justify-content:space-between;align-items:center"
+        onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background='white'">
+        <div style="flex:1">
           <div style="font-size:0.85rem;font-weight:600;color:#0f172a">${m.name}</div>
-          <div style="font-size:0.7rem;color:#94a3b8">${m.category||'—'}</div>
+          <div style="font-size:0.7rem;color:#94a3b8;display:flex;gap:0.75rem;margin-top:2px">
+            <span>PPH: <strong style="color:#0f766e">${m.pph||0} MAD</strong></span>
+            <span>PPV: <strong style="color:#6366f1">${m.ppv||0} MAD</strong></span>
+          </div>
         </div>
-        <div style="text-align:right">
-          ${alreadyIn
-            ? '<span style="font-size:0.72rem;background:#dcfce7;color:#166534;border-radius:20px;padding:2px 8px">Déjà ajouté</span>'
-            : `<span style="font-size:0.78rem;font-weight:600;color:#6366f1">${m.ppv||0} MAD</span>`
+        <div style="text-align:right;min-width:60px">
+          ${inJerd
+            ? `<span style="font-size:0.85rem;font-weight:700;background:#dcfce7;color:#166534;border-radius:20px;padding:3px 12px">✅ ${currentQte}</span>`
+            : `<span style="font-size:0.78rem;color:#94a3b8">+ Ajouter</span>`
           }
         </div>
       </div>`;
@@ -3509,26 +3846,69 @@ async function searchJerdCatalogue(q) {
 }
 
 function addFromCatalogueToJerd(m) {
-  // Créer un produit temporaire pour le jerd
-  const tempProduct = {
-    id: null,
-    name: m.name,
-    category: m.category || 'Médicament',
-    stock: 0,
-    pph: m.pph || 0,
-    ppv: m.ppv || 0,
-    isNew: true // marqueur produit nouveau
-  };
+  const nameLC = m.name.toLowerCase();
 
-  jerdData.unshift({ product: tempProduct, qteComptee: '' });
+  // 1. Chercher dans jerdData d'abord
+  const inJerd = jerdData.find(i => i.product.name.toLowerCase() === nameLC);
+  if(inJerd) {
+    const curr = parseInt(inJerd.qteComptee) || 0;
+    inJerd.qteComptee = String(curr + 1);
+    updateDiffCount();
+    updateJerdBadgeInSearch(m.name, curr + 1);
+    const scrollY = window.scrollY;
+    renderJerd();
+    window.scrollTo({top: scrollY, behavior: 'instant'});
+    toast(`+1 → ${m.name}: ${curr + 1}`);
+    return;
+  }
+
+  // 2. Chercher dans allProducts
+  const existing = allProducts.find(p => p.name.toLowerCase() === nameLC);
+  if(existing) {
+    jerdData.unshift({ product: existing, qteComptee: '1' });
+  } else {
+    jerdData.unshift({
+      product: { id: null, name: m.name, category: m.category || 'Médicament', stock: 0, pph: m.pph||0, ppv: m.ppv||0, isNew: true },
+      qteComptee: '1'
+    });
+  }
+
   jerdFiltered = [...jerdData];
-
-  document.getElementById('jerd-catalogue-search').value = '';
-  document.getElementById('jerd-catalogue-results').style.display = 'none';
-  document.getElementById('jerd-total-count').textContent = jerdData.length + ' produits';
-
+  document.getElementById('jerd-total-count').textContent = jerdData.length + ' produit(s)';
+  updateDiffCount();
+  updateJerdBadgeInSearch(m.name, 1);
+  const scrollY = window.scrollY;
   renderJerd();
-  toast(`✅ ${m.name} ajouté — entrez la quantité`);
+  window.scrollTo({top: scrollY, behavior: 'instant'});
+  toast(`✅ ${m.name}: 1`);
+}
+
+function updateJerdBadgeInSearch(name, qty) {
+  const results = document.getElementById('jerd-catalogue-results');
+  if(!results) return;
+  const rows = results.querySelectorAll('div[onclick]');
+  rows.forEach(row => {
+    const nameEl = row.querySelector('div > div:first-child');
+    if(nameEl && nameEl.textContent.trim() === name) {
+      const badge = row.querySelector('div:last-child');
+      if(badge) badge.innerHTML = `<span style="font-size:0.85rem;font-weight:700;background:#dcfce7;color:#166534;border-radius:20px;padding:3px 12px">✅ ${qty}</span>`;
+    }
+  });
+}
+
+function removeFromJerd(realIdx) {
+  jerdData.splice(realIdx, 1);
+  jerdFiltered = [...jerdData];
+  if(selectedJerdIdx === realIdx) selectedJerdIdx = null;
+  else if(selectedJerdIdx > realIdx) selectedJerdIdx--;
+  document.getElementById('jerd-total-count').textContent = jerdData.length + ' produits';
+  updateDiffCount();
+  renderJerd();
+}
+
+function updateDiffCount() {
+  const nbDiff = jerdData.filter(i => i.qteComptee !== '' && parseInt(i.qteComptee) !== i.product.stock).length;
+  document.getElementById('jerd-diff-count').textContent = nbDiff > 0 ? `⚠️ ${nbDiff} différence(s)` : '';
 }
 
 function initJerd() {
@@ -3537,10 +3917,13 @@ function initJerd() {
   const sel = document.getElementById('jerd-cat');
   sel.innerHTML = '<option value="">Toutes catégories</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
 
-  // Initialiser jerdData avec tous les produits
-  jerdData = allProducts.map(p => ({ product: p, qteComptee: '' }));
-  jerdFiltered = [...jerdData];
-  document.getElementById('jerd-total-count').textContent = jerdData.length + ' produits';
+  // Commencer avec cart vide — on ajoute les produits via le catalogue
+  jerdData = [];
+  jerdFiltered = [];
+  document.getElementById('jerd-total-count').textContent = '';
+  document.getElementById('jerd-catalogue-search').value = '';
+  document.getElementById('jerd-catalogue-results').style.display = 'none';
+  document.getElementById('jerd-search').value = '';
   renderJerd();
 }
 
@@ -3564,73 +3947,178 @@ function filterJerd(q) {
   renderJerd();
 }
 
+let selectedJerdIdx = null;
+
 function renderJerd() {
-  const tbody = document.getElementById('jerd-tbody');
-  if(!jerdFiltered.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:3rem;color:#94a3b8">Aucun produit trouvé</td></tr>`;
+  const cart = document.getElementById('jerd-cart');
+  if(!jerdData.length) {
+    cart.innerHTML = '<div style="text-align:center;padding:2rem;color:#94a3b8;font-size:0.85rem">🔍 Recherchez des produits ci-dessus pour commencer</div>';
+    document.getElementById('jerd-total-count').textContent = '';
     return;
   }
 
-  tbody.innerHTML = jerdFiltered.map((item, idx) => {
+  document.getElementById('jerd-total-count').textContent = jerdData.length + ' produit(s)';
+
+  cart.innerHTML = jerdData.map((item, realIdx) => {
     const p = item.product;
-    const qte = item.qteComptee;
-    const ecart = qte !== '' ? parseInt(qte) - p.stock : null;
-    const ecartColor = ecart === null ? '#94a3b8' : ecart > 0 ? '#16a34a' : ecart < 0 ? '#dc2626' : '#64748b';
-    const ecartText = ecart === null ? '—' : (ecart > 0 ? '+' : '') + ecart;
-    const rowBg = ecart !== null && ecart !== 0 ? (ecart > 0 ? '#f0fdf4' : '#fef2f2') : 'white';
+    const qte = parseInt(item.qteComptee) || 0;
+    const ecart = qte - p.stock;
+    const ecartColor = ecart > 0 ? '#16a34a' : ecart < 0 ? '#dc2626' : '#64748b';
+    const ecartText = (ecart > 0 ? '+' : '') + ecart;
+    const isNew = p.isNew;
 
-    const isNew = item.product.isNew;
-    let statutBadge = isNew ? '<span style="background:#f5f3ff;color:#6366f1;border-radius:20px;padding:2px 10px;font-size:0.75rem;font-weight:600">🆕 Nouveau</span>' : '<span style="font-size:0.75rem;color:#94a3b8">Non compté</span>';
-    if(qte !== '') {
-      if(ecart === 0) statutBadge = '<span style="background:#dcfce7;color:#166534;border-radius:20px;padding:2px 10px;font-size:0.75rem;font-weight:600">✅ OK</span>';
-      else if(ecart > 0) statutBadge = '<span style="background:#dcfce7;color:#166534;border-radius:20px;padding:2px 10px;font-size:0.75rem;font-weight:600">📈 Excédent</span>';
-      else statutBadge = '<span style="background:#fee2e2;color:#991b1b;border-radius:20px;padding:2px 10px;font-size:0.75rem;font-weight:600">📉 Manque</span>';
-    }
+    const autoCalc = item.autoCalc !== false; // true par défaut
 
-    // Trouver l'index réel dans jerdData pour sauvegarder
-    const realIdx = jerdData.indexOf(item);
+    return `<div style="border-bottom:1px solid #f1f5f9;background:white;padding:0.75rem 0.85rem">
+      <!-- Ligne 1: Nom + Stock + Écart + Supprimer -->
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:0.85rem;font-weight:600;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.name}</div>
+          <span style="font-size:0.7rem;background:${p.stock<=0?'#fee2e2':p.stock<=5?'#fef9c3':'#dcfce7'};color:${p.stock<=0?'#991b1b':p.stock<=5?'#854d0e':'#166534'};border-radius:10px;padding:1px 7px;font-weight:600">
+            Stock: ${p.stock}
+          </span>
+          ${isNew ? '<span style="color:#6366f1;font-weight:600;font-size:0.7rem;margin-left:4px">🆕</span>' : ''}
+        </div>
+        <span style="font-size:0.9rem;font-weight:700;color:${ecartColor};min-width:30px;text-align:center">${ecartText}</span>
+        <button onclick="removeFromJerd(${realIdx})"
+          style="width:24px;height:24px;border-radius:50%;border:none;background:#fee2e2;color:#dc2626;font-size:0.8rem;font-weight:700;cursor:pointer;flex-shrink:0">✕</button>
+      </div>
 
-    return `<tr style="background:${rowBg}">
-      <td style="font-weight:600;font-size:0.88rem">${p.name}</td>
-      <td><span class="badge badge-blue" style="font-size:0.72rem">${p.category || '—'}</span></td>
-      <td style="text-align:center;font-weight:700;font-size:1rem;color:#0f172a">${p.stock}</td>
-      <td style="text-align:center">
-        <input type="number" min="0" value="${qte}"
-          placeholder="—"
-          oninput="updateJerdQte(${realIdx}, this.value)"
-          style="width:80px;padding:5px 8px;border:2px solid ${qte !== '' ? (ecart === 0 ? '#86efac' : ecart > 0 ? '#86efac' : '#fca5a5') : '#e2e8f0'};
-                 border-radius:8px;font-size:1rem;text-align:center;font-weight:700;outline:none;
-                 color:${qte !== '' ? '#0f172a' : '#94a3b8'}">
-      </td>
-      <td style="text-align:center;font-weight:700;font-size:1.05rem;color:${ecartColor}">${ecartText}</td>
-      <td>${statutBadge}</td>
-    </tr>`;
+      <!-- Ligne 2: Quantité + PPH + PPV + Expiry -->
+      <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+        <!-- Quantité -->
+        <div style="display:flex;align-items:center;gap:0.25rem">
+          <button onclick="jerdQte(${realIdx},-1)" style="width:26px;height:26px;border-radius:7px;border:none;background:#f1f5f9;font-size:1rem;font-weight:700;cursor:pointer">−</button>
+          <input type="number" min="0" value="${qte}"
+            onchange="jerdSetQte(${realIdx},this.value)" oninput="jerdSetQte(${realIdx},this.value)"
+            style="width:50px;height:26px;border:2px solid #0f766e;border-radius:7px;text-align:center;font-size:0.9rem;font-weight:700;outline:none;padding:0">
+          <button onclick="jerdQte(${realIdx},1)" style="width:26px;height:26px;border-radius:7px;border:none;background:#0f766e;color:white;font-size:1rem;font-weight:700;cursor:pointer">+</button>
+        </div>
+
+        <!-- PPH -->
+        <div style="text-align:center">
+          <div style="font-size:0.6rem;color:#94a3b8;font-weight:600">PPH</div>
+          <input type="number" min="0" step="0.01" value="${p.pph||0}" id="pph-${realIdx}"
+            oninput="jerdCalcPPV(${realIdx},this.value)"
+            style="width:58px;height:24px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;font-size:0.78rem;outline:none;padding:0">
+        </div>
+
+        <!-- Auto toggle -->
+        <div style="text-align:center;cursor:pointer" onclick="jerdToggleAuto(${realIdx})" title="Calcul automatique PPH↔PPV">
+          <div style="font-size:0.6rem;color:#94a3b8;font-weight:600">Auto</div>
+          <div style="width:32px;height:18px;border-radius:9px;background:${autoCalc?'#0f766e':'#e2e8f0'};position:relative;transition:background 0.2s">
+            <div style="width:14px;height:14px;border-radius:50%;background:white;position:absolute;top:2px;${autoCalc?'right:2px':'left:2px'};transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)"></div>
+          </div>
+        </div>
+
+        <!-- PPV -->
+        <div style="text-align:center">
+          <div style="font-size:0.6rem;color:#94a3b8;font-weight:600">PPV</div>
+          <input type="number" min="0" step="0.01" value="${p.ppv||0}" id="ppv-${realIdx}"
+            oninput="jerdCalcPPH(${realIdx},this.value)"
+            style="width:58px;height:24px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;font-size:0.78rem;outline:none;padding:0">
+        </div>
+
+        <!-- Date péremption MM/YYYY -->
+        <div style="text-align:center">
+          <div style="font-size:0.6rem;color:#94a3b8;font-weight:600">Péremption</div>
+          <input type="text" maxlength="7" placeholder="MM/YYYY" value="${p.expiry||''}" id="exp-${realIdx}"
+            oninput="jerdFormatExpiry(${realIdx},this)"
+            style="width:75px;height:24px;border:1px solid #e2e8f0;border-radius:6px;text-align:center;font-size:0.78rem;outline:none;padding:0 4px">
+        </div>
+      </div>
+    </div>`;
   }).join('');
 }
 
-function updateJerdQte(realIdx, val) {
-  jerdData[realIdx].qteComptee = val === '' ? '' : val;
-  // Recalcul diff count
-  const nbDiff = jerdData.filter(i => i.qteComptee !== '' && parseInt(i.qteComptee) !== i.product.stock).length;
-  document.getElementById('jerd-diff-count').textContent = nbDiff > 0 ? `⚠️ ${nbDiff} différence(s)` : '';
-  // Re-render seulement si filtre diff actif
-  if(document.getElementById('jerd-filter-diff').value === 'diff') {
-    filterJerd(document.getElementById('jerd-search').value);
-  } else {
-    // Juste update la ligne visuellement sans re-render complet
-    renderJerd();
+function jerdCalcPPV(realIdx, pphVal) {
+  const pph = parseFloat(pphVal) || 0;
+  jerdData[realIdx].product.pph = pph;
+  if(jerdData[realIdx].autoCalc !== false) {
+    const ppv = Math.round(pph * 1.5 * 100) / 100; // marge 30%
+    jerdData[realIdx].product.ppv = ppv;
+    const el = document.getElementById('ppv-'+realIdx);
+    if(el) el.value = ppv;
   }
 }
 
+function jerdCalcPPH(realIdx, ppvVal) {
+  const ppv = parseFloat(ppvVal) || 0;
+  jerdData[realIdx].product.ppv = ppv;
+  if(jerdData[realIdx].autoCalc !== false) {
+    const pph = Math.round(ppv / 1.5 * 100) / 100;
+    jerdData[realIdx].product.pph = pph;
+    const el = document.getElementById('pph-'+realIdx);
+    if(el) el.value = pph;
+  }
+}
+
+function jerdToggleAuto(realIdx) {
+  jerdData[realIdx].autoCalc = jerdData[realIdx].autoCalc === false ? true : false;
+  const scrollY = window.scrollY;
+  renderJerd();
+  window.scrollTo({top: scrollY, behavior: 'instant'});
+}
+
+function jerdFormatExpiry(realIdx, input) {
+  let val = input.value.replace(/\D/g, '');
+  if(val.length >= 2) {
+    // Auto-insert slash after MM
+    const mm = val.substring(0,2);
+    const yyyy = val.substring(2,6);
+    input.value = yyyy ? mm + '/' + yyyy : mm;
+    if(val.length === 2) {
+      // Auto-move to year part
+      input.value = mm + '/';
+    }
+  }
+  jerdData[realIdx].product.expiry = input.value;
+}
+
+function jerdQte(realIdx, delta) {
+  const curr = parseInt(jerdData[realIdx].qteComptee) || 0;
+  const newVal = Math.max(0, curr + delta);
+  jerdData[realIdx].qteComptee = String(newVal);
+  updateDiffCount();
+  // Update seulement le row sans scroll
+  const cart = document.getElementById('jerd-cart');
+  const inputs = cart.querySelectorAll('input[type=number]');
+  const rowInputs = [...inputs].filter((_, i) => Math.floor(i/3) === realIdx);
+  // Simple re-render avec scroll preserve
+  const scrollY = window.scrollY;
+  renderJerd();
+  window.scrollTo({top: scrollY, behavior: 'instant'});
+  // Update badge
+  updateJerdBadgeInSearch(jerdData[realIdx].product.name, newVal);
+}
+
+function jerdSetQte(realIdx, val) {
+  jerdData[realIdx].qteComptee = val === '' ? '0' : String(Math.max(0, parseInt(val)||0));
+  updateDiffCount();
+  updateJerdBadgeInSearch(jerdData[realIdx].product.name, parseInt(jerdData[realIdx].qteComptee));
+}
+
+
+
+
+
+
 function resetJerd() {
   if(!confirm('Réinitialiser toutes les quantités comptées ?')) return;
-  jerdData.forEach(i => i.qteComptee = '');
-  document.getElementById('jerd-search').value = '';
-  document.getElementById('jerd-cat').value = '';
-  document.getElementById('jerd-filter-diff').value = '';
+  jerdData = [];
+  jerdFiltered = [];
+  document.getElementById('jerd-catalogue-search').value = '';
+  document.getElementById('jerd-catalogue-results').style.display = 'none';
   document.getElementById('jerd-diff-count').textContent = '';
-  jerdFiltered = [...jerdData];
+  document.getElementById('jerd-total-count').textContent = '';
   renderJerd();
+}
+
+function updateJerdQte(realIdx, val) {
+  if(jerdData[realIdx]) {
+    jerdData[realIdx].qteComptee = val === '' ? '' : val;
+    updateDiffCount();
+  }
 }
 
 async function validerJerd() {
@@ -3642,7 +4130,6 @@ async function validerJerd() {
   let ok = 0, erreurs = 0;
   const ref = 'INV-' + new Date().toISOString().split('T')[0];
 
-  // Récupérer userId une seule fois
   const { data: { user } } = await db.auth.getUser();
   const userId = user?.id;
   if(!userId) { toast('❌ Session expirée — reconnectez-vous', 'error'); return; }
@@ -3653,9 +4140,17 @@ async function validerJerd() {
     const diff = newStock - p.stock;
 
     try {
+      // Convertir expiry MM/YYYY → YYYY-MM-01
+      const toISO = (exp) => {
+        if(!exp) return null;
+        if(exp.includes('/')) {
+          const [mm, yyyy] = exp.split('/');
+          return (yyyy && yyyy.length===4) ? `${yyyy}-${mm.padStart(2,'0')}-01` : null;
+        }
+        return exp;
+      };
+
       if(p.isNew || !p.id) {
-        // Nouveau produit — créer dans products
-        // Générer un ID texte unique
         const newId = 'P' + Date.now() + Math.floor(Math.random()*1000);
         const {data: newProd, error} = await db.from('products').insert({
           id: newId,
@@ -3664,21 +4159,24 @@ async function validerJerd() {
           pph: p.pph || 0,
           ppv: p.ppv || 0,
           stock: newStock,
+          expiry: toISO(p.expiry),
           user_id: userId
         }).select().single();
         if(error) { console.error('Insert error:', error); erreurs++; continue; }
         await logMouvement(newProd.id, p.name, 'ajustement', 0, newStock, ref, 'Inventaire — nouveau produit');
         p.id = newProd.id;
         p.isNew = false;
-        // Ajouter aux produits locaux
         allProducts.push({...p, id: newProd.id, stock: newStock});
       } else {
-        const { error } = await db.from('products').update({ stock: newStock }).eq('id', p.id).eq('user_id', userId);
+        const updates = { stock: newStock };
+        if(p.pph) updates.pph = p.pph;
+        if(p.ppv) updates.ppv = p.ppv;
+        if(p.expiry) updates.expiry = toISO(p.expiry);
+        const {error} = await db.from('products').update(updates).eq('id', p.id).eq('user_id', userId);
         if(error) { console.error('Update error:', error); erreurs++; continue; }
         await logMouvement(p.id, p.name, 'ajustement', p.stock, diff, ref, `Inventaire — compté: ${newStock}`);
-        // Mettre à jour localement
         const local = allProducts.find(pr => pr.id === p.id);
-        if(local) local.stock = newStock;
+        if(local) { local.stock = newStock; local.pph = p.pph; local.ppv = p.ppv; }
       }
       p.stock = newStock;
       item.qteComptee = '';
@@ -3690,10 +4188,10 @@ async function validerJerd() {
   }
 
   if(ok > 0) toast(`✅ ${ok} produit(s) mis à jour`);
-  if(erreurs > 0) toast(`⚠️ ${erreurs} erreur(s) — vérifiez la console`, 'error');
+  if(erreurs > 0) toast(`⚠️ ${erreurs} erreur(s)`, 'error');
 
-  document.getElementById('jerd-diff-count').textContent = '';
-  filterJerd(document.getElementById('jerd-search').value);
+  updateDiffCount();
+  renderJerd();
 }
 
 // =====================
@@ -4234,6 +4732,61 @@ checkSession();
       <div style="display:flex;gap:0.75rem;margin-top:0.5rem">
         <button onclick="document.getElementById('modal-add-user').classList.remove('show')" style="flex:1;padding:0.65rem;border-radius:8px;border:1px solid #e2e8f0;background:white;font-size:0.9rem;font-weight:600;cursor:pointer;color:#64748b">Annuler</button>
         <button onclick="saveUser()" id="save-user-btn" style="flex:2;padding:0.65rem;border-radius:8px;border:none;background:#0f766e;color:white;font-size:0.95rem;font-weight:700;cursor:pointer">✅ Enregistrer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PÉRIMÉS -->
+<div class="modal-overlay" id="modal-perimes">
+  <div style="background:white;border-radius:20px;padding:1.75rem;width:600px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 25px 70px rgba(0,0,0,0.25)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div>
+        <h3 style="font-size:1.05rem;font-weight:700;color:#dc2626">🗑 Produits périmés</h3>
+        <span id="perimes-count" style="font-size:0.8rem;color:#94a3b8"></span>
+      </div>
+      <button onclick="document.getElementById('modal-perimes').classList.remove('show')"
+        style="background:#f1f5f9;border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1.1rem;color:#64748b">✕</button>
+    </div>
+    <table style="width:100%;border-collapse:collapse">
+      <thead><tr style="border-bottom:2px solid #f1f5f9">
+        <th style="text-align:left;padding:0.5rem;font-size:0.78rem;color:#64748b">Produit</th>
+        <th style="text-align:center;padding:0.5rem;font-size:0.78rem;color:#64748b">Péremption</th>
+        <th style="text-align:center;padding:0.5rem;font-size:0.78rem;color:#64748b">Stock</th>
+        <th style="text-align:center;padding:0.5rem;font-size:0.78rem;color:#64748b">Action</th>
+      </tr></thead>
+      <tbody id="perimes-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL RETOUR SUR VENTE -->
+<div class="modal-overlay" id="retour-modal">
+  <div style="background:white;border-radius:20px;padding:1.75rem;width:380px;max-width:95vw;box-shadow:0 25px 70px rgba(0,0,0,0.25)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <h3 style="font-size:1.05rem;font-weight:700;color:#854d0e">↩ Retour sur vente</h3>
+      <button onclick="document.getElementById('retour-modal').classList.remove('show')"
+        style="background:#f1f5f9;border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1.1rem;color:#64748b">✕</button>
+    </div>
+    <div style="background:#fef9c3;border-radius:10px;padding:0.85rem;margin-bottom:1rem">
+      <div style="font-size:0.88rem;font-weight:600;color:#0f172a" id="retour-product-name"></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:1rem">
+      <div>
+        <label style="font-size:0.75rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Quantité à retourner</label>
+        <input type="number" id="retour-qty" min="1" value="1"
+          style="width:100%;padding:0.65rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:1rem;text-align:center;font-weight:700;outline:none;box-sizing:border-box">
+      </div>
+      <div>
+        <label style="font-size:0.75rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.35rem">Prix unitaire remboursé</label>
+        <input type="number" id="retour-prix" min="0" step="0.01"
+          style="width:100%;padding:0.65rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:1rem;text-align:center;font-weight:700;outline:none;box-sizing:border-box">
+      </div>
+      <div style="display:flex;gap:0.75rem">
+        <button onclick="document.getElementById('retour-modal').classList.remove('show')"
+          style="flex:1;padding:0.65rem;border-radius:8px;border:1px solid #e2e8f0;background:white;font-size:0.9rem;font-weight:600;cursor:pointer;color:#64748b">Annuler</button>
+        <button onclick="confirmerRetour()"
+          style="flex:2;padding:0.65rem;border-radius:8px;border:none;background:#d97706;color:white;font-size:0.95rem;font-weight:700;cursor:pointer">↩ Confirmer le retour</button>
       </div>
     </div>
   </div>
