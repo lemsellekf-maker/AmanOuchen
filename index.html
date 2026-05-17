@@ -533,6 +533,15 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
           <div style="font-size:0.85rem;font-weight:700;color:#dc2626">⚠️ Montant insuffisant</div>
           <div style="font-size:0.8rem;color:#ef4444;margin-top:2px" id="pay-manque-display"></div>
         </div>
+        <!-- CREDIT CLIENT -->
+        <div id="pay-credit-box" style="background:#fef9c3;border:2px solid #fde047;border-radius:12px;padding:1rem;margin-bottom:1.25rem;display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem">
+            <div style="font-size:0.85rem;font-weight:700;color:#854d0e">📋 Crédit client — montant restant</div>
+            <div style="font-size:1rem;font-weight:800;color:#dc2626" id="pay-credit-amount">0.00 MAD</div>
+          </div>
+          <div style="font-size:0.75rem;color:#92400e;margin-bottom:0.6rem">Choisir le client à créditer :</div>
+          <select id="pay-client-select" style="width:100%;padding:0.55rem 0.75rem;border:1.5px solid #fde047;border-radius:8px;font-size:0.85rem;outline:none;background:white;color:#1a202c"><option value="">— Sélectionner un client —</option></select>
+        </div>
         <!-- Boutons rapides -->
         <div style="display:flex;gap:0.5rem;margin-bottom:1rem;flex-wrap:wrap" id="quick-amounts"></div>
         <!-- Actions -->
@@ -734,7 +743,7 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
         </div>
         <div style="overflow-x:auto">
           <table>
-            <thead><tr><th>Nom</th><th>Téléphone</th><th>Email</th><th>Crédit</th><th>Avoir</th><th>Solde</th></tr></thead>
+            <thead><tr><th>Nom</th><th>Téléphone</th><th>Email</th><th id="th-credit" onclick="sortClientsByCredit()" style="cursor:pointer;user-select:none;white-space:nowrap">Crédit <span id="credit-sort-icon">↕</span></th><th>Avoir</th><th>Solde</th></tr></thead>
             <tbody id="clients-tbody"></tbody>
           </table>
         </div>
@@ -1176,6 +1185,69 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
     <div class="modal-btns">
       <button class="modal-cancel" onclick="closeModal()">Annuler</button>
       <button class="modal-ok" onclick="confirmAdd()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETAIL CLIENT -->
+<div class="modal-overlay" id="modal-client-detail">
+  <div style="background:white;border-radius:20px;padding:1.75rem;width:560px;max-width:95vw;max-height:88vh;overflow-y:auto;box-shadow:0 25px 70px rgba(0,0,0,0.25)">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem">
+      <div>
+        <h3 id="cd-name" style="font-size:1.1rem;font-weight:800;color:#0f172a">Client</h3>
+        <div style="display:flex;gap:0.75rem;margin-top:0.3rem;flex-wrap:wrap">
+          <span id="cd-phone" style="font-size:0.8rem;color:#64748b"></span>
+          <span id="cd-email" style="font-size:0.8rem;color:#64748b"></span>
+        </div>
+      </div>
+      <button onclick="document.getElementById('modal-client-detail').classList.remove('show')"
+        style="background:#f1f5f9;border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1.1rem;color:#64748b">✕</button>
+    </div>
+
+    <!-- Solde Cards -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;margin-bottom:1.25rem">
+      <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:12px;padding:0.9rem;text-align:center">
+        <div style="font-size:0.7rem;font-weight:600;color:#dc2626;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.3rem">💳 Crédit dû</div>
+        <div id="cd-credit" style="font-size:1.3rem;font-weight:800;color:#dc2626">0.00 MAD</div>
+      </div>
+      <div style="background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:0.9rem;text-align:center">
+        <div style="font-size:0.7rem;font-weight:600;color:#16a34a;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.3rem">✅ Avoir</div>
+        <div id="cd-avoir" style="font-size:1.3rem;font-weight:800;color:#16a34a">0.00 MAD</div>
+      </div>
+      <div style="background:#f0f9ff;border:1.5px solid #bae6fd;border-radius:12px;padding:0.9rem;text-align:center">
+        <div style="font-size:0.7rem;font-weight:600;color:#0369a1;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.3rem">⚖️ Solde net</div>
+        <div id="cd-solde" style="font-size:1.3rem;font-weight:800;color:#0369a1">0.00 MAD</div>
+      </div>
+    </div>
+
+    <!-- Payer Crédit -->
+    <div id="cd-pay-section" style="background:#fffbeb;border:2px solid #fde047;border-radius:14px;padding:1.1rem;margin-bottom:1.25rem">
+      <div style="font-size:0.85rem;font-weight:700;color:#92400e;margin-bottom:0.75rem">💰 Payer le crédit</div>
+      <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:140px">
+          <label style="font-size:0.72rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.3rem">Montant reçu (MAD)</label>
+          <input type="number" id="cd-pay-amount" min="0" step="0.01" placeholder="0.00"
+            oninput="updateCdPayPreview()"
+            style="width:100%;padding:0.65rem 0.85rem;border:2px solid #fde047;border-radius:9px;font-size:1rem;font-weight:700;outline:none;box-sizing:border-box;background:white">
+        </div>
+        <div style="flex:1;min-width:140px">
+          <label style="font-size:0.72rem;font-weight:600;color:#64748b;display:block;margin-bottom:0.3rem">Reste après paiement</label>
+          <div id="cd-pay-reste" style="padding:0.65rem 0.85rem;border-radius:9px;font-size:1rem;font-weight:700;background:#fef2f2;color:#dc2626;min-height:38px">— MAD</div>
+        </div>
+      </div>
+      <button onclick="confirmerPayerCredit()"
+        style="margin-top:0.85rem;width:100%;padding:0.7rem;border-radius:9px;border:none;background:#d97706;color:white;font-size:0.95rem;font-weight:700;cursor:pointer">
+        ✅ Confirmer le paiement
+      </button>
+    </div>
+
+    <!-- Historique ventes -->
+    <div>
+      <div style="font-size:0.8rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.75rem">🧾 Historique des ventes</div>
+      <div id="cd-sales-list" style="display:flex;flex-direction:column;gap:0.5rem;max-height:280px;overflow-y:auto">
+        <div style="text-align:center;padding:1.5rem;color:#94a3b8;font-size:0.85rem">Chargement...</div>
+      </div>
     </div>
   </div>
 </div>
@@ -1783,7 +1855,10 @@ async function doRegister() {
 
 function onLoginSuccess(user) {
   currentUserId = user?.id;
-  // Sauvegarder session pour les users PIN
+  // Effacer l'ancienne session owner et sauvegarder la nouvelle
+  localStorage.removeItem('owner_session_token');
+  localStorage.removeItem('owner_session_refresh');
+  localStorage.removeItem('owner_user_id');
   db.auth.getSession().then(({data}) => {
     if(data?.session?.access_token) {
       localStorage.setItem('owner_session_token', data.session.access_token);
@@ -1935,6 +2010,12 @@ function showPage(id) {
 // API HELPER
 async function query(table, opts={}) {
   let q = db.from(table).select(opts.select||'*');
+  // Filtrer par user_id pour les tables multi-tenant
+  const multiTenantTables = ['sales','purchases','products','customers','stock_movements','settings'];
+  if(multiTenantTables.includes(table)) {
+    const uid = currentUserId || localStorage.getItem('owner_user_id');
+    if(uid) q = q.eq('user_id', uid);
+  }
   if(opts.filter) opts.filter.forEach(f => { q = q[f[0]](...f.slice(1)); });
   if(opts.order) q = q.order(opts.order, {ascending: opts.asc !== false});
   if(opts.limit) q = q.limit(opts.limit);
@@ -2068,6 +2149,10 @@ let barcodeBuffer = '', barcodeTimer = null;
 async function initCaisse() {
   if(allProducts.length === 0) {
     allProducts = await fetchAllProducts();
+  }
+  // Preload clients pour le modal paiement crédit
+  if(!allClients.length) {
+    await loadClients();
   }
   renderProdList(allProducts.slice(0,100));
   document.getElementById('barcode-in').focus();
@@ -2292,6 +2377,11 @@ function openPaymentModal() {
   document.getElementById('pay-monnaie-box').style.display = 'none';
   document.getElementById('pay-exact-box').style.display = 'none';
   document.getElementById('pay-insuffisant-box').style.display = 'none';
+  document.getElementById('pay-credit-box').style.display = 'none';
+  // Populate clients dropdown
+  const sel = document.getElementById('pay-client-select');
+  sel.innerHTML = '<option value="">— Sélectionner un client —</option>' +
+    (allClients||[]).map(c=>`<option value="${c.id}">${c.name}${c.phone?' — '+c.phone:''}</option>`).join('');
   // Boutons montants rapides fixes
   const fixedAmounts = [20, 50, 100, 200];
   document.getElementById('quick-amounts').innerHTML = fixedAmounts.map(a =>
@@ -2313,6 +2403,7 @@ function calcMonnaie() {
   document.getElementById('pay-monnaie-box').style.display = 'none';
   document.getElementById('pay-exact-box').style.display = 'none';
   document.getElementById('pay-insuffisant-box').style.display = 'none';
+  document.getElementById('pay-credit-box').style.display = 'none';
   if(received <= 0) return;
   if(Math.abs(monnaie) < 0.01) {
     document.getElementById('pay-exact-box').style.display = 'block';
@@ -2320,8 +2411,10 @@ function calcMonnaie() {
     document.getElementById('pay-monnaie-display').textContent = monnaie.toFixed(2)+' MAD';
     document.getElementById('pay-monnaie-box').style.display = 'block';
   } else {
-    document.getElementById('pay-manque-display').textContent = 'Manque: '+(Math.abs(monnaie)).toFixed(2)+' MAD';
-    document.getElementById('pay-insuffisant-box').style.display = 'block';
+    // Client 3ta a9al mn total → credit matlub
+    const ba9i = Math.abs(monnaie);
+    document.getElementById('pay-credit-amount').textContent = ba9i.toFixed(2)+' MAD';
+    document.getElementById('pay-credit-box').style.display = 'block';
   }
 }
 
@@ -2332,9 +2425,17 @@ function closePaymentModal() {
 async function confirmPaymentAndSave() {
   const total = cart.reduce((s,i)=>s+itemTotal(i),0);
   const received = parseFloat(document.getElementById('pay-received').value)||0;
-  if(received < total - 0.01) { toast('Montant insuffisant!','error'); return; }
-  closePaymentModal();
-  await validateSale();
+  const ba9i = total - received;
+  if(ba9i > 0.01) {
+    // Kayn ba9i → khassna client
+    const clientId = document.getElementById('pay-client-select').value;
+    if(!clientId) { toast('Khtar client li ghadi ythsseb 3lih l crédit!','error'); return; }
+    closePaymentModal();
+    await validateSale(clientId, ba9i);
+  } else {
+    closePaymentModal();
+    await validateSale(null, 0);
+  }
 }
 
 // =====================
@@ -2410,7 +2511,7 @@ async function confirmerRetour() {
   toast(`✅ Retour enregistré — ${qtyRetour} × ${item.name.substring(0,25)} remis en stock`);
 }
 
-async function validateSale() {
+async function validateSale(clientId=null, creditAmount=0) {
   if(!cart.length) { toast('Panier vide!','error'); return; }
   const total = cart.reduce((s,i)=>s+itemTotal(i),0);
   const discount = cart.reduce((s,i)=>s+((i.prix||i.ppv)*i.qty*(i.remise||0)/100),0);
@@ -2422,11 +2523,21 @@ async function validateSale() {
     localStorage.getItem('owner_user_id');
   if(!saleUserId) { toast('Session expirée — reconnectez-vous','error'); return; }
 
-  const {data:sale, error:sErr} = await db.from('sales').insert({
-    reference: ref, total, discount, status:'completed',
+  const saleStatus = (clientId && creditAmount > 0.01) ? 'en_attente' : 'completed';
+  const clientObj = clientId ? (allClients||[]).find(c=>c.id===clientId) : null;
+  const saleData = {
+    reference: ref, total, discount, status: saleStatus,
+    paid_amount: creditAmount > 0.01 ? (total - creditAmount) : total,
+    credit_amount: creditAmount > 0.01 ? creditAmount : 0,
     created_at: new Date().toISOString(),
     user_id: saleUserId
-  }).select().single();
+  };
+  if(clientId) {
+    saleData.customer_id = clientId;
+    if(clientObj) saleData.customer_name = clientObj.name;
+  }
+
+  const {data:sale, error:sErr} = await db.from('sales').insert(saleData).select().single();
   
   if(sErr) { toast('Erreur lors de la vente!','error'); console.error(sErr); return; }
   
@@ -2473,7 +2584,21 @@ async function validateSale() {
     }
   }
   
-  toast(`✅ Vente ${ref} — ${total.toFixed(2)} MAD`);
+  // Si ba9i → ajouter crédit sur le client
+  if(clientId && creditAmount > 0.01) {
+    const client = (allClients||[]).find(c=>c.id===clientId);
+    if(client) {
+      const newCredit = (client.credit||0) + creditAmount;
+      await db.from('customers').update({credit: newCredit}).eq('id', clientId);
+      client.credit = newCredit;
+      const clientName = client.name;
+      toast(`✅ Vente ${ref} — ${total.toFixed(2)} MAD | Crédit ${creditAmount.toFixed(2)} MAD → ${clientName}`,'info');
+    } else {
+      toast(`✅ Vente ${ref} — ${total.toFixed(2)} MAD`);
+    }
+  } else {
+    toast(`✅ Vente ${ref} — ${total.toFixed(2)} MAD`);
+  }
   cart=[]; renderCart();
 }
 
@@ -2500,7 +2625,9 @@ async function loadVentes() {
   let allData = [];
   let offset = 0;
   while(true) {
+    const saleUid = currentUserId || localStorage.getItem('owner_user_id');
     let q = db.from('sales').select('*')
+      .eq('user_id', saleUid)
       .order('created_at', {ascending: false})
       .range(offset, offset + PAGE_SIZE - 1);
     if(from) q = q.gte('created_at', from + ' 00:00:00');
@@ -2579,15 +2706,27 @@ function renderVentes() {
     const dt = new Date(v.created_at);
     const dateStr = dt.toLocaleDateString('fr-MA');
     const timeStr = dt.toLocaleTimeString('fr-MA',{hour:'2-digit',minute:'2-digit'});
+    const isCredit = v.status === 'en_attente' && v.credit_amount > 0;
+    const isRetour = v.status === 'retour';
+    const statusBadge = isRetour
+      ? `<span class="badge badge-red">Retour</span>`
+      : isCredit
+        ? `<span class="badge badge-yellow">En attente</span>`
+        : `<span class="badge badge-green">Complété</span>`;
+    const totalDisplay = isCredit
+      ? `<div style="font-weight:600">${v.total?.toFixed(2)} MAD</div>
+         <div style="font-size:0.72rem;color:#16a34a">✅ Payé: ${(v.paid_amount||0).toFixed(2)} MAD</div>
+         <div style="font-size:0.72rem;color:#dc2626">📋 Crédit: ${(v.credit_amount||0).toFixed(2)} MAD</div>`
+      : `<span style="font-weight:600">${v.total?.toFixed(2)} MAD</span>`;
     return `<tr>
       <td style="font-weight:600;color:#0f766e">${v.reference||'—'}</td>
-      <td>${v.customer_name||'—'}</td>
+      <td>${v.customer_name||v.customer_id||'—'}</td>
       <td>${dateStr}</td>
       <td style="color:#64748b">${timeStr}</td>
       <td>—</td>
       <td style="color:#d97706">${(v.discount||0).toFixed(2)} MAD</td>
-      <td style="font-weight:600">${v.total?.toFixed(2)} MAD</td>
-      <td><span class="badge badge-green">Complété</span></td>
+      <td>${totalDisplay}</td>
+      <td>${statusBadge}</td>
       <td style="display:flex;gap:0.3rem">
         <button class="btn btn-outline btn-sm" onclick="viewVenteDetail('${v.id}','${v.reference||''}')">🧾</button>
         <button class="btn btn-danger btn-sm" onclick="deleteVente('${v.id}','${v.reference||''}')">🗑</button>
@@ -2679,7 +2818,8 @@ async function loadAchats() {
   const PAGE_SIZE = 1000;
   let allData = [], offset = 0;
   while(true) {
-    let q = db.from('purchases').select('*, purchase_items(count)').order('created_at',{ascending:false}).range(offset, offset+PAGE_SIZE-1);
+    const purchUid = currentUserId || localStorage.getItem('owner_user_id');
+    let q = db.from('purchases').select('*, purchase_items(count)').eq('user_id', purchUid).order('created_at',{ascending:false}).range(offset, offset+PAGE_SIZE-1);
     if(from) q = q.gte('created_at', from);
     if(to)   q = q.lte('created_at', to+' 23:59:59');
     const {data} = await q;
@@ -3112,7 +3252,8 @@ async function loadClients() {
   const PAGE_SIZE = 1000;
   let allData = [], offset = 0;
   while(true) {
-    const {data} = await db.from('customers').select('*').order('name').range(offset, offset+PAGE_SIZE-1);
+    const custUid = currentUserId || localStorage.getItem('owner_user_id');
+    const {data} = await db.from('customers').select('*').eq('user_id', custUid).order('name').range(offset, offset+PAGE_SIZE-1);
     if(!data || !data.length) break;
     allData = allData.concat(data);
     if(data.length < PAGE_SIZE) break;
@@ -3127,27 +3268,187 @@ function filterClients() {
   pages.c=1; renderClients();
 }
 
+let clientSortDir = null; // null | 'asc' | 'desc'
+function sortClientsByCredit() {
+  if(clientSortDir === 'desc') {
+    clientSortDir = 'asc';
+    filteredClients.sort((a,b)=>(a.credit||0)-(b.credit||0));
+  } else {
+    clientSortDir = 'desc';
+    filteredClients.sort((a,b)=>(b.credit||0)-(a.credit||0));
+  }
+  const icon = document.getElementById('credit-sort-icon');
+  if(icon) icon.textContent = clientSortDir === 'asc' ? '↑' : '↓';
+  pages.c=1; renderClients();
+}
+
 function renderClients() {
   const start=(pages.c-1)*PER_PAGE, slice=filteredClients.slice(start,start+PER_PAGE);
-  document.getElementById('clients-tbody').innerHTML = slice.map(c => `<tr>
+  document.getElementById('clients-tbody').innerHTML = slice.map(c => `<tr onclick="openClientDetail('${c.id}')" style="cursor:pointer">
     <td style="font-weight:600;color:#1a202c">${c.name}</td>
     <td>${c.phone||'—'}</td>
     <td>${c.email||'—'}</td>
-    <td style="color:#dc2626">${c.credit?.toFixed(2)||0} MAD</td>
-    <td style="color:#16a34a">${c.avoir?.toFixed(2)||0} MAD</td>
-    <td style="font-weight:700;color:#0f766e">${(c.credit-c.avoir)?.toFixed(2)||0} MAD</td>
+    <td style="color:${(c.credit||0)>0?'#dc2626':'#16a34a'};font-weight:600">${(c.credit||0).toFixed(2)} MAD</td>
+    <td style="color:#16a34a">${(c.avoir||0).toFixed(2)} MAD</td>
+    <td style="font-weight:700;color:${((c.credit||0)-(c.avoir||0))>0?'#dc2626':'#0f766e'}">${((c.credit||0)-(c.avoir||0)).toFixed(2)} MAD</td>
   </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8">Aucun client</td></tr>';
   document.getElementById('c-info').textContent = `${filteredClients.length} clients`;
+}
+
+let currentDetailClient = null;
+
+async function openClientDetail(clientId) {
+  const c = allClients.find(x => x.id === clientId);
+  if(!c) return;
+  currentDetailClient = c;
+
+  document.getElementById('cd-name').textContent = c.name;
+  document.getElementById('cd-phone').textContent = c.phone ? '📞 '+c.phone : '';
+  document.getElementById('cd-email').textContent = c.email ? '✉️ '+c.email : '';
+
+  const credit = c.credit || 0;
+  const avoir  = c.avoir  || 0;
+  const solde  = credit - avoir;
+
+  document.getElementById('cd-credit').textContent = credit.toFixed(2)+' MAD';
+  document.getElementById('cd-avoir').textContent  = avoir.toFixed(2)+' MAD';
+  document.getElementById('cd-solde').textContent  = solde.toFixed(2)+' MAD';
+  document.getElementById('cd-solde').style.color  = solde > 0 ? '#dc2626' : '#16a34a';
+  document.getElementById('cd-pay-section').style.display = credit > 0 ? 'block' : 'none';
+  document.getElementById('cd-pay-amount').value = '';
+  document.getElementById('cd-pay-reste').textContent = '— MAD';
+
+  document.getElementById('modal-client-detail').classList.add('show');
+
+  // Charger historique ventes du client avec les produits
+  const uid = currentUserId || localStorage.getItem('owner_user_id');
+  const {data: sales} = await db.from('sales')
+    .select('id,reference,total,paid_amount,credit_amount,status,created_at')
+    .eq('customer_id', clientId)
+    .eq('user_id', uid)
+    .order('created_at', {ascending: false})
+    .limit(30);
+
+  const container = document.getElementById('cd-sales-list');
+  if(!sales || !sales.length) {
+    container.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#94a3b8;font-size:0.85rem">Aucune vente</div>';
+    return;
+  }
+
+  // Fetch sale_items pour toutes les ventes d'un coup
+  const saleIds = sales.map(s=>s.id);
+  const {data: allItems} = await db.from('sale_items')
+    .select('sale_id,product_name,quantity,unit_price,total')
+    .in('sale_id', saleIds);
+
+  const itemsBySale = {};
+  (allItems||[]).forEach(item => {
+    if(!itemsBySale[item.sale_id]) itemsBySale[item.sale_id] = [];
+    itemsBySale[item.sale_id].push(item);
+  });
+
+  container.innerHTML = sales.map(s => {
+    const paid   = s.paid_amount  || 0;
+    const credit = s.credit_amount|| 0;
+    const date   = new Date(s.created_at).toLocaleDateString('fr-MA',{day:'2-digit',month:'2-digit',year:'numeric'});
+    const time   = new Date(s.created_at).toLocaleTimeString('fr-MA',{hour:'2-digit',minute:'2-digit'});
+    const statusColor = s.status === 'completed' ? '#16a34a' : s.status === 'retour' ? '#dc2626' : '#d97706';
+    const statusLabel = s.status === 'completed' ? 'Payé' : s.status === 'retour' ? 'Retour' : 'Crédit';
+    const items = itemsBySale[s.id] || [];
+    const produits = items.map(i =>
+      `<div style="display:flex;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid #f1f5f9">
+        <span style="font-size:0.78rem;color:#374151">💊 ${i.product_name||'—'} <span style="color:#94a3b8">x${i.quantity}</span></span>
+        <span style="font-size:0.78rem;font-weight:600;color:#0f766e">${(i.total||0).toFixed(2)} MAD</span>
+      </div>`
+    ).join('');
+    return `<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:0.4rem">
+      <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem">
+        <div style="flex:1;min-width:0">
+          <div style="font-size:0.82rem;font-weight:700;color:#0f172a">${s.reference}</div>
+          <div style="font-size:0.72rem;color:#94a3b8">${date} à ${time}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:0.88rem;font-weight:700;color:#0f172a">${(s.total||0).toFixed(2)} MAD</div>
+          ${paid > 0 && credit > 0 ? `<div style="font-size:0.72rem;color:#16a34a">✅ ${paid.toFixed(2)} / <span style="color:#dc2626">📋 ${credit.toFixed(2)}</span></div>` : ''}
+        </div>
+        <span style="background:${statusColor}22;color:${statusColor};font-size:0.7rem;font-weight:700;padding:2px 8px;border-radius:20px;white-space:nowrap">${statusLabel}</span>
+      </div>
+      ${items.length ? `<div style="padding:0.4rem 1rem 0.6rem;background:white;border-top:1px solid #f1f5f9">${produits}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function updateCdPayPreview() {
+  if(!currentDetailClient) return;
+  const credit = currentDetailClient.credit || 0;
+  const paid   = parseFloat(document.getElementById('cd-pay-amount').value) || 0;
+  const reste  = Math.max(0, credit - paid);
+  const el = document.getElementById('cd-pay-reste');
+  el.textContent = reste.toFixed(2)+' MAD';
+  el.style.color = reste > 0 ? '#dc2626' : '#16a34a';
+  el.style.background = reste > 0 ? '#fef2f2' : '#f0fdf4';
+}
+
+async function confirmerPayerCredit() {
+  if(!currentDetailClient) return;
+  const c = currentDetailClient;
+  const paid = parseFloat(document.getElementById('cd-pay-amount').value) || 0;
+  if(paid <= 0) { toast('Entrez un montant valide!','error'); return; }
+  if(paid > (c.credit||0)) { toast('Montant supérieur au crédit!','error'); return; }
+
+  const newCredit = Math.max(0, (c.credit||0) - paid);
+  const uid = currentUserId || localStorage.getItem('owner_user_id');
+
+  // 1. Mettre à jour le crédit client
+  const {error} = await db.from('customers').update({credit: newCredit}).eq('id', c.id);
+  if(error) { toast('Erreur!','error'); return; }
+
+  // 2. Enregistrer le paiement comme transaction dans sales (visible dans Ventes)
+  const ref = 'PAY-' + Date.now();
+  await db.from('sales').insert({
+    reference: ref,
+    customer_id: c.id,
+    customer_name: c.name,
+    total: paid,
+    paid_amount: paid,
+    credit_amount: 0,
+    discount: 0,
+    status: 'completed',
+    created_at: new Date().toISOString(),
+    user_id: uid
+  });
+
+  // 3. Mettre à jour cache local
+  c.credit = newCredit;
+  const cached = allClients.find(x=>x.id===c.id);
+  if(cached) cached.credit = newCredit;
+
+  // 4. Refresh affichage modal
+  document.getElementById('cd-credit').textContent = newCredit.toFixed(2)+' MAD';
+  const solde = newCredit - (c.avoir||0);
+  document.getElementById('cd-solde').textContent = solde.toFixed(2)+' MAD';
+  document.getElementById('cd-solde').style.color = solde > 0 ? '#dc2626' : '#16a34a';
+  document.getElementById('cd-pay-section').style.display = newCredit > 0 ? 'block' : 'none';
+  document.getElementById('cd-pay-amount').value = '';
+  document.getElementById('cd-pay-reste').textContent = '— MAD';
+
+  // 5. Reload historique dans le modal
+  await openClientDetail(c.id);
+
+  renderClients();
+  toast(`✅ ${paid.toFixed(2)} MAD reçu — Reste: ${newCredit.toFixed(2)} MAD`,'success');
 }
 
 function showAddClient() { document.getElementById('modal-client').classList.add('show'); }
 async function saveClient() {
   const name = document.getElementById('cl-name').value.trim();
   if(!name) { toast('Nom requis!','error'); return; }
+  const custUid = currentUserId || localStorage.getItem('owner_user_id');
   const {error} = await db.from('customers').insert({
     name, phone:document.getElementById('cl-phone').value||null,
     email:document.getElementById('cl-email').value||null,
-    credit:parseFloat(document.getElementById('cl-credit').value)||0
+    credit:parseFloat(document.getElementById('cl-credit').value)||0,
+    user_id: custUid
   });
   if(error) { toast('Erreur!','error'); return; }
   toast('✅ Client ajouté!');
@@ -3159,7 +3460,8 @@ async function saveClient() {
 async function fetchAllProducts() {
   let all = [], from = 0, batch = 1000;
   while(true) {
-    const {data} = await db.from('products').select('*').order('name').range(from, from+batch-1);
+    const prodUid = currentUserId || localStorage.getItem('owner_user_id');
+    const {data} = await db.from('products').select('*').eq('user_id', prodUid).order('name').range(from, from+batch-1);
     if(!data || data.length===0) break;
     all = all.concat(data);
     if(data.length < batch) break;
@@ -3478,7 +3780,8 @@ async function fetchAllSales(from, to) {
   let allData = [];
   let offset = 0;
   while(true) {
-    let q = db.from('sales').select('*').order('created_at', {ascending: true}).range(offset, offset + PAGE_SIZE - 1);
+    const rptUid = currentUserId || localStorage.getItem('owner_user_id');
+    let q = db.from('sales').select('*').eq('user_id', rptUid).order('created_at', {ascending: true}).range(offset, offset + PAGE_SIZE - 1);
     if(from) q = q.gte('created_at', from + ' 00:00:00');
     if(to)   q = q.lte('created_at', to   + ' 23:59:59');
     const {data, error} = await q;
@@ -3495,7 +3798,8 @@ async function fetchAllSaleIds(from, to) {
   let allIds = [];
   let offset = 0;
   while(true) {
-    let q = db.from('sales').select('id').range(offset, offset + PAGE_SIZE - 1);
+    const rptUid2 = currentUserId || localStorage.getItem('owner_user_id');
+    let q = db.from('sales').select('id').eq('user_id', rptUid2).range(offset, offset + PAGE_SIZE - 1);
     if(from) q = q.gte('created_at', from + ' 00:00:00');
     if(to)   q = q.lte('created_at', to   + ' 23:59:59');
     const {data, error} = await q;
