@@ -2551,7 +2551,9 @@ async function searchBLProduct(q) {
     if(localMatches.length) {
       html += `<div style="padding:0.35rem 0.85rem;font-size:0.7rem;font-weight:700;color:#0f766e;background:#f0fdf9;text-transform:uppercase">✅ Dans votre stock</div>`;
       html += localMatches.map(p => {
-        const stockBadge = p.stock<=0
+        const stockBadge = p.stock<0
+          ? `<span style="font-size:0.7rem;background:#fee2e2;color:#991b1b;border-radius:10px;padding:1px 7px">${p.stock}</span>`
+          : p.stock===0
           ? `<span style="font-size:0.7rem;background:#fee2e2;color:#991b1b;border-radius:10px;padding:1px 7px">0</span>`
           : `<span style="font-size:0.7rem;background:#dcfce7;color:#166534;border-radius:10px;padding:1px 7px">${p.stock}</span>`;
         return `<div onclick='addBLItem(${JSON.stringify(p).replace(/'/g,"&#39;")})' style="padding:0.55rem 1rem;cursor:pointer;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;font-size:0.83rem" onmouseover="this.style.background='#f0fdf9'" onmouseout="this.style.background='white'">
