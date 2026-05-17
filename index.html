@@ -893,6 +893,19 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
       <div class="table-card" style="max-width:600px;margin:0 auto">
         <div class="table-header"><h2>⚙️ Paramètres de sécurité</h2></div>
         <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1.5rem">
+
+          <!-- CHANGER MOT DE PASSE -->
+          <div style="background:#f0fdf9;border-radius:10px;padding:1.25rem;border:1px solid #99f6e4">
+            <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.5rem">🔑 Changer mot de passe</h3>
+            <p style="font-size:0.82rem;color:#64748b;margin-bottom:0.75rem">Modifiez le mot de passe de votre compte pharmacien.</p>
+            <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap">
+              <input type="password" id="new-password" placeholder="Nouveau mot de passe" 
+                style="padding:0.6rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;width:200px;outline:none">
+              <input type="password" id="confirm-password" placeholder="Confirmer" 
+                style="padding:0.6rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.9rem;width:200px;outline:none">
+              <button class="btn btn-primary" onclick="changePassword()">Modifier</button>
+            </div>
+          </div>
           
           <div style="background:#f8fafc;border-radius:10px;padding:1.25rem">
             <h3 style="font-size:0.95rem;font-weight:600;margin-bottom:0.75rem">👑 Code Admin</h3>
@@ -1154,20 +1167,27 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
     <input type="hidden" id="ep-id">
     <div class="form-grid" style="margin-bottom:1rem">
       <div class="form-group">
-        <label>PPV (prix vente)</label>
-        <input id="ep-ppv" type="number" step="0.01" min="0">
+        <label style="display:flex;align-items:center;justify-content:space-between">
+          PPH (prix achat)
+          <span style="display:flex;align-items:center;gap:4px;font-size:0.75rem;font-weight:400;color:#0f766e">
+            <input type="checkbox" id="ep-auto" checked onchange="epCalcFromPPH()" style="width:13px;height:13px;cursor:pointer">
+            Auto ×1.5
+          </span>
+        </label>
+        <input id="ep-pph" type="number" step="0.01" min="0" oninput="epCalcFromPPH()">
       </div>
       <div class="form-group">
-        <label>PPH (prix achat)</label>
-        <input id="ep-pph" type="number" step="0.01" min="0">
+        <label>PPV (prix vente)</label>
+        <input id="ep-ppv" type="number" step="0.01" min="0" oninput="epCalcFromPPV()">
       </div>
       <div class="form-group">
         <label>Stock (quantité)</label>
-        <input id="ep-stock" type="number" min="0">
+        <input id="ep-stock" type="number">
       </div>
       <div class="form-group">
-        <label>Date péremption</label>
-        <input id="ep-expiry" type="date">
+        <label>Péremption (MM/AAAA)</label>
+        <input id="ep-expiry" type="text" placeholder="MM/AAAA" maxlength="7"
+          oninput="formatExpiryInput(this)" style="letter-spacing:1px">
       </div>
     </div>
     <div class="modal-btns">
@@ -1326,7 +1346,7 @@ function openNewProductModal(barcode='') {
 
 // Format expiry: auto-add / after 2 digits
 function formatExpiryInput(el) {
-  let val = el.value.replace(/\D/g,'');
+  let val = el.value.replace(/[^0-9]/g,'');
   if(val.length > 2) val = val.substring(0,2) + '/' + val.substring(2,6);
   // Validate month
   if(val.length >= 2) {
@@ -1341,8 +1361,16 @@ function formatExpiryInput(el) {
 function expiryToISO(val) {
   if(!val) return null;
   const parts = val.split('/');
-  if(parts.length === 2 && parts[1].length === 4) return parts[1] + '-' + parts[0];
-  return val;
+  if(parts.length === 2) {
+    let mm = parts[0].padStart(2,'0');
+    let yyyy = parts[1];
+    // Handle MM/YY format → MM/20YY
+    if(yyyy.length === 2) yyyy = '20' + yyyy;
+    if(yyyy.length === 4) return yyyy + '-' + mm + '-01';
+  }
+  // Already ISO format
+  if(val.match(/^\d{4}-\d{2}/)) return val;
+  return null;
 }
 
 // Convert YYYY-MM to MM/YYYY for display
@@ -1350,6 +1378,20 @@ function expiryFromISO(val) {
   if(!val) return '';
   if(val.includes('-') && val.length >= 7) return val.substring(5,7) + '/' + val.substring(0,4);
   return val;
+}
+
+function epCalcFromPPH() {
+  const auto = document.getElementById('ep-auto')?.checked;
+  if(!auto) return;
+  const pph = parseFloat(document.getElementById('ep-pph').value)||0;
+  document.getElementById('ep-ppv').value = (pph * 1.5).toFixed(2);
+}
+
+function epCalcFromPPV() {
+  const auto = document.getElementById('ep-auto')?.checked;
+  if(!auto) return;
+  const ppv = parseFloat(document.getElementById('ep-ppv').value)||0;
+  document.getElementById('ep-pph').value = (ppv / 1.5).toFixed(2);
 }
 
 function calcFromPPH() {
@@ -1579,9 +1621,9 @@ async function doUserLogin() {
   // Login réussi — charger les données du owner
   currentUser = user.role;
   currentPharmacyUser = user;
+  // Utiliser owner_id comme userId pour accéder aux données via RLS
+  currentUserId = user.owner_id;
 
-  // Se connecter avec le compte owner pour accéder aux données
-  // On utilise un mode "user session" sans auth Supabase
   document.getElementById('login-page').style.display = 'none';
   document.getElementById('app-container').style.display = 'block';
   applyRolePermissions(user.role);
@@ -2385,9 +2427,7 @@ function renderVentes() {
 }
 
 async function deleteVente(id, ref) {
-  const code = prompt('🔐 Code de sécurité requis:');
-  if(code === null) return;
-  if(code !== getSecCode()) { toast('Code incorrect!','error'); return; }
+
   if(!confirm(`Supprimer la vente ${ref} et remettre le stock ?`)) return;
   
   // Get sale items first to restore stock
@@ -2487,7 +2527,7 @@ function renderAchats() {
   document.getElementById('achats-tbody').innerHTML = slice.map(a => `<tr>
     <td style="font-weight:600;color:#0f766e">${a.reference||'—'}</td>
     <td>${a.supplier||'—'}</td>
-    <td>${a.created_at?.split('T')[0]||'—'}</td>
+    <td>${a.created_at ? (() => { const d = new Date(a.created_at); return d.toLocaleDateString('fr-MA') + ' ' + d.toLocaleTimeString('fr-MA',{hour:'2-digit',minute:'2-digit',timeZone:'Africa/Casablanca'}); })() : '—'}</td>
     <td>${a.purchase_items?.[0]?.count||'—'}</td>
     <td style="font-weight:600">${a.total?.toFixed(2)||0} MAD</td>
     <td style="display:flex;gap:0.4rem">
@@ -2544,7 +2584,14 @@ async function searchBLProduct(q) {
 
     // Combiner — produits locaux en premier
     const localIds = new Set(localMatches.map(p => p.name.toLowerCase()));
-    const catalogOnly = (catalogMatches || []).filter(m => !localIds.has(m.name.toLowerCase()));
+    // Deduplication catalogue
+    const seenCat = new Set();
+    const catalogOnly = (catalogMatches || []).filter(m => {
+      const key = m.name.toLowerCase();
+      if(localIds.has(key) || seenCat.has(key)) return false;
+      seenCat.add(key);
+      return true;
+    });
 
     let html = '';
 
@@ -2604,13 +2651,18 @@ function addBLItem(p) {
   if(existing) {
     existing.quantity++;
     existing.total = existing.quantity * existing.pph;
+    updateBLSearchBadge(p.name, existing.quantity);
   } else {
     const pphV = p.pph||0;
     const ppvV = (p.ppv && p.ppv>0) ? p.ppv : Math.round(pphV*1.5*100)/100;
     blItems.push({ product_id:p.id, product_name:p.name, pph:pphV, ppv:ppvV, quantity:1, total:pphV, expiry:'', autoCalc:true });
+    updateBLSearchBadge(p.name, 1);
   }
+  // Ne PAS fermer le résultat de recherche — juste update le cart
+  const scrollY = window.scrollY;
   renderBLItems();
-  updateBLSearchBadge(p.name, blItems.find(i=>i.product_id===p.id)?.quantity||1);
+  window.scrollTo({top: scrollY, behavior: 'instant'});
+  toast(`+1 → ${p.name.substring(0,25)}`);
 }
 
 function renderBLItems() {
@@ -2741,12 +2793,15 @@ function blFormatExpiry(i, input) {
 function updateBLSearchBadge(name, qty) {
   const res = document.getElementById('bl-search-results');
   if(!res) return;
-  res.querySelectorAll('div').forEach(row => {
-    const nameEl = row.querySelector('div:first-child div:first-child');
+  res.querySelectorAll('div[onclick]').forEach(row => {
+    const nameEl = row.querySelector('span:first-child');
     if(nameEl && nameEl.textContent.trim() === name) {
-      let badge = row.querySelector('.bl-qty-badge');
-      if(!badge) { badge = document.createElement('span'); badge.className='bl-qty-badge'; badge.style.cssText='font-size:0.78rem;font-weight:700;background:#dcfce7;color:#166534;border-radius:20px;padding:2px 10px'; row.querySelector('span:last-child')?.replaceWith(badge); }
-      badge.textContent = '✅ '+qty;
+      const stockSpan = row.querySelector('span:last-child span:first-child') || row.querySelector('span:last-child');
+      if(stockSpan) {
+        stockSpan.style.background = '#dcfce7';
+        stockSpan.style.color = '#166534';
+        stockSpan.textContent = '✅ ' + qty;
+      }
     }
   });
 }
@@ -2804,7 +2859,9 @@ async function saveBL() {
       if(exp.includes('/')) { const [mm,yyyy]=exp.split('/'); return (yyyy&&yyyy.length===4)?`${yyyy}-${mm.padStart(2,'0')}-01`:null; }
       return exp||null;
     };
-    const {data:purchase,error:pErr} = await db.from('purchases').insert({reference:ref,supplier:fournisseur,created_at:date,total,user_id:userId}).select().single();
+    // Use full datetime with current time
+    const blDateTime = date ? new Date(date + 'T12:00:00').toISOString().split('T')[0] + 'T' + new Date().toISOString().split('T')[1] : new Date().toISOString();
+    const {data:purchase,error:pErr} = await db.from('purchases').insert({reference:ref,supplier:fournisseur,created_at:blDateTime,total,user_id:userId}).select().single();
     if(pErr) { toast('Erreur: '+pErr.message,'error'); return; }
     await db.from('purchase_items').insert(blItems.map(i=>({purchase_id:purchase.id,product_id:i.product_id,product_name:i.product_name,quantity:i.quantity,unit_price:i.pph,total:i.pph*i.quantity,expiry:toISObL(i.expiry),user_id:userId})));
     for(const item of blItems) {
@@ -2935,7 +2992,13 @@ async function fetchAllProducts() {
     if(data.length < batch) break;
     from += batch;
   }
-  return all;
+  // Dedup par id uniquement (garder tous les produits distincts)
+  const seen = new Set();
+  return all.filter(p => {
+    if(seen.has(p.id)) return false;
+    seen.add(p.id);
+    return true;
+  });
 }
 
 async function loadProduits() {
@@ -2979,7 +3042,7 @@ function renderProduits() {
       <td>${expBadge}</td>
       <td style="display:flex;gap:0.3rem">
         <button class="btn btn-outline btn-sm" onclick='editProduct(${JSON.stringify(p).replace(/'/g,"&#39;")})'>✏️</button>
-        <button class="btn btn-sm" onclick='editProductStock("${p.id}","${p.name.replace(/"/g,"").substring(0,40)}",${p.stock||0})' style="background:#f0fdf9;color:#0f766e;border:1px solid #99f6e4">📦 Stock</button>
+        <button class="btn btn-sm" onclick='showProdInfo(${JSON.stringify(p).replace(/'/g,"&#39;")})' style="background:#f0f9ff;color:#0284c7;border:1px solid #7dd3fc;font-weight:700">ⓘ</button>
         <button class="btn btn-outline btn-sm" style="color:#0f766e" onclick="showProductHistorique('${p.id}','${p.name.replace(/'/g,'')}')">📜</button>
       </td>
     </tr>`;
@@ -2988,10 +3051,30 @@ function renderProduits() {
 }
 
 // EDIT PRODUCT
+function showProdInfo(p) {
+  document.getElementById('pi-name').textContent = p.name;
+  document.getElementById('pi-dci').value = p.dci||'';
+  document.getElementById('pi-classe').value = p.classe_therapeutique||'';
+  document.getElementById('pi-forme').value = p.forme_galenique||'';
+  document.getElementById('pi-id').value = p.id;
+  document.getElementById('modal-prod-info').classList.add('show');
+}
+
+async function saveProdInfo() {
+  const id = document.getElementById('pi-id').value;
+  const dci = document.getElementById('pi-dci').value.trim();
+  const classe = document.getElementById('pi-classe').value.trim();
+  const forme = document.getElementById('pi-forme').value.trim();
+  const {error} = await db.from('products').update({dci, classe_therapeutique:classe, forme_galenique:forme}).eq('id',id);
+  if(error) { toast('Erreur: '+error.message,'error'); return; }
+  const p = allProducts.find(x=>x.id===id);
+  if(p) { p.dci=dci; p.classe_therapeutique=classe; p.forme_galenique=forme; }
+  document.getElementById('modal-prod-info').classList.remove('show');
+  toast('✅ Informations mises à jour!');
+}
+
 async function editProductStock(prodId, prodName, currentStock) {
-  const code = prompt('🔐 Code de sécurité requis:');
-  if(code === null) return;
-  if(code !== getSecCode()) { toast('Code incorrect!','error'); return; }
+
   const newStock = prompt(`Modifier le stock de:\n${prodName}\n\nStock actuel: ${currentStock}\nNouveau stock:`, currentStock);
   if(newStock === null) return;
   const qty = parseInt(newStock);
@@ -3013,7 +3096,7 @@ function editProduct(p) {
   document.getElementById('ep-ppv').value = p.ppv||0;
   document.getElementById('ep-pph').value = p.pph||0;
   document.getElementById('ep-stock').value = p.stock||0;
-  document.getElementById('ep-expiry').value = p.expiry||'';
+  document.getElementById('ep-expiry').value = expiryFromISO(p.expiry)||'';
   document.getElementById('modal-edit-prod').classList.add('show');
 }
 async function saveEditProduct() {
@@ -3021,10 +3104,19 @@ async function saveEditProduct() {
   const ppv = parseFloat(document.getElementById('ep-ppv').value)||0;
   const pph = parseFloat(document.getElementById('ep-pph').value)||0;
   const stock = parseInt(document.getElementById('ep-stock').value)||0;
-  const expiry = document.getElementById('ep-expiry').value||null;
-  const {error} = await db.from('products').update({ppv,pph,stock,expiry}).eq('id',id);
-  if(error) { toast('Erreur!','error'); return; }
+  const expiry = expiryToISO(document.getElementById('ep-expiry').value)||null;
+
   const p = allProducts.find(x=>x.id===id);
+  const stockBefore = p?.stock || 0;
+
+  const {error} = await db.from('products').update({ppv,pph,stock,expiry}).eq('id',id);
+  if(error) { toast('Erreur: '+error.message,'error'); return; }
+
+  // Log si stock changé
+  if(stock !== stockBefore) {
+    await logMouvement(id, p?.name||'', 'ajustement', stockBefore, stock-stockBefore, '', `Mise à jour manuelle → ${stock}`);
+  }
+
   if(p) { p.ppv=ppv; p.pph=pph; p.stock=stock; p.expiry=expiry; }
   document.getElementById('modal-edit-prod').classList.remove('show');
   filterProduits();
@@ -3040,19 +3132,96 @@ async function showProductHistorique(prodId, prodName) {
   const sales = salesRes.data||[];
   const purchases = purchRes.data||[];
 
-  const events = [
-    ...sales.map(i=>({ type:'vente', date: i.sales?.created_at||'', ref: i.sales?.reference||'', qty: -i.quantity, prix: i.unit_price, label: `🛒 Vendu ×${i.quantity}` })),
-    ...purchases.map(i=>({ type:'achat', date: i.purchases?.created_at||'', ref: i.purchases?.reference||'', supplier: i.purchases?.supplier||'', qty: +i.quantity, prix: i.unit_price, label: `📦 Acheté ×${i.quantity}` }))
-  ].sort((a,b)=> new Date(b.date)-new Date(a.date));
+  // Fetch all stock movements (includes vente, bl, ajustement)
+  const {data: mouvements} = await db.from('stock_movements')
+    .select('*').eq('product_id', prodId)
+    .order('created_at',{ascending:false}).limit(100);
 
-  let html = `<style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #e2e8f0;padding:8px 12px;font-size:13px}th{background:#f8fafc;color:#64748b}.vente{color:#dc2626}.achat{color:#16a34a}</style>`;
+  // Combiner stock_movements + sales + purchases comme fallback
+  let events = [];
+
+  if(mouvements && mouvements.length > 0) {
+    events = mouvements.map(m => ({
+      type: m.type,
+      date: m.created_at||'',
+      ref: m.reference||'',
+      qty: m.qty_change,
+      stockAvant: m.qty_before,
+      stockApres: m.qty_after,
+      note: m.note||'',
+      label: m.type==='vente' ? `🛒 Vendu ×${Math.abs(m.qty_change)}`
+           : m.type==='retour' ? `↩ Retour ×${Math.abs(m.qty_change)}`
+           : m.type==='bl' ? `📦 Acheté ×${m.qty_change}`
+           : m.type==='ajustement' ? `✏️ Ajustement`
+           : m.type==='perime' ? `🗑 Périmé`
+           : `📋 ${m.type}`
+    }));
+  } else {
+    // Fallback: utiliser sales + purchases directement
+    const [salesRes2, purchRes2] = await Promise.all([
+      db.from('sale_items').select('*, sales(created_at,reference,status)').eq('product_id', prodId).order('id',{ascending:false}).limit(50),
+      db.from('purchase_items').select('*, purchases(created_at,reference,supplier)').eq('product_id', prodId).order('id',{ascending:false}).limit(50)
+    ]);
+    events = [
+      ...(salesRes2.data||[]).map(i=>({
+        type: i.sales?.status==='retour'?'retour':'vente',
+        date: i.sales?.created_at||'',
+        ref: i.sales?.reference||'',
+        qty: i.sales?.status==='retour' ? Math.abs(i.quantity) : -Math.abs(i.quantity),
+        stockAvant: null, stockApres: null, note: '',
+        label: i.sales?.status==='retour' ? `↩ Retour ×${Math.abs(i.quantity)}` : `🛒 Vendu ×${Math.abs(i.quantity)}`
+      })),
+      ...(purchRes2.data||[]).map(i=>({
+        type:'bl', date: i.purchases?.created_at||'', ref: i.purchases?.reference||'',
+        qty: i.quantity, stockAvant: null, stockApres: null,
+        note: i.purchases?.supplier||'',
+        label: `📦 Acheté ×${i.quantity}`
+      }))
+    ];
+  }
+
+  events.sort((a,b)=> new Date(b.date)-new Date(a.date));
+
+  // Calculer stock avant/après si non disponible
+  const currentStock = allProducts.find(p=>p.id===prodId)?.stock ?? 0;
+  let runningStock = currentStock;
+  // Recalculer en ordre chronologique (inverse)
+  const eventsChron = [...events].reverse();
+  const stockMap = new Map();
+  let s = currentStock;
+  for(const e of events) {
+    const after = s;
+    const before = s - e.qty;
+    if(e.stockApres === null || e.stockApres === undefined) {
+      stockMap.set(e, {before, after});
+    }
+    s = before;
+  }
+  events.forEach(e => {
+    if((e.stockAvant === null || e.stockAvant === undefined) && stockMap.has(e)) {
+      e.stockAvant = stockMap.get(e).before;
+      e.stockApres = stockMap.get(e).after;
+    }
+  });
+
+  let html = `<style>body{font-family:sans-serif;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #e2e8f0;padding:8px 12px;font-size:13px}th{background:#f8fafc;color:#64748b;font-weight:600}.vente{color:#dc2626}.achat{color:#16a34a}.ajust{color:#d97706}.retour{color:#7c3aed}</style>`;
   html += `<h2 style="margin-bottom:4px">📜 Historique: ${prodName}</h2>`;
   html += `<p style="color:#94a3b8;font-size:13px;margin-bottom:12px">${events.length} mouvements</p>`;
-  html += `<table><thead><tr><th>Date</th><th>Mouvement</th><th>Référence</th><th>Qtité</th><th>Prix unit.</th></tr></thead><tbody>`;
+  html += `<table><thead><tr><th>Date</th><th>Mouvement</th><th>Référence / Note</th><th>Qtité</th><th>Stock avant</th><th>Stock après</th></tr></thead><tbody>`;
   events.forEach(e => {
     const dt = e.date ? new Date(e.date).toLocaleString('fr-MA') : '—';
-    const cls = e.type==='vente'?'vente':'achat';
-    html += `<tr><td>${dt}</td><td class="${cls}">${e.label}</td><td>${e.ref}${e.supplier?' — '+e.supplier:''}</td><td class="${cls}" style="font-weight:600">${e.qty>0?'+':''}${e.qty}</td><td>${e.prix?.toFixed(2)||'—'} MAD</td></tr>`;
+    const cls = e.type==='vente'?'vente':e.type==='bl'?'achat':e.type==='retour'?'retour':'ajust';
+    const qtyStr = (e.qty>0?'+':'')+e.qty;
+    const stockApr = e.stockApres !== null && e.stockApres !== undefined ? e.stockApres : '—';
+    const stockAv = e.stockAvant !== null && e.stockAvant !== undefined ? e.stockAvant : '—';
+    html += `<tr>
+      <td style="white-space:nowrap">${dt}</td>
+      <td class="${cls}" style="font-weight:600">${e.label}</td>
+      <td style="font-size:0.85em;color:#64748b">${e.ref}${e.note?' — '+e.note:''}</td>
+      <td class="${cls}" style="font-weight:700;text-align:center">${qtyStr}</td>
+      <td style="text-align:center;color:#94a3b8">${stockAv}</td>
+      <td style="text-align:center;font-weight:700;color:#0f172a">${stockApr}</td>
+    </tr>`;
   });
   html += `</tbody></table>`;
   if(!events.length) html += `<p style="text-align:center;color:#94a3b8;margin-top:2rem">Aucun mouvement trouvé</p>`;
@@ -3595,9 +3764,22 @@ async function importFile(type, input) {
 function getSecCode() { return getAdminCode(); }
 
 function checkCode(inputId) {
-  const val = document.getElementById(inputId)?.value;
-  if(val !== getSecCode()) { toast('Code incorrect!','error'); return false; }
-  return true;
+  return true; // Code de sécurité désactivé
+}
+
+async function changePassword() {
+  const newPwd = document.getElementById('new-password').value;
+  const confirmPwd = document.getElementById('confirm-password').value;
+
+  if(!newPwd || newPwd.length < 6) { toast('Mot de passe trop court (min 6)', 'error'); return; }
+  if(newPwd !== confirmPwd) { toast('Les mots de passe ne correspondent pas', 'error'); return; }
+
+  const {error} = await db.auth.updateUser({password: newPwd});
+  if(error) { toast('Erreur: ' + error.message, 'error'); return; }
+
+  document.getElementById('new-password').value = '';
+  document.getElementById('confirm-password').value = '';
+  toast('✅ Mot de passe modifié avec succès!');
 }
 
 async function changeSecurityCode(type) {
@@ -3607,16 +3789,17 @@ async function changeSecurityCode(type) {
   if(!current) { toast('Entrez le code actuel', 'error'); return; }
   if(!newCode || newCode.length < 3) { toast('Nouveau code trop court (min 3)', 'error'); return; }
 
-  // Vérifier code actuel depuis Supabase
-  let validCode;
+  // Vérifier code actuel depuis Supabase (avec user_id)
+  let validCode = null;
   try {
-    const {data} = await db.from('settings').select('value').eq('key','admin_code').single();
-    validCode = data?.value || getAdminCode();
-  } catch(e) {
-    validCode = getAdminCode();
-  }
+    const {data} = await db.from('settings').select('value').eq('key','admin_code').eq('user_id', currentUserId).single();
+    validCode = data?.value;
+  } catch(e) {}
 
-  if(current !== validCode) { toast('Code actuel incorrect!', 'error'); return; }
+  // Si pas de code défini pour cet utilisateur → accepter n'importe quel code
+  if(validCode && current !== validCode) {
+    toast('Code actuel incorrect!', 'error'); return;
+  }
 
   await saveCode('admin_code', newCode);
   document.getElementById('current-code').value = '';
@@ -3810,7 +3993,16 @@ async function searchJerdCatalogue(q) {
       .limit(15);
 
     const emptyEl = document.getElementById('jerd-catalogue-empty');
-    if(!data || !data.length) {
+    // Deduplicate results
+    const seenNames = new Set();
+    const dedupData = (data||[]).filter(m => {
+      const k = m.name.toLowerCase();
+      if(seenNames.has(k)) return false;
+      seenNames.add(k);
+      return true;
+    });
+    const data_dedup = dedupData;
+    if(!dedupData.length) {
       res.innerHTML = '<div style="padding:1rem;text-align:center;color:#94a3b8;font-size:0.82rem">Aucun résultat</div>';
       res.style.display = 'block';
       if(emptyEl) emptyEl.style.display = 'none';
@@ -3821,7 +4013,7 @@ async function searchJerdCatalogue(q) {
     // Filtrer ceux déjà dans jerdData
     const existingNames = new Set(jerdData.map(i => i.product.name.toLowerCase()));
 
-    res.innerHTML = data.map(m => {
+    res.innerHTML = (data_dedup||data).map(m => {
       const alreadyIn = existingNames.has(m.name.toLowerCase());
       const inJerd = jerdData.find(i => i.product.name.toLowerCase() === m.name.toLowerCase());
       const currentQte = inJerd ? (inJerd.qteComptee || '0') : '0';
@@ -4790,6 +4982,33 @@ checkSession();
         <button onclick="confirmerRetour()"
           style="flex:2;padding:0.65rem;border-radius:8px;border:none;background:#d97706;color:white;font-size:0.95rem;font-weight:700;cursor:pointer">↩ Confirmer le retour</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL INFO PRODUIT -->
+<div class="modal-overlay" id="modal-prod-info">
+  <div class="modal" style="width:420px">
+    <h3 style="font-size:1rem;font-weight:700;color:#0284c7;margin-bottom:0.5rem">ⓘ Informations produit</h3>
+    <div id="pi-name" style="font-size:0.85rem;color:#64748b;font-weight:600;margin-bottom:1.25rem;background:#f0f9ff;padding:0.6rem 0.85rem;border-radius:8px"></div>
+    <input type="hidden" id="pi-id">
+    <div class="form-grid" style="margin-bottom:1rem">
+      <div class="form-group" style="grid-column:1/-1">
+        <label>DCI (Dénomination Commune Internationale)</label>
+        <input id="pi-dci" placeholder="Ex: OLANZAPINE" style="text-transform:uppercase">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Classe thérapeutique</label>
+        <input id="pi-classe" placeholder="Ex: NEUROLEPTIQUE" style="text-transform:uppercase">
+      </div>
+      <div class="form-group" style="grid-column:1/-1">
+        <label>Forme galénique</label>
+        <input id="pi-forme" placeholder="Ex: COMPRIMÉ PELLICULÉ" style="text-transform:uppercase">
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="document.getElementById('modal-prod-info').classList.remove('show')">Annuler</button>
+      <button class="modal-ok" onclick="saveProdInfo()">💾 Enregistrer</button>
     </div>
   </div>
 </div>
