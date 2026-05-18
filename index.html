@@ -2615,7 +2615,7 @@ async function confirmPaymentAndSave() {
   const total = cart.reduce((s,i)=>s+itemTotal(i),0);
   const received = parseFloat(document.getElementById('pay-received').value)||0;
   const ba9i = total - received;
-  if(ba9i > 0.01) {
+  if(ba9i > 0) {
     // Kayn ba9i → khassna client
     const clientId = document.getElementById('pay-client-select').value;
     if(!clientId) { toast('Khtar client li ghadi ythsseb 3lih l crédit!','error'); return; }
