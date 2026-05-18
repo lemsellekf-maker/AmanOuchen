@@ -2593,7 +2593,7 @@ function calcMonnaie() {
   document.getElementById('pay-exact-box').style.display = 'none';
   document.getElementById('pay-insuffisant-box').style.display = 'none';
   document.getElementById('pay-credit-box').style.display = 'none';
-  if(received <= 0) return;
+  if(received < 0) return;
   if(Math.abs(monnaie) < 0.01) {
     document.getElementById('pay-exact-box').style.display = 'block';
   } else if(monnaie > 0) {
@@ -2615,7 +2615,7 @@ async function confirmPaymentAndSave() {
   const total = cart.reduce((s,i)=>s+itemTotal(i),0);
   const received = parseFloat(document.getElementById('pay-received').value)||0;
   const ba9i = total - received;
-  if(ba9i > 0) {
+  if(ba9i >= 0.01) {
     // Kayn ba9i → khassna client
     const clientId = document.getElementById('pay-client-select').value;
     if(!clientId) { toast('Khtar client li ghadi ythsseb 3lih l crédit!','error'); return; }
