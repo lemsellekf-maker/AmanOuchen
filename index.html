@@ -1802,7 +1802,7 @@ async function toggleUserActive(id, currentActive) {
 
 // Permissions par rôle
 const ROLE_PERMISSIONS = {
-  caissier:     ['caisse'],
+  caissier:     ['caisse','clients'],
   gestionnaire: ['caisse','ventes','achats','clients','produits'],
   admin:        ['caisse','ventes','achats','clients','produits','rapports','commande','inventaire','paramètres']
 };
