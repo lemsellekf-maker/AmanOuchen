@@ -2595,7 +2595,13 @@ function calcMonnaie() {
   document.getElementById('pay-exact-box').style.display = 'none';
   document.getElementById('pay-insuffisant-box').style.display = 'none';
   document.getElementById('pay-credit-box').style.display = 'none';
-  if(received <= 0) return;
+  if(received < 0) return;
+  if(received === 0) {
+  const ba9i = total;
+  document.getElementById('pay-credit-amount').textContent = ba9i.toFixed(2)+' MAD';
+  document.getElementById('pay-credit-box').style.display = 'block';
+  return;
+}
   if(Math.abs(monnaie) < 0.01) {
     document.getElementById('pay-exact-box').style.display = 'block';
   } else if(monnaie > 0) {
