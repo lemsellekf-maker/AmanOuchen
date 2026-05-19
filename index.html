@@ -3745,9 +3745,7 @@ const { data: lastSale, error: saleError } = await db
   .select('*')
   .eq('customer_id', c.id)
   .eq('status', 'en_attente')
-  .order('created_at', { ascending: false })
-  .limit(1)
-  .single();
+  .order('created_at', { ascending: true })
 
 if(saleError || !lastSale){
   toast('Aucune facture en attente trouvée!','error');
