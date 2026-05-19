@@ -4159,7 +4159,7 @@ async function fetchAllSales(from, to) {
   let allData = [];
   let offset = 0;
   while(true) {
-    const rptUid = currentUserId || localStorage.getItem('owner_user_id');
+    const rptUid = localStorage.getItem('owner_user_id');
     let q = db.from('sales').select('*').eq('user_id', rptUid).order('created_at', {ascending: true}).range(offset, offset + PAGE_SIZE - 1);
     if(from) q = q.gte('created_at', from + ' 00:00:00');
     if(to)   q = q.lte('created_at', to   + ' 23:59:59');
