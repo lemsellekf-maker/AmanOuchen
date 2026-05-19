@@ -4653,6 +4653,7 @@ async function importFile(type, input) {
     if(type==='stock') {
       const prods = rows.slice(1).filter(r=>r.length>=12&&r[0]).map(r=>({
         id:r[0], name:r[1], category:r[2].split(' (')[0],
+        user_id: currentUserId || localStorage.getItem('owner_user_id'),
         ppv:parseFloat(r[4])||0, pph:parseFloat(r[5])||0,
         stock:parseInt(r[7])||0, expiry:r[8]||null,
         stock_min:parseInt(r[9])||0, stock_max:parseInt(r[10])||0,
