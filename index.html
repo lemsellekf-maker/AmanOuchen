@@ -1280,7 +1280,7 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
       </div>
 
       <!-- RESULTATS RECHERCHE -->
-      <div id="cmd-search-results" style="display:none;background:white;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.1);margin-bottom:1rem;max-height:280px;overflow-y:auto"></div>
+      <div id="cmd-search-results" style="display:none;background:white;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.1);margin-bottom:1rem;max-height:400px;overflow-y:auto"></div>
 
       <!-- LISTE COMMANDE -->
       <div class="table-card">
@@ -1392,7 +1392,7 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
     <!-- Historique ventes -->
     <div>
       <div style="font-size:0.8rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.75rem">🧾 Historique des ventes</div>
-      <div id="cd-sales-list" style="display:flex;flex-direction:column;gap:0.5rem;max-height:50vh;overflow-y:auto">
+      <div id="cd-sales-list" style="display:flex;flex-direction:column;gap:0.5rem;max-height:400px;overflow-y:auto">
         <div style="text-align:center;padding:1.5rem;color:#94a3b8;font-size:0.85rem">Chargement...</div>
       </div>
     </div>
@@ -2624,7 +2624,7 @@ async function confirmPaymentAndSave() {
 if(ba9i > 0.01) {
 	// Kayn ba9i → khassna client
     const clientId = document.getElementById('pay-client-select').value;
-    if(!clientId) { toast('Khtar client li ghadi ythsseb 3lih l crédit!','error'); return; }
+    if(!clientId) { toast('Tu choisis un client!','error'); return; }
     closePaymentModal();
     await validateSale(clientId, ba9i);
   } else {
@@ -6172,7 +6172,7 @@ autoFillLogin();
       </label>
       <input type="file" id="scan-bl-input" accept="image/*" style="display:none" onchange="onScanImageChange(this)">
     </div>
-    <img id="scan-bl-preview" style="display:none;width:100%;max-height:280px;object-fit:contain;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:1rem">
+    <img id="scan-bl-preview" style="display:none;width:100%;max-height:400px;object-fit:contain;border-radius:10px;border:1px solid #e2e8f0;margin-bottom:1rem">
     <div id="scan-bl-error" style="display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:0.65rem 0.85rem;font-size:0.83rem;color:#dc2626;margin-bottom:1rem"></div>
     <div id="scan-bl-loading" style="display:none;align-items:center;justify-content:center;gap:0.75rem;padding:1rem;background:#f0fdf9;border-radius:10px;margin-bottom:1rem">
       <div class="spinner"></div>
