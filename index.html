@@ -1688,8 +1688,8 @@ async function saveNewProduct() {
   };
   
   // Ajouter user_id
-  const { data: { user } } = await db.auth.getUser();
-  newProd.user_id = user?.id;
+  newProd.user_id = currentUserId || localStorage.getItem('owner_user_id');
+	
   const {error} = await db.from('products').insert(newProd);
   if(error) { toast('Erreur: '+error.message,'error'); return; }
   
