@@ -3639,7 +3639,6 @@ async function openClientDetail(clientId) {
   const {data: sales} = await db.from('sales')
     .select('id,reference,total,paid_amount,credit_amount,status,created_at')
     .eq('customer_id', clientId)
-    .eq('user_id', uid)
     .order('created_at', {ascending: false})
     .limit(30);
 
@@ -3654,7 +3653,6 @@ async function openClientDetail(clientId) {
   const {data: allItems} = await db.from('sale_items')
     .select('sale_id,product_name,quantity,unit_price,total')
     .in('sale_id', saleIds);
-	.order('sale_id');
 
   const itemsBySale = {};
   (allItems||[]).forEach(item => {
