@@ -3654,7 +3654,6 @@ async function openClientDetail(clientId) {
   const {data: allItems} = await db.from('sale_items')
     .select('sale_id,product_name,quantity,unit_price,total')
     .in('sale_id', saleIds);
-	.order('sale_id');
 
   const itemsBySale = {};
   (allItems||[]).forEach(item => {
