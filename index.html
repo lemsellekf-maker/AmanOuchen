@@ -3637,7 +3637,7 @@ async function openClientDetail(clientId) {
     .select('id,reference,total,paid_amount,credit_amount,status,created_at')
     .eq('customer_id', clientId)
     .eq('user_id', uid)
-    .order('created_at', {ascending: false})
+    .order('created_at', {ascending: true})
     .limit(30);
 
   const container = document.getElementById('cd-sales-list');
@@ -3745,7 +3745,9 @@ const { data: lastSale, error: saleError } = await db
   .select('*')
   .eq('customer_id', c.id)
   .eq('status', 'en_attente')
-  .order('created_at', { ascending: true })
+  .order('created_at', { ascending: false })
+  .limit(1)
+  .single();
 
 if(saleError || !lastSale){
   toast('Aucune facture en attente trouvée!','error');
