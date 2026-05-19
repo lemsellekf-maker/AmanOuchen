@@ -3662,7 +3662,7 @@ async function openClientDetail(clientId) {
 
   // Fonction toggle accordion
   window._toggleSaleDetail = function(btn) {
-    const detail = btn.parentElement.nextElementSibling;
+    const detail = btn.nextElementSibling;
     const arr = btn.querySelector('.sale-arr');
     const isOpen = detail.style.display === 'block';
     detail.style.display = isOpen ? 'none' : 'block';
