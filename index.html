@@ -4056,8 +4056,18 @@ async function saveEditProduct() {
   const p = allProducts.find(x=>x.id===id);
   const stockBefore = p?.stock || 0;
 
-  const {error} = await db.from('products').update({ppv,pph,stock,expiry}).eq('id',id);
-  if(error) { toast('Erreur: '+error.message,'error'); return; }
+  const exists = allProducts.find(x=>x.id===id);
+  
+  if(!exists) {
+    const {error} = await db.from('products').insert({
+      id, ppv, pph, stock, expiry,
+      user_id: currentUserId || localStorage.getItem('owner_user_id')
+    });
+    if(error) { toast('Erreur: '+error.message,'error'); return; }
+  } else {
+    const {error} = await db.from('products').update({ppv,pph,stock,expiry}).eq('id',id);
+    if(error) { toast('Erreur: '+error.message,'error'); return; }
+  }
 
   // Log si stock changé
   if(stock !== stockBefore) {
