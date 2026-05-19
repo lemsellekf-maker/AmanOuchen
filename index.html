@@ -807,7 +807,8 @@ tbody td{padding:0.7rem 1rem;font-size:0.875rem}
     <!-- PRODUITS -->
     <div class="page" id="page-produits">
       <div class="table-card">
-        <div class="table-header"><h2>Liste des produits</h2><div style="display:flex;gap:0.5rem;align-items:center"><span id="prod-count-display" style="font-size:0.85rem;color:#94a3b8"></span><button class="btn btn-outline btn-sm" onclick="loadProduits()" title="Actualiser la liste" style="color:#0f766e;border-color:#0f766e">🔄 Actualiser</button><button class="btn btn-outline btn-sm" style="color:#dc2626;border-color:#dc2626" onclick="openPerimesModal()">🗑 Périmés</button></div></div>
+        <div class="table-header"><h2>Liste des produits</h2><div style="display:flex;gap:0.5rem;align-items:center"><span id="prod-count-display" style="font-size:0.85rem;color:#94a3b8"></span><button class="btn btn-outline btn-sm" onclick="loadProduits()" title="Actualiser la liste" style="color:#0f766e;border-color:#0f766e">🔄 Actualiser</button><button class="btn btn-sm" onclick="openAddProduit()" style="background:#0f766e;color:white">+ Nouveau produit</button>
+            <button class="btn btn-outline btn-sm" style="color:#dc2626;border-color:#dc2626" onclick="openPerimesModal()">🗑 Périmés</button></div></div>
         <div class="table-toolbar">
           <input type="text" placeholder="Nom ou code barre..." id="p-search" oninput="filterProduits()" style="width:250px">
           <select id="p-cat" onchange="filterProduits()">
@@ -4032,7 +4033,10 @@ async function editProductStock(prodId, prodName, currentStock) {
   renderProduits();
   toast(`✅ Stock mis à jour: ${qty}`);
 }
-
+function openAddProduit() {
+  const empty = {id:'P'+Date.now(), name:'', category:'', ppv:0, pph:0, stock:0, stock_min:0, stock_max:0, barcode1:'', barcode2:'', dci:''};
+  editProduct(empty);
+}
 function editProduct(p) {
   document.getElementById('ep-id').value = p.id;
   document.getElementById('modal-prod-title').textContent = p.name;
