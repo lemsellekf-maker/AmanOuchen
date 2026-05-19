@@ -3635,7 +3635,7 @@ async function openClientDetail(clientId) {
   document.getElementById('modal-client-detail').classList.add('show');
 
   // Charger historique ventes du client avec les produits
-  const uid = currentUserId || localStorage.getItem('owner_user_id');
+  const uid = localStorage.getItem('owner_user_id');
   const {data: sales} = await db.from('sales')
     .select('id,reference,total,paid_amount,credit_amount,status,created_at')
     .eq('customer_id', clientId)
