@@ -3637,7 +3637,7 @@ async function openClientDetail(clientId) {
     .select('id,reference,total,paid_amount,credit_amount,status,created_at')
     .eq('customer_id', clientId)
     .eq('user_id', uid)
-    .order('created_at', {ascending: true})
+    .order('created_at', {ascending: false})
     .limit(30);
 
   const container = document.getElementById('cd-sales-list');
