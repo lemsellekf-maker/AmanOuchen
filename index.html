@@ -4034,9 +4034,8 @@ async function editProductStock(prodId, prodName, currentStock) {
   toast(`✅ Stock mis à jour: ${qty}`);
 }
 function openAddProduit() {
-  const empty = {id:'P'+Date.now(), name:'', category:'', ppv:0, pph:0, stock:0, stock_min:0, stock_max:0, barcode1:'', barcode2:'', dci:''};
-  editProduct(empty);
-}
+  document.getElementById('modal-new-product').classList.add('show');
+}	
 function editProduct(p) {
   document.getElementById('ep-id').value = p.id;
   document.getElementById('modal-prod-title').textContent = p.name;
