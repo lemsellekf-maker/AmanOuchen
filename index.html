@@ -4663,6 +4663,7 @@ async function importFile(type, input) {
       for(const chunk of chunks) await db.from('products').upsert(chunk, {onConflict:'id'});
       allProducts = []; // Reset cache
       statusEl.textContent = `✅ ${prods.length} produits importés!`;
+	  await loadProduits();
     } else if(type==='customers') {
       const custs = rows.slice(1).filter(r=>r.length>=4&&r[0]).map(r=>({
         name:r[0].trim(), 
